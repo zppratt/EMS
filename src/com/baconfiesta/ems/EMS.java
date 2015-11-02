@@ -1,7 +1,13 @@
 package com.baconfiesta.ems;
 
-/**
- * Created by User on 11/2/2015.
- */
 public class EMS {
+
+    /**
+     * Main driver for the EMS program.
+     * @param args
+     */
+    public static void main(String[] args) {
+
+    }
+
 }
