@@ -1,12 +1,10 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
-public class Category {
+/**
+ * The emergency categories our system will handle
+ */
+public enum Category {
 
-    public enum Category {
-        FIRE,
-        CRIME,
-        CAR_CRASH,
-        MEDICAL
-    }
+    FIRE, CRIME, CAR_CRASH, MEDICAL
 
 }
