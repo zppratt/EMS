@@ -35,8 +35,8 @@ public class EMSUser {
         return username;
     }
 
-    public Boolean checkPassword() {
-
+    public Boolean checkPassword(String password) {
+        return this.getPassword().equals(password);
     }
 
     public HashMap<Instant, EmergencyRecord> getRecords() {
@@ -51,4 +51,7 @@ public class EMSUser {
 
     }
 
+    private String getPassword() {
+        return password;
+    }
 }
