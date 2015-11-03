@@ -29,7 +29,7 @@ public class Metadata {
     /**
      * The category of the emergency
      */
-    private String emergencyCategory;
+    private Category emergencyCategory;
 
     /**
      * Default constructor for a Metadata object
@@ -38,28 +38,53 @@ public class Metadata {
         this.timeCreated = Instant.now();
     }
 
+    /**
+     * Retrieves the user who created the record
+     * @return the user
+     */
     public EMSUser getCreatedBy() {
         return createdBy;
     }
 
+    /**
+     * Retrieves the user who modifies a record at an instant in time
+     * @param instant the time the record was modified
+     * @return the user who modified the record
+     */
     public EMSUser getModifiedByTime(Instant instant) {
-
+        return this.getModifications().get(instant);
     }
 
-    public HashMap<Instant, EMSUser> getModifications() {
+    /**
+     * Retrieves the modifications to the record
+     * @return the list of modifications by time, user
+     */
+    HashMap<Instant, EMSUser> getModifications() {
         /* Should we return a copy or itself? */
         return modifications;
     }
 
+    /**
+     * Retrieves the time the record was created
+     * @return the creation time
+     */
     public Instant getTimeCreated() {
         return timeCreated;
     }
 
-    public String getEmergencyCategory() {
+    /**
+     * Receives the category of the emergency
+     * @return the category
+     */
+    public Category getEmergencyCategory() {
         return emergencyCategory;
     }
 
-    public void setEmergencyCategory(String emergencyCategory) {
+    /**
+     * Sets the category of the emergency
+     * @param emergencyCategory the category
+     */
+    public void setEmergencyCategory(Category emergencyCategory) {
         this.emergencyCategory = emergencyCategory;
     }
 }
