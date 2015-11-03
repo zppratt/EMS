@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /**
  * Contains information about an emergency record
- * @author baconfiesta
+ * @author team_bacon_fiesta
  */
 public class Metadata {
 

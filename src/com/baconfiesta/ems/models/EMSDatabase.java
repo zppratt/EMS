@@ -74,6 +74,7 @@ public class EMSDatabase {
         // Add it to the database
         this.getUsers().put(username, user);
         // ...
+        return null;
     }
 
     /**
@@ -109,8 +110,8 @@ public class EMSDatabase {
      */
     public boolean removeUser(String username) {
         // Remove a user from the database and list in memory
-        if (this.getRecords().containsKey(username)) {
-            this.getRecords().remove(username);
+        if (this.getUsers().containsKey(username)) {
+            this.getUsers().remove(username);
             return true;
         }
         return false;

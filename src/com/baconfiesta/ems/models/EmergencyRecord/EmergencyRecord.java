@@ -2,6 +2,7 @@ package com.baconfiesta.ems.models.EmergencyRecord;
 
 /**
  * An emergency record in the system
+ * @author team_bacon_fiesta
  */
 public class EmergencyRecord {
 
@@ -52,7 +53,7 @@ public class EmergencyRecord {
 
     /**
      * Retrieves the caller for this emergency
-     * @return teh caller
+     * @return the caller
      */
     public Caller getCaller() {
         return caller;
@@ -133,7 +134,7 @@ public class EmergencyRecord {
 
     /**
      * Sets the object containing the information about this record
-     * @return the metadata of this record
+     * @param metadata the metadata of this record
      */
     protected void setMetadata(Metadata metadata) {
         this.metadata = metadata;

@@ -109,6 +109,8 @@ public class EMSUser {
 
     /**
      * Toggles the user's administrative privileges
+     * @param admin true makes the user an administrator,
+     *              false makes the user a regular user.
      */
     private void setAdmin(boolean admin) {
         this.admin = admin;

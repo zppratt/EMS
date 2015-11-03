@@ -10,6 +10,7 @@ import java.util.Date;
 
 /**
  * The main controller for the EMS system
+ * @author team_bacon_fiesta
  */
 public class EMSController {
 
@@ -24,13 +25,19 @@ public class EMSController {
     private EMSDatabase database;
 
     /**
+     * Default constructor for a user controller
+     */
+    public EMSController() {
+    }
+
+    /**
      * Logs a user into the system
-     * @param username
-     * @param password
+     * @param username the username
+     * @param password the password
      * @return the User on success, null on failure
      */
     public EMSUser logIn(String username, String password) {
-
+        return null;
     }
 
     /**
@@ -42,10 +49,21 @@ public class EMSController {
 
     /**
      * Creates a new emergency record
-     * @return the emergency record on success, null on failure
+     * @param a unknown
+     * @param b unknown
+     * @param c unknown
+     * @param d unknown
+     * @param e unknown
+     * @param f unknown
+     * @param g unknown
+     * @param h unknown
+     * @return the created record on success, null on failure
      */
-    public EmergencyRecord createNewEmergency(String, String, String, String, String, String, int, String) {
-
+    public EmergencyRecord createNewEmergency(
+            String a, String b, String c,
+            String d, String e, String f,
+            int g, String h) {
+        return null;
     }
 
     /**
@@ -74,10 +92,11 @@ public class EMSController {
 
     /**
      * Retrieve an emergency record by the time it was created
+     * @param time the time of the record to access
      * @return the emergency record
      */
     public EmergencyRecord accessEmergencyRecord(Instant time) {
-        /* Why is it a string in parameter? Don't we need an instant?*/
+        return null;
     }
 
     /**
@@ -95,7 +114,7 @@ public class EMSController {
      * @return the list of users
      */
     public EMSUser[] getUsers() {
-
+        return null;
     }
 
     /**
@@ -103,7 +122,7 @@ public class EMSController {
      * @return the list of records
      */
     public EmergencyRecord[] getRecords() {
-
+        return null;
     }
 
     /**

@@ -4,51 +4,52 @@ import com.baconfiesta.ems.models.EMSUser;
 
 /**
  * Privileged version of the main controller for the EMS system
+ * @author team_bacon_fiesta
  */
 public class EMSAdminController extends EMSController {
 
     /**
      * Adds a user to the system
-     * @param firstname
-     * @param lastname
-     * @param username
-     * @param password
+     * @param firstname the user's first name
+     * @param lastname the user's last name
+     * @param username the user's username
+     * @param password the user's password
      * @return the User on success, null on failure
      */
     public EMSUser addUser(String firstname, String lastname, String username, String password) {
-        /* Added the password argument because how else can we define a password to a user? */
+        return new EMSUser(firstname,lastname,username,password,false);
     }
 
     /**
      * Removes a user from the system
-     * @param user
+     * @param user the user
      * @return whether the removal was successful or not
      */
     public boolean removeUser(EMSUser user) {
-
+        return false;
     }
 
     /**
      * Get a user from the system by name
-     * @param username
+     * @param username the username
      * @return the User if found, otherwise null
      */
     public EMSUser lookupUser(String username) {
-
+        return null;
     }
 
     /**
      * View a users activity
-     * @param user
+     * @param user the user
      * @return the activity of the user
      */
     public String viewUserActivity(EMSUser user) {
-
+        return null;
     }
 
     /**
      * Sets the current user
-     * @param user
+     * @param user the user
      */
     public void setUser(EMSUser user) {
 

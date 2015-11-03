@@ -2,6 +2,7 @@ package com.baconfiesta.ems.models.EmergencyRecord;
 
 /**
  * A caller in the system
+ * @author team_bacon_fiesta
  */
 public class Caller {
 
@@ -22,9 +23,9 @@ public class Caller {
 
     /**
      * Create a caller for an emergency record
-     * @param firstName
-     * @param lastName
-     * @param phone
+     * @param firstName the first name
+     * @param lastName the last name
+     * @param phone the phone number
      */
     public Caller(String firstName, String lastName, String phone) {
         this.firstName = firstName;

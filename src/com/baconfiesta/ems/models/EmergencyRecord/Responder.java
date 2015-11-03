@@ -2,6 +2,7 @@ package com.baconfiesta.ems.models.EmergencyRecord;
 
 /**
  * A responder to an emergency
+ * @author team_bacon_fiesta
  */
 public class Responder {
 

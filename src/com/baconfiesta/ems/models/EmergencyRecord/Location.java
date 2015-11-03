@@ -1,44 +1,48 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
+/**
+ * A location of an emergency in the system
+ * @author team_bacon_fiesta
+ */
 public class Location {
 
     /**
      * The address of the emergency
      */
-    private String emergencyAddress;
+    private String address;
 
     /**
      * The state where the emergency is/was located
      */
-    private String emergencyState;
+    private String state;
 
     /**
      * The zip code where the emergency is/was located
      */
-    private int emergencyZip;
+    private int zip;
 
     /**
      * Retrieve the address of the emergency
      * @return the address
      */
-    public String getEmergencyAddress() {
-        return emergencyAddress;
+    public String getAddress() {
+        return address;
     }
 
     /**
      * Retrieve the state where the emergency is/was located
      * @return the state
      */
-    public String getEmergencyState() {
-        return emergencyState;
+    public String getState() {
+        return state;
     }
 
     /**
      * Retrieve the zip code where the emergency is/was located
      * @return the zip code
      */
-    public int getEmergencyZip() {
-        return emergencyZip;
+    public int getZip() {
+        return zip;
     }
 
 }
