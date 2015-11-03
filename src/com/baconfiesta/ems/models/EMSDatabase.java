@@ -43,7 +43,9 @@ public class EMSDatabase {
      * @param record the record to add
      */
     public void addEmergencyRecord(EmergencyRecord record) {
-
+        if (!this.getRecords().containsValue(record)) {
+            this.getRecords().put(record.getMetadata().getTimeCreated(), record);
+        }
     }
 
     /**
@@ -52,7 +54,10 @@ public class EMSDatabase {
      * @return the record
      */
     public EmergencyRecord getEmergencyRecord(Instant time) {
-
+        if (this.getRecords().containsKey(time)) {
+            return this.getRecords().get(time);
+        }
+        return null;
     }
 
     /**
@@ -77,7 +82,11 @@ public class EMSDatabase {
      * @return the user on success, null on failure
      */
     public EMSUser lookupUser(String username) {
-
+        // Return the user if it exists
+        if (this.getUsers().containsKey(username)) {
+            return this.getUsers().get(username);
+        }
+        return null;
     }
 
     /**
@@ -86,7 +95,11 @@ public class EMSDatabase {
      * @return the emergency record on success, null on failure
      */
     public EmergencyRecord lookupEmergencyRecord(Instant time) {
-
+        // Return the record for this time if it exists
+        if (this.getRecords().containsKey(time)) {
+            return this.getRecords().get(time);
+        }
+        return null;
     }
 
     /**
@@ -96,8 +109,8 @@ public class EMSDatabase {
      */
     public boolean removeUser(String username) {
         // Remove a user from the database and list in memory
-        if (this.records.containsKey(username)) {
-            this.records.remove(username);
+        if (this.getRecords().containsKey(username)) {
+            this.getRecords().remove(username);
             return true;
         }
         return false;
@@ -107,15 +120,15 @@ public class EMSDatabase {
      * Retrieve the list of emergency records in the database
      * @return the list of records
      */
-    public EmergencyRecord[] getRecords() {
-        return (EmergencyRecord[]) this.records.values().toArray();
+    private HashMap<Instant, EmergencyRecord> getRecords() {
+        return records;
     }
 
     /**
      * Retrieve the list of users in the database
      * @return the list of users
      */
-    protected EMSUser[] getUsers() {
-        return (EMSUser[]) this.records.keySet().toArray();
+    private HashMap<String, EMSUser> getUsers() {
+        return users;
     }
 }
