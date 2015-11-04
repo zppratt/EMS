@@ -49,21 +49,9 @@ public class EMSController {
 
     /**
      * Creates a new emergency record
-     * @param a unknown
-     * @param b unknown
-     * @param c unknown
-     * @param d unknown
-     * @param e unknown
-     * @param f unknown
-     * @param g unknown
-     * @param h unknown
-     * @return the created record on success, null on failure
      */
-    public EmergencyRecord createNewEmergency(
-            String a, String b, String c,
-            String d, String e, String f,
-            int g, String h) {
-        return null;
+    public void createNewEmergency(EmergencyRecord record) {
+
     }
 
     /**
@@ -87,7 +75,7 @@ public class EMSController {
      * @param record the record to finalize
      */
     public void finalizeRecord(EmergencyRecord record) {
-
+        
     }
 
     /**
