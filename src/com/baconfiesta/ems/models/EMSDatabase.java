@@ -60,7 +60,6 @@ public class EMSDatabase {
                     File directory = new File("./db");
                     if (!(directory.isDirectory())) {
                         directory.mkdir();
-                        
                     }
                     fileOutputStream = new FileOutputStream(database);
                 } catch (FileNotFoundException e) {
