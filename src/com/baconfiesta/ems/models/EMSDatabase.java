@@ -1,10 +1,13 @@
 package com.baconfiesta.ems.models;
 
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * The file storage for records and users
@@ -15,6 +18,11 @@ public class EMSDatabase {
      * The file for the user database
      */
     private static final File database = new File("./db/database.db");
+
+    /**
+     * Log for debugging, etc.
+     */
+    private Logger log = Logger.getLogger(EMSDatabase.class.getName());
 
     /**
      * Output stream for storing the users and records
@@ -40,20 +48,32 @@ public class EMSDatabase {
      * List of users
      * key: username, value: the user
      */
-    private HashMap<String, EMSUser> users;
+    private static HashMap<String, EMSUser> users;
 
     /**
      * List of emergency records
      * key: the creation time
      * value: the emergency record
      */
-    private HashMap<Instant, EmergencyRecord> records;
+    private static HashMap<Instant, EmergencyRecord> records;
 
     /**
      * Default constructor for a database object
      */
     public EMSDatabase() {
         // Check if the streams for the database reading and writing have been created. If not, create them.
+        setupStreams();
+        // Setup logger
+        setupLogger();
+        // Check if the user and records are initialized in memory
+        setupUserDatabase();
+        setupRecordDatabase();
+    }
+
+    /**
+     * Check input and output streams for setup
+     */
+    private void setupStreams() {
         if (outputStream==null) {
             if (fileOutputStream==null) {
                 try {
@@ -89,6 +109,60 @@ public class EMSDatabase {
     }
 
     /**
+     * Sets up the logger
+     */
+    private void setupLogger() {
+        Logger logger = Logger.getLogger(this.getClass().toString());
+        String log4JPropertyFile = "./log/log4j.properties";
+        Properties p = new Properties();
+        try {
+            p.load(new FileInputStream(log4JPropertyFile));
+            PropertyConfigurator.configure(p);
+            logger.info("Wow! I'm configured!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Setup the memory space for the user
+     */
+    private void setupUserDatabase() {
+        if (users != null) {
+            try {
+                // Does it exist in the database file? Pull it into memory
+                users = (HashMap<String, EMSUser>) inputStream.readObject();
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        // Otherwise created a new one
+        users = new HashMap<>();
+    }
+
+    /**
+     * Setup the memory space for the records
+     */
+    private void setupRecordDatabase() {
+        if (users != null) {
+            try {
+                // Does it exist in the database file? Pull it into memory
+                records = (HashMap<Instant, EmergencyRecord>) inputStream.readObject();
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        // Otherwise created a new one
+        records = new HashMap<>();
+    }
+
+    /**
      * Checks a users credentials match in the database
      * @param username the user id
      * @param password the password
@@ -111,6 +185,7 @@ public class EMSDatabase {
     public void addEmergencyRecord(EmergencyRecord record) throws IOException {
         if (!this.getRecords().containsValue(record)) {
             this.getRecords().put(record.getMetadata().getTimeCreated(), record);
+            log.info("Writing users to database from 'addEmergencyRecord'");
             outputStream.writeObject(users);
             outputStream.writeObject(records);
         }
@@ -141,7 +216,11 @@ public class EMSDatabase {
         EMSUser user = new EMSUser(firstname, lastname, username, password, false);
         // Add it to the database
         this.getUsers().put(username, user);
-        // ...
+        try {
+            outputStream.writeObject(getUsers());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
