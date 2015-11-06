@@ -48,6 +48,9 @@ public class EmergencyRecord {
      * @return the metadata
      */
     public Metadata getMetadata () {
+        if (metadata==null) {
+            metadata = new Metadata();
+        }
         return metadata;
     }
 

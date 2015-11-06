@@ -152,9 +152,11 @@ public class EMSDatabase {
                 // Does it exist in the database file? Pull it into memory
                 records = (HashMap<Instant, EmergencyRecord>) inputStream.readObject();
                 return;
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (EOFException e) {
+
+            }  catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -185,8 +187,7 @@ public class EMSDatabase {
     public void addEmergencyRecord(EmergencyRecord record) throws IOException {
         if (!this.getRecords().containsValue(record)) {
             this.getRecords().put(record.getMetadata().getTimeCreated(), record);
-            log.info("Writing users to database from 'addEmergencyRecord'");
-            outputStream.writeObject(users);
+            log.info("Writing to database...");
             outputStream.writeObject(records);
         }
     }

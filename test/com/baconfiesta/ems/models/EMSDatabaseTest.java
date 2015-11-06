@@ -1,21 +1,30 @@
 package com.baconfiesta.ems.models;
 
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.baconfiesta.ems.models.EmergencyRecord.Metadata;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.createNiceMock;
+import static org.powermock.api.easymock.PowerMock.expectLastCall;
+import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest()
+@PrepareForTest( {Metadata.class} )
 public class EMSDatabaseTest {
 
     /**
@@ -131,9 +140,18 @@ public class EMSDatabaseTest {
      */
     @Test
     public void testAddEmergencyRecord() throws Exception {
-        EmergencyRecord record = PowerMock.createNiceMock(EmergencyRecord.class);
+        File mockDirectory = createMock(File.class);
+        expectNew(File.class, "test").andReturn(mockDirectory);
+        File mockFile = createMock(File.class);
+        expectNew(File.class, "test").andReturn(mockFile);
+        fileOutputStream = createNiceMock(FileOutputStream.class);
+        expectNew(FileOutputStream.class, mockFile).andReturn(fileOutputStream);
+        EmergencyRecord mockRecord = createNiceMock(EmergencyRecord.class);
+        outputStream = createNiceMock(ObjectOutputStream.class);
+        outputStream.writeObject(mockRecord);
+        expectLastCall().once();
         replayAll();
-        database.addEmergencyRecord(record);
+        database.addEmergencyRecord(mockRecord);
         verifyAll();
     }
 
