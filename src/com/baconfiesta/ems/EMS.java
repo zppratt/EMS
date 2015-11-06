@@ -1,5 +1,7 @@
 package com.baconfiesta.ems;
 
+import com.baconfiesta.ems.view.EMSInterface;
+
 /**
  * The main driver for the EMS system
  * @author team_bacon_fiesta
@@ -11,7 +13,7 @@ public class EMS {
      * @param args not used
      */
     public static void main(String[] args) {
-
+        EMSInterface face = new EMSInterface();
     }
 
 }
