@@ -11,4 +11,24 @@ public class Route {
     private double source;
     private double destination;
 
+    public void determineNearestResponder(EmergencyRecord record) {
+
+        /* Determine emergency responder according to the type of the emergency:*/
+        switch (record.getCategory()) {
+            /* Fire Department*/
+            case FIRE:
+                break;
+            /* Police Department */
+            case CRIME:
+                break;
+            case CAR_CRASH:
+                break;
+            /* Health Department */
+            case MEDICAL:
+                break;
+            default:
+                break;
+        }
+    }
+
 }
