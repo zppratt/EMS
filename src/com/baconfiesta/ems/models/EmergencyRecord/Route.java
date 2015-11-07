@@ -51,7 +51,7 @@ public class Route {
 
         /* Creating a context for the places API query using our team key */
         GeoApiContext context = new GeoApiContext();
-        context.setApiKey("AIzaSyClARJ6vh6DKFwNEIe8uHV1uJhM3d_Air0"); // Our Places API key
+        context.setApiKey(""); // Our Places API key
 
         /* Fields required to create a new responder */
         String responderPhone = "";
