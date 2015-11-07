@@ -6,6 +6,6 @@ package com.baconfiesta.ems.models.EmergencyRecord;
  */
 public enum Category {
 
-    FIRE, CRIME, CAR_CRASH, MEDICAL
+    FIRE, CRIME, CAR_CRASH, MEDICAL, HOAX
 
 }
