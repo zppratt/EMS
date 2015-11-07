@@ -46,12 +46,4 @@ public class EMSAdminController extends EMSController {
     public String viewUserActivity(EMSUser user) {
         return null;
     }
-
-    /**
-     * Sets the current user
-     * @param user the user
-     */
-    public void setUser(EMSUser user) {
-
-    }
 }

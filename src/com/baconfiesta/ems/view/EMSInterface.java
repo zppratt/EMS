@@ -264,6 +264,8 @@ public class EMSInterface {
         loginButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Check if the credentials are successful
+//                EMSUser user = controller.authenticateUser(usernameText.getText(), passwordText.getPassword().toString());
+//                if (user==null) return;
                 // If successful then clear window
                 mainframe.removeAll();
                 // If a normal user then use useractions()

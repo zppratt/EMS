@@ -15,6 +15,11 @@ import java.util.Date;
 public class EMSController {
 
     /**
+     * Current user of the system
+     */
+    private EMSUser user;
+
+    /**
      * The current user of the system
      */
     private EMSUser currentUser;
@@ -127,6 +132,29 @@ public class EMSController {
      */
     public void restoreData(File file) {
         EMSDatabase.restoreData(file);
+    }
+
+    /**
+     * Authenticates a user
+     * @param username the username
+     * @param password the password
+     */
+    public EMSUser authenticateUser(String username, String password) {
+        EMSUser user = database.lookupUser(username);
+        if (user != null ) {
+            if (user.checkPassword(password)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sets the current user
+     * @param user the user
+     */
+    public void setUser(EMSUser user) {
+        this.user = user;
     }
 
 }
