@@ -18,6 +18,7 @@ public class Route {
     /*
      * TODO: Handle the fact that the answer query can be empty
      * TODO: If no category, what should I do instead of return?
+     * TODO: if cannot retrieve data, what happens?
      * */
 
     /**
@@ -97,6 +98,13 @@ public class Route {
                 PlaceDetails detailsQuery = PlacesApi.placeDetails(context, placeId).await();
                 responderPhone = detailsQuery.formattedPhoneNumber;
                 responderAddress = detailsQuery.vicinity;
+
+                for(int i = 0; i<detailsQuery.addressComponents.length; i++) {
+                    if(detailsQuery.addressComponents[i].types == POSTAL_CODE)
+                        responderZip = Integer.parseInt(detailsQuery.addressComponents[i].longName);
+                    else if(detailsQuery.addressComponents[i].types == ADMINISTRATIVE_AREA_LEVEL_1)
+                        responderState = detailsQuery.addressComponents[i].longName;
+                }
 
             } catch (Exception e) {
                 System.err.println(e);
