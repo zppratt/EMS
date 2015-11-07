@@ -5,6 +5,11 @@ import com.google.maps.PlacesApi;
 import com.google.maps.model.PlaceDetails;
 import com.google.maps.model.PlacesSearchResponse;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * A route in the system from the responder to the emergency
  */
@@ -12,15 +17,17 @@ public class Route {
 
     /*
      * TODO: Handle the fact that the answer query can be empty
-     * TODO: If no category, what sould I do instead of return?
+     * TODO: If no category, what should I do instead of return?
      * */
 
     /**
      * \brief Determines the nearest emergency responder according to the type of the emergency
-     * @param EmergencyRecord record, the emergency record currently being created
      *
-     * Determines an emergency responder according to the type of the emergency. Queries places from google, selects the nearest place,
-     * queries information about this place, and formats information according to a Responder. Creates a new Responder and appends it to the emergency record */
+     * @param record the emergency record currently being created
+     *               <p>
+     *               Determines an emergency responder according to the type of the emergency. Queries places from google, selects the nearest place,
+     *               queries information about this place, and formats information according to a Responder. Creates a new Responder and appends it to the emergency record
+     */
     public void determineNearestResponder(EmergencyRecord record) {
 
         String searchQuery;
@@ -51,7 +58,23 @@ public class Route {
 
         /* Creating a context for the places API query using our team key */
         GeoApiContext context = new GeoApiContext();
-        context.setApiKey(""); // Our Places API key
+        Properties properties = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("maps.private.properties");
+            properties.load(input);
+            context.setApiKey(properties.getProperty("PlacesKey")); // Our Places API key
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         /* Fields required to create a new responder */
         String responderPhone = "";
@@ -79,7 +102,7 @@ public class Route {
                 System.err.println(e);
             }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println(e);
         }
 
@@ -87,7 +110,6 @@ public class Route {
         Responder emergencyResponder = new Responder(responderPhone, responderAddress, responderState, responderZip);
         record.setResponder(emergencyResponder);
 
-
     }
-
 }
+
