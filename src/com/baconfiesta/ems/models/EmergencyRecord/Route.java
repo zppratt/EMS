@@ -2,12 +2,14 @@ package com.baconfiesta.ems.models.EmergencyRecord;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
+import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.PlaceDetails;
 import com.google.maps.model.PlacesSearchResponse;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -100,10 +102,13 @@ public class Route {
                 responderAddress = detailsQuery.vicinity;
 
                 for(int i = 0; i<detailsQuery.addressComponents.length; i++) {
-                    if(detailsQuery.addressComponents[i].types == POSTAL_CODE)
+                    if(Arrays.asList(detailsQuery.addressComponents[i].types)
+                            .contains(AddressComponentType.POSTAL_CODE)) {
                         responderZip = Integer.parseInt(detailsQuery.addressComponents[i].longName);
-                    else if(detailsQuery.addressComponents[i].types == ADMINISTRATIVE_AREA_LEVEL_1)
+                    } else if(Arrays.asList(detailsQuery.addressComponents[i].types)
+                            .contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
                         responderState = detailsQuery.addressComponents[i].longName;
+                    }
                 }
 
             } catch (Exception e) {
