@@ -102,7 +102,7 @@ public class EMSController {
      * @return the list of users
      */
     public EMSUser[] getUsers() {
-        return null;
+        return (EMSUser[]) database.getUsers().values().toArray();
     }
 
     /**
@@ -110,23 +110,23 @@ public class EMSController {
      * @return the list of records
      */
     public EmergencyRecord[] getRecords() {
-        return null;
+        return (EmergencyRecord[]) database.getRecords().values().toArray();
     }
 
     /**
      * Saves all emergency data to a file
-     * @param backupFile the file to save to
+     * @param file the file to save to
      */
-    public void backupData(File backupFile) {
-
+    public void backupData(File file) {
+        EMSDatabase.backupData(file);
     }
 
     /**
      * Restores emergency data from a backup file
-     * @param restoringFile the file to restore from
+     * @param file the file to restore from
      */
-    public void restoreData(File restoringFile) {
-
+    public void restoreData(File file) {
+        EMSDatabase.restoreData(file);
     }
 
 }

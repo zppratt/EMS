@@ -286,7 +286,7 @@ public class EMSDatabase {
      * Retrieve the list of emergency records in the database
      * @return the list of records
      */
-    private HashMap<Instant, EmergencyRecord> getRecords() {
+    public HashMap<Instant, EmergencyRecord> getRecords() {
         return records;
     }
 
@@ -294,7 +294,43 @@ public class EMSDatabase {
      * Retrieve the list of users in the database
      * @return the list of users
      */
-    private HashMap<String, EMSUser> getUsers() {
+    public HashMap<String, EMSUser> getUsers() {
         return users;
+    }
+
+    /**
+     * Static method to support the backup of data to a custom destination
+     * @param file the file to backup to
+     */
+    public static void backupData(File file) {
+        try (
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))
+        ) {
+            oos.writeObject(users);
+            oos.writeObject(records);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Static method to support the restore of data from a custom location
+     * @param file the file to restore from
+     */
+    public static void restoreData(File file) {
+        try (
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
+        ) {
+            users = (HashMap<String, EMSUser>) ois.readObject();
+            records = (HashMap<Instant, EmergencyRecord>) ois.readObject();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
