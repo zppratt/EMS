@@ -2,6 +2,7 @@ package com.baconfiesta.ems.models.EmergencyRecord;
 
 import com.baconfiesta.ems.models.EMSUser;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
 
@@ -9,7 +10,7 @@ import java.util.HashMap;
  * Contains information about an emergency record
  * @author team_bacon_fiesta
  */
-public class Metadata {
+public class Metadata implements Serializable {
 
     /**
      * The user who created the emergency record
@@ -34,7 +35,7 @@ public class Metadata {
     /**
      * Default constructor for a Metadata object
      */
-    protected Metadata() {
+    public Metadata() {
         this.timeCreated = Instant.now();
     }
 

@@ -188,7 +188,15 @@ public class EMSDatabase {
         if (!this.getRecords().containsValue(record)) {
             this.getRecords().put(record.getMetadata().getTimeCreated(), record);
             log.info("Writing to database...");
-            outputStream.writeObject(records);
+            writeObject(records);
+        }
+    }
+
+    private void writeObject(Object object) {
+        try {
+            outputStream.writeObject(object);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

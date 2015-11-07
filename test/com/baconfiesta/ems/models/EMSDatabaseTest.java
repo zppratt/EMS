@@ -9,22 +9,19 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.Instant;
+import java.util.HashMap;
 
-import static org.powermock.api.easymock.PowerMock.createMock;
-import static org.powermock.api.easymock.PowerMock.createNiceMock;
-import static org.powermock.api.easymock.PowerMock.expectLastCall;
-import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {Metadata.class} )
+@PrepareForTest( {Metadata.class, EMSDatabase.class, EmergencyRecord.class, Metadata.class} )
 public class EMSDatabaseTest {
 
     /**
@@ -140,16 +137,16 @@ public class EMSDatabaseTest {
      */
     @Test
     public void testAddEmergencyRecord() throws Exception {
-        File mockDirectory = createMock(File.class);
-        expectNew(File.class, "test").andReturn(mockDirectory);
-        File mockFile = createMock(File.class);
-        expectNew(File.class, "test").andReturn(mockFile);
-        fileOutputStream = createNiceMock(FileOutputStream.class);
-        expectNew(FileOutputStream.class, mockFile).andReturn(fileOutputStream);
-        EmergencyRecord mockRecord = createNiceMock(EmergencyRecord.class);
-        outputStream = createNiceMock(ObjectOutputStream.class);
-        outputStream.writeObject(mockRecord);
-        expectLastCall().once();
+//        File mockDirectory = createMock(File.class);
+//        expectNew(File.class, "test").andReturn(mockDirectory);
+//        File mockFile = createMock(File.class);
+//        expectNew(File.class, "test").andReturn(mockFile);
+//        fileOutputStream = createNiceMock(FileOutputStream.class);
+//        expectNew(FileOutputStream.class, mockFile).andReturn(fileOutputStream);
+        HashMap<Instant, EmergencyRecord> mockRecords = new HashMap<>();
+//        expectPrivate(database, "writeObject", mockRecords).anyTimes();
+        EmergencyRecord mockRecord = new EmergencyRecord();
+        mockRecords.put(Instant.EPOCH, mockRecord);
         replayAll();
         database.addEmergencyRecord(mockRecord);
         verifyAll();
