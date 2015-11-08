@@ -6,6 +6,7 @@ import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.PlaceDetails;
 import com.google.maps.model.PlacesSearchResponse;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,11 +18,11 @@ import java.util.Properties;
  */
 public class Route {
 
-    /*
-     * TODO: Handle the fact that the answer query can be empty
-     * TODO: If no category, what should I do instead of return?
-     * TODO: if cannot retrieve data, what happens?
-     * */
+    private String emergencyResponderAddress;
+    private String emergencyLocationAddress;
+    private File mainRoute;
+    private File alternateRoute;
+
 
     /**
      * \brief Determines the nearest emergency responder according to the type of the emergency
@@ -29,30 +30,37 @@ public class Route {
      * @param record the emergency record currently being created
      *               <p>
      *               Determines an emergency responder according to the type of the emergency. Queries places from google, selects the nearest place,
-     *               queries information about this place, and formats information according to a Responder. Creates a new Responder and appends it to the emergency record
+     *               queries information about this place, and formats information according to a Responder. Creates a new Responder and returns it.
+     * @return       an emergency Responder
      */
-    public void determineNearestResponder(EmergencyRecord record) {
+    public Responder determineNearestResponder(EmergencyRecord record) {
+
+         /*
+     * TODO: Handle the fact that the answer query can be empty
+     * TODO: If no category, what should I do instead of return?
+     * TODO: if cannot retrieve data, what happens?
+     * */
 
         String searchQuery;
         /* Determine emergency responder according to the type of the emergency:*/
         switch (record.getCategory()) {
             /* Fire Department*/
             case FIRE:
-                searchQuery = "Fire Department";
+                searchQuery = "Police Department";
                 break;
             /* Police Department */
             case CRIME:
                 searchQuery = "Police Department";
                 break;
             case CAR_CRASH:
-                searchQuery = "PoliceDepartment";
+                searchQuery = "Police Department";
                 break;
             /* Health Department */
             case MEDICAL:
-                searchQuery = "Hospital";
+                searchQuery = "Police Department";
                 break;
             default:
-                return;
+                return null;
         }
 
         /* Getting location of emergency in order to format the query string */
@@ -63,6 +71,7 @@ public class Route {
         GeoApiContext context = new GeoApiContext();
         Properties properties = new Properties();
         InputStream input = null;
+
         try {
             input = new FileInputStream("maps.private.properties");
             properties.load(input);
@@ -102,6 +111,7 @@ public class Route {
                 responderAddress = detailsQuery.vicinity;
 
                 for(int i = 0; i<detailsQuery.addressComponents.length; i++) {
+                    /* @Zach, you have to explain me what's going on here. I think I get the point, but... Yeah */
                     if(Arrays.asList(detailsQuery.addressComponents[i].types)
                             .contains(AddressComponentType.POSTAL_CODE)) {
                         responderZip = Integer.parseInt(detailsQuery.addressComponents[i].longName);
@@ -119,9 +129,15 @@ public class Route {
             System.err.println(e);
         }
 
-        /* Creating a new Responder and appending it to the emergency record */
-        Responder emergencyResponder = new Responder(responderPhone, responderAddress, responderState, responderZip);
-        record.setResponder(emergencyResponder);
+        /* Creating a new Responder and returning it */
+        return new Responder(responderPhone, responderAddress, responderState, responderZip);
+    }
+
+    /**
+     * \brief Calculates 1 main route and 1 alternative route (if existing) from the Responder to the emergency address
+     *
+     */
+    private void calculateRoute() {
 
     }
 }
