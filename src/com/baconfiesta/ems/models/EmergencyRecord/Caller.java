@@ -1,10 +1,12 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
+import java.io.Serializable;
+
 /**
  * A caller in the system
  * @author team_bacon_fiesta
  */
-public class Caller {
+public class Caller implements Serializable {
 
     /**
      * The first name of the caller

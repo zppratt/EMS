@@ -46,6 +46,21 @@ public class EmergencyRecord implements Serializable{
     }
 
     /**
+     * Constructor that builds a dummy object
+     * @param dummy tells the Emergency record to build a dummy object
+     */
+    public EmergencyRecord(boolean dummy) {
+        if (dummy) {
+            this.setMetadata(new Metadata());
+            this.setCaller(new Caller("John", "Smith", "2608675309"));
+            this.setCategory(Category.CAR_CRASH);
+            this.setLocation(new Location("999 Windmore Ave", "Indiana", 46825));
+            this.setResponder(new Responder("2609999999", "999 Benchmark Ave", "Indiana", 46805));
+            this.setRoute(new Route());
+        }
+    }
+
+    /**
      * Retrieve the metadata, including creation and modification information
      * @return the metadata
      */

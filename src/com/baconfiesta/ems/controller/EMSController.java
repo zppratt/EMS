@@ -4,20 +4,16 @@ import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
-import java.io.File;
+import java.io.*;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * The main controller for the EMS system
  * @author team_bacon_fiesta
  */
 public class EMSController {
-
-    /**
-     * Current user of the system
-     */
-    private EMSUser user;
 
     /**
      * The current user of the system
@@ -32,7 +28,9 @@ public class EMSController {
     /**
      * Default constructor for a user controller
      */
-    public EMSController() {
+    public EMSController(EMSUser user, EMSDatabase database) {
+        this.currentUser = user;
+        this.database = database;
     }
 
     /**
@@ -123,7 +121,14 @@ public class EMSController {
      * @param file the file to save to
      */
     public void backupData(File file) {
-        EMSDatabase.backupData(file);
+        try (
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))
+        ) {
+            oos.writeObject(database.getUsers());
+            oos.writeObject(database.getRecords());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -131,7 +136,14 @@ public class EMSController {
      * @param file the file to restore from
      */
     public void restoreData(File file) {
-        EMSDatabase.restoreData(file);
+        try (
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
+        ) {
+            database = EMSDatabase.getNewDatabase().withUsers((HashMap<String, EMSUser>) ois.readObject())
+                    .withRecords((HashMap<Instant, EmergencyRecord>) ois.readObject());
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -154,7 +166,6 @@ public class EMSController {
      * @param user the user
      */
     public void setUser(EMSUser user) {
-        this.user = user;
+        this.currentUser = user;
     }
-
 }

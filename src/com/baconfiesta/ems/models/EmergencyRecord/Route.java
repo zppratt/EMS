@@ -10,13 +10,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Properties;
 
 /**
  * A route in the system from the responder to the emergency
  */
-public class Route {
+public class Route implements Serializable {
 
     private String emergencyResponderAddress;
     private String emergencyLocationAddress;

@@ -1,10 +1,12 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
+import java.io.Serializable;
+
 /**
  * A responder to an emergency
  * @author team_bacon_fiesta
  */
-public class Responder {
+public class Responder implements Serializable {
 
     /**
      * The phone number of the responder

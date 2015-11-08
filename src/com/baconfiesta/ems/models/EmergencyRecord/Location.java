@@ -1,10 +1,12 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
+import java.io.Serializable;
+
 /**
  * A location of an emergency in the system
  * @author team_bacon_fiesta
  */
-public class Location {
+public class Location implements Serializable {
 
     /**
      * The address of the emergency
@@ -20,6 +22,15 @@ public class Location {
      * The zip code where the emergency is/was located
      */
     private int zip;
+
+    /**
+     * Default constructor
+     */
+    public Location(String address, String state, int zip) {
+        this.address = address;
+        this.state = state;
+        this.zip = zip;
+    }
 
     /**
      * Retrieve the address of the emergency

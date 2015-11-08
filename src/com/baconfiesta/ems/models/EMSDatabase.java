@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 import java.io.*;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -48,32 +49,59 @@ public class EMSDatabase {
      * List of users
      * key: username, value: the user
      */
-    private static HashMap<String, EMSUser> users;
+    private static Map<String, EMSUser> users;
 
     /**
      * List of emergency records
      * key: the creation time
      * value: the emergency record
      */
-    private static HashMap<Instant, EmergencyRecord> records;
+    private static Map<Instant, EmergencyRecord> records;
+
+    public EMSDatabase() {
+    }
 
     /**
-     * Default constructor for a database object
+     * Default builder for a database object
      */
-    public EMSDatabase() {
+    public static EMSDatabase getNewDatabase() {
+        return new EMSDatabase().withFile(database);
+    }
+
+    /**
+     * Builder for a database object specifying a database location
+     */
+    public EMSDatabase withFile(File file) {
         // Check if the streams for the database reading and writing have been created. If not, create them.
-        setupStreams();
+        setupStreams(file);
         // Setup logger
         setupLogger();
         // Check if the user and records are initialized in memory
         setupUserDatabase();
         setupRecordDatabase();
+        return new EMSDatabase();
+    }
+
+    /**
+     * Builder that allows the specification of a user
+     */
+    public EMSDatabase withUsers(Map<String, EMSUser> users)  {
+        EMSDatabase.users = users;
+        return new EMSDatabase();
+    }
+
+    /**
+     * Builder that allows the specification of a user
+     */
+    public EMSDatabase withRecords( Map<Instant, EmergencyRecord> records)  {
+        EMSDatabase.records = records;
+        return new EMSDatabase();
     }
 
     /**
      * Check input and output streams for setup
      */
-    private void setupStreams() {
+    private void setupStreams(File file) {
         if (outputStream==null) {
             if (fileOutputStream==null) {
                 try {
@@ -81,7 +109,7 @@ public class EMSDatabase {
                     if (!(directory.isDirectory())) {
                         directory.mkdir();
                     }
-                    fileOutputStream = new FileOutputStream(database);
+                    fileOutputStream = new FileOutputStream(file);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -118,7 +146,7 @@ public class EMSDatabase {
         try {
             p.load(new FileInputStream(log4JPropertyFile));
             PropertyConfigurator.configure(p);
-            logger.info("Wow! I'm configured!");
+            logger.info("New log created");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -128,44 +156,47 @@ public class EMSDatabase {
      * Setup the memory space for the user
      */
     private void setupUserDatabase() {
-        if (users != null) {
-            try {
-                // Does it exist in the database file? Pull it into memory
-                users = (HashMap<String, EMSUser>) inputStream.readObject();
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+        if (users == null) {
+            users = getDatabaseUsers();
+            if (users==null) {
+                users = new HashMap<>();
             }
+        } else {
+            reconcileDatabaseWithMemory(); // if there are users in memory already, compare to database
         }
-        // Otherwise created a new one
-        users = new HashMap<>();
     }
 
     /**
      * Setup the memory space for the records
      */
     private void setupRecordDatabase() {
-        if (users != null) {
-            try {
-                // Does it exist in the database file? Pull it into memory
-                records = (HashMap<Instant, EmergencyRecord>) inputStream.readObject();
-                return;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (EOFException e) {
-
-            }  catch (IOException e) {
-                e.printStackTrace();
+        if (records == null) {
+            records = getDatabaseRecords();
+            if (records==null) {
+                records = new HashMap<>();
             }
+        } else {
+            reconcileDatabaseWithMemory(); // if there are records in memory already, compare to database
         }
-        // Otherwise created a new one
-        records = new HashMap<>();
     }
 
     /**
-     * Checks a users credentials match in the database
+     * Adds any new users or records to database from memory and vice versa, simply performs a union
+     */
+    public void reconcileDatabaseWithMemory() {
+        // Get users and records from database
+        Map<String, EMSUser> databaseUsers = getDatabaseUsers();
+        Map<Instant, EmergencyRecord> databaseRecords = getDatabaseRecords();
+        if (databaseUsers != null) {
+            users.putAll(databaseUsers);
+        }
+        if (databaseRecords != null) {
+            records.putAll(databaseRecords);
+        }
+    }
+
+    /**
+     * Checks a ` credentials match in the database
      * @param username the user id
      * @param password the password
      * @return the user on succcess, null on failure
@@ -286,7 +317,7 @@ public class EMSDatabase {
      * Retrieve the list of emergency records in the database
      * @return the list of records
      */
-    public HashMap<Instant, EmergencyRecord> getRecords() {
+    public Map<Instant, EmergencyRecord> getRecords() {
         return records;
     }
 
@@ -294,43 +325,37 @@ public class EMSDatabase {
      * Retrieve the list of users in the database
      * @return the list of users
      */
-    public HashMap<String, EMSUser> getUsers() {
+    public Map<String, EMSUser> getUsers() {
         return users;
     }
 
     /**
-     * Static method to support the backup of data to a custom destination
-     * @param file the file to backup to
+     * Attempt to retrieve records from database
+     * @return the records on success, null on failure
      */
-    public static void backupData(File file) {
-        try (
-                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))
-        ) {
-            oos.writeObject(users);
-            oos.writeObject(records);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+    public Map<Instant, EmergencyRecord> getDatabaseRecords() {
+        try {
+            return (Map<Instant, EmergencyRecord>) inputStream.readObject();
+        } catch (EOFException e) {
+            log.info("Nothing to read from database file.");
+        } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     /**
-     * Static method to support the restore of data from a custom location
-     * @param file the file to restore from
+     * Attempt to retrieve users from database
+     * @return the users on success, null on failure
      */
-    public static void restoreData(File file) {
-        try (
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
-        ) {
-            users = (HashMap<String, EMSUser>) ois.readObject();
-            records = (HashMap<Instant, EmergencyRecord>) ois.readObject();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+    public Map<String, EMSUser> getDatabaseUsers() {
+        try {
+            return (Map<String, EMSUser>) inputStream.readObject();
+        } catch (EOFException e) {
+            log.info("Nothing to read from database file.");
+        } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 }

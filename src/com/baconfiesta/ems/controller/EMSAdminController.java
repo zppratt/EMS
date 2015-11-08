@@ -1,5 +1,6 @@
 package com.baconfiesta.ems.controller;
 
+import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser;
 
 /**
@@ -7,6 +8,16 @@ import com.baconfiesta.ems.models.EMSUser;
  * @author team_bacon_fiesta
  */
 public class EMSAdminController extends EMSController {
+
+    /**
+     * Default constructor for a user controller
+     *
+     * @param user the user to use the controller
+     * @param database the database
+     */
+    public EMSAdminController(EMSUser user, EMSDatabase database) {
+        super(user, database);
+    }
 
     /**
      * Adds a user to the system
