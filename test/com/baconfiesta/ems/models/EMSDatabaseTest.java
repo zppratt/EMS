@@ -1,6 +1,7 @@
 package com.baconfiesta.ems.models;
 
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecordBuilder;
 import com.baconfiesta.ems.models.EmergencyRecord.Metadata;
 import org.junit.After;
 import org.junit.Before;
@@ -9,18 +10,15 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
-import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.powermock.api.easymock.PowerMock.replayAll;
-import static org.powermock.api.easymock.PowerMock.verifyAll;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {Metadata.class, EMSDatabase.class, EmergencyRecord.class, Metadata.class} )
@@ -40,26 +38,6 @@ public class EMSDatabaseTest {
      * Test database file
      */
     private static final File mockFile = testDatabaseLocation.toFile();
-
-    /**
-     * Output stream for storing the users and records
-     */
-    private static ObjectOutputStream outputStream;
-
-    /**
-     * Input stream for receiving the users and records
-     */
-    private static ObjectInputStream inputStream;
-
-    /**
-     * File output stream for the database
-     */
-    private static FileOutputStream fileOutputStream;
-
-    /**
-     * File input stream for the database
-     */
-    private static FileInputStream fileInputStream;
 
     @Before
     public void setUp() throws Exception {
@@ -85,8 +63,7 @@ public class EMSDatabaseTest {
         assertThat("Test database was not created on setup.", mockFile.exists(), is(true)); // Make sure the file exists
         database.closeDatabase(); // Open access to the test database file by closing the database object
 
-        mockFile.delete(); // Delete the file
-        assertThat("Test database was not deleted.", mockFile.exists(), is(false)); // Should succeed...
+        assertThat("Test database was not deleted.", mockFile.delete(), is(true)); // Should succeed...
 
         database = EMSDatabase.getNewDatabase().withFile(mockFile); // Try to create a new database
         assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
@@ -112,37 +89,22 @@ public class EMSDatabaseTest {
         assertNotNull(database.getRecords());
     }
 
-    /**
-     * Test the reading and writing of a file
-     */
-    @Test
-    public void testDatabaseReadFile() {
-
-    }
-
     @Test
     public void testVerifyUser() throws Exception {
+        System.out.println("testVerifyUser");
+
 
     }
 
-    /**
-     * Test of the addEmergencyRecord method
-     */
     @Test
     public void testAddEmergencyRecord() throws Exception {
-//        File mockDirectory = createMock(File.class);
-//        expectNew(File.class, "test").andReturn(mockDirectory);
-//        File mockFile = createMock(File.class);
-//        expectNew(File.class, "test").andReturn(mockFile);
-//        fileOutputStream = createNiceMock(FileOutputStream.class);
-//        expectNew(FileOutputStream.class, mockFile).andReturn(fileOutputStream);
-        HashMap<Instant, EmergencyRecord> mockRecords = new HashMap<>();
-//        expectPrivate(database, "writeObject", mockRecords).anyTimes();
-        EmergencyRecord mockRecord = new EmergencyRecord();
-        mockRecords.put(Instant.EPOCH, mockRecord);
-        replayAll();
-        database.addEmergencyRecord(mockRecord);
-        verifyAll();
+        System.out.println("testAddEmergencyRecord");
+
+        // Test that the records object gets updated
+        assertThat("New records object was not empty", database.getRecords().isEmpty());
+        EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
+        database.addEmergencyRecord(testRecord);
+        assertThat("New record was not added.", database.getRecords().containsValue(testRecord));
     }
 
     @Test
@@ -175,8 +137,48 @@ public class EMSDatabaseTest {
 
     }
 
-    /**
-     * Test of the write
-     */
+    @Test
+    public void testGetNewDatabase() throws Exception {
 
+    }
+
+    @Test
+    public void testWithFile() throws Exception {
+
+    }
+
+    @Test
+    public void testWithUsers() throws Exception {
+
+    }
+
+    @Test
+    public void testWithRecords() throws Exception {
+
+    }
+
+    @Test
+    public void testReconcileDatabaseWithMemory() throws Exception {
+
+    }
+
+    @Test
+    public void testGetRecords() throws Exception {
+
+    }
+
+    @Test
+    public void testGetUsers() throws Exception {
+
+    }
+
+    @Test
+    public void testGetDatabaseRecords() throws Exception {
+
+    }
+
+    @Test
+    public void testGetDatabaseUsers() throws Exception {
+
+    }
 }
