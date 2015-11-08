@@ -4,6 +4,8 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +18,14 @@ import java.util.logging.Logger;
 public class EMSDatabase {
 
     /**
+     * Path for the database
+     */
+    private static final Path databasePath = Paths.get("db/database.db");
+
+    /**
      * The file for the user database
      */
-    private static final File database = new File("./db/database.db");
+    private static final File database = databasePath.toFile();
 
     /**
      * Log for debugging, etc.
@@ -102,37 +109,40 @@ public class EMSDatabase {
      * Check input and output streams for setup
      */
     private void setupStreams(File file) {
-        if (outputStream==null) {
-            if (fileOutputStream==null) {
-                try {
-                    File directory = new File("./db");
-                    if (!(directory.isDirectory())) {
-                        directory.mkdir();
-                    }
-                    fileOutputStream = new FileOutputStream(file);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+        closeStreams();
+        try {
+            File directory = new File("db");
+            if (!(directory.isDirectory())) {
+                directory.mkdir();
             }
-            try {
-                outputStream = new ObjectOutputStream(fileOutputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            fileOutputStream = new FileOutputStream(file);
+            outputStream = new ObjectOutputStream(fileOutputStream);
+            fileInputStream = new FileInputStream(database);
+            inputStream = new ObjectInputStream(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        if (inputStream==null) {
-            if (fileInputStream==null) {
-                try {
-                    fileInputStream = new FileInputStream(database);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+    }
+
+    /**
+     * Closes all streams
+     */
+    private void closeStreams() {
+        try {
+            if (fileInputStream!=null) {
+                fileInputStream.close();
             }
-            try {
-                inputStream = new ObjectInputStream(fileInputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (fileOutputStream!=null) {
+                fileOutputStream.close();
             }
+            if (inputStream!=null) {
+                inputStream.close();
+            }
+            if (outputStream!=null) {
+                outputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -146,7 +156,7 @@ public class EMSDatabase {
         try {
             p.load(new FileInputStream(log4JPropertyFile));
             PropertyConfigurator.configure(p);
-            logger.info("New log created");
+//            logger.info("New log created");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -218,7 +228,7 @@ public class EMSDatabase {
     public void addEmergencyRecord(EmergencyRecord record) throws IOException {
         if (!this.getRecords().containsValue(record)) {
             this.getRecords().put(record.getMetadata().getTimeCreated(), record);
-            log.info("Writing to database...");
+//            log.info("Writing to database...");
             writeObject(records);
         }
     }
@@ -309,8 +319,9 @@ public class EMSDatabase {
      * @throws IOException
      */
     public void closeDatabase() throws IOException {
-        outputStream.close();
-        inputStream.close();
+        closeStreams();
+        users = null;
+        records = null;
     }
 
     /**
@@ -337,7 +348,7 @@ public class EMSDatabase {
         try {
             return (Map<Instant, EmergencyRecord>) inputStream.readObject();
         } catch (EOFException e) {
-            log.info("Nothing to read from database file.");
+//            log.info("Nothing to read from database file.");
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
@@ -352,7 +363,7 @@ public class EMSDatabase {
         try {
             return (Map<String, EMSUser>) inputStream.readObject();
         } catch (EOFException e) {
-            log.info("Nothing to read from database file.");
+//            log.info("Nothing to read from database file.");
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }

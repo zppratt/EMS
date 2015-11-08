@@ -9,14 +9,16 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.HashMap;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 
@@ -25,9 +27,19 @@ import static org.powermock.api.easymock.PowerMock.verifyAll;
 public class EMSDatabaseTest {
 
     /**
-     * Class under test, sometimes mocked, sometimes a real object
+     * Class under test
      */
     EMSDatabase database;
+
+    /**
+     * String path to test database
+     */
+    private static final Path testDatabaseLocation = Paths.get("./db/test.db");
+
+    /**
+     * Test database file
+     */
+    private static final File mockFile = testDatabaseLocation.toFile();
 
     /**
      * Output stream for storing the users and records
@@ -51,72 +63,53 @@ public class EMSDatabaseTest {
 
     @Before
     public void setUp() throws Exception {
-        database = new EMSDatabase();
+        database = EMSDatabase.getNewDatabase().withFile(mockFile);
+        assertNotNull(database.getUsers());
+        assertNotNull(database.getRecords());
     }
 
     @After
     public void tearDown() throws Exception {
         database.closeDatabase();
+        assertNull(database.getUsers());
+        assertNull(database.getRecords());
     }
 
     /**
-     * Test the opening and closing of a database
+     * Test the creation of a database object if no database file exists
      */
     @Test
-    public void testDatabaseOpenAndClose() {
-        database = new EMSDatabase();
-        try {
-            database.closeDatabase();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void testDatabaseNoFile() throws IOException {
+        System.out.println("testDatabaseNoFile");
+
+        assertThat("Test database was not created on setup.", mockFile.exists(), is(true)); // Make sure the file exists
+        database.closeDatabase(); // Open access to the test database file by closing the database object
+
+        mockFile.delete(); // Delete the file
+        assertThat("Test database was not deleted.", mockFile.exists(), is(false)); // Should succeed...
+
+        database = EMSDatabase.getNewDatabase().withFile(mockFile); // Try to create a new database
+        assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
+        assertNotNull(database);
+        assertNotNull(database.getUsers());
+        assertNotNull(database.getRecords());
     }
 
     /**
-     * Test the creation of a database if no db file exists
+     * Test the creation of a database object if database file exists prior to creation
      */
     @Test
-    public void testDatabaseNoDirectory() throws Exception {
-//        File fileMock = PowerMock.createMock(File.class);
-//
-//        // Creation of the database
-//        expectNew(File.class, "./db").andReturn(fileMock);
-//        // Creation of the database file
-//        expectNew(File.class, "./db/database.db").andReturn(fileMock);
-//
-//        replayAll();
-//        database = new EMSDatabase();
-//        verifyAll();
-//        // Close the database
-//        try {
-//            database.closeDatabase();
-//            expectLastCall().once();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
+    public void testDatabaseWithFile() throws IOException {
+        System.out.println("testDatabaseWithFile");
 
-    /**
-     * Test the creation of a database if no db file exists
-     */
-    @Test
-    public void testDatabaseNoFile() {
-        EMSDatabase db = new EMSDatabase();
-        try {
-            db.closeDatabase();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Test the writing of a file
-     */
-    @Test
-    public void testDatabaseWriteFile() {
-        // Write a dummy object
-
-        // Try to read the dummy object
+        // Basically just created another database object while the last one has already created the file
+        assertThat("Test database was not created on setup.", mockFile.exists(), is(true)); // Make sure the file exists
+        database.closeDatabase(); // Open access to the test database file by closing the database object
+        database = EMSDatabase.getNewDatabase().withFile(mockFile); // Try to create a new database
+        assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
+        assertNotNull(database);
+        assertNotNull(database.getUsers());
+        assertNotNull(database.getRecords());
     }
 
     /**
