@@ -5,6 +5,7 @@ import com.google.maps.PlacesApi;
 import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.PlaceDetails;
 import com.google.maps.model.PlacesSearchResponse;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +26,14 @@ public class Route implements Serializable {
     private File alternateRoute;
 
 
+    public Route(String completeAddressFrom, String completeAddressTo) {
+        this.emergencyLocationAddress = completeAddressFrom;
+        this.emergencyResponderAddress = completeAddressTo;
+
+        this.calculateRoute();
+    }
+
+
     /**
      * \brief Determines the nearest emergency responder according to the type of the emergency
      *
@@ -34,7 +43,7 @@ public class Route implements Serializable {
      *               queries information about this place, and formats information according to a Responder. Creates a new Responder and returns it.
      * @return       an emergency Responder
      */
-    public Responder determineNearestResponder(EmergencyRecord record) {
+    public static Responder determineNearestResponder(EmergencyRecord record) {
 
          /*
      * TODO: Handle the fact that the answer query can be empty
@@ -123,6 +132,11 @@ public class Route implements Serializable {
                         Java's Array class has no .contains, so I need to turn it into a List first to ask
                         it if it contains the object I'm looking for
 
+                       @Zach
+                            Okay, thanks, I'll show you the API doc and you'll tell me if it corresponds to what you've done
+                            because it's an attribute that has an array enum type (so I didn't know how to handle that
+                            I also need to know what I do with the exceptions... Because for now I copied your code, but I have no idea why you "print stack trace" for
+
                     */
                     if(Arrays.asList(detailsQuery.addressComponents[i].types)
                             .contains(AddressComponentType.POSTAL_CODE)) {
@@ -134,11 +148,11 @@ public class Route implements Serializable {
                 }
 
             } catch (Exception e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
 
         } catch (Exception e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
 
         /* Creating a new Responder and returning it */
@@ -150,7 +164,61 @@ public class Route implements Serializable {
      *
      */
     private void calculateRoute() {
+        Properties properties = new Properties();
+        InputStream input = null;
+        String key = null;
+        String htmlRequest;
 
+        /* Retrieving Key */
+        try {
+            input = new FileInputStream("maps.private.properties");
+            properties.load(input);
+            key = properties.getProperty("EmbedKey"); // Our Embed API key
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /* Creating the URL for request */
+        htmlRequest = "https://www.google.com/maps/embed/v1/directions ?key=" + key + "&origin=" + this.emergencyResponderAddress +
+                "&destination=" + this.emergencyLocationAddress;
+        /* Main route is the fastest, used with the previous URL */
+        this.mainRoute = createHTMLRoute(htmlRequest, "mainRoute.html");
+
+        /* Adding restrictions to route */
+        htmlRequest += "&avoid=tolls|highways";
+        /* Second route is longer */
+        this.alternateRoute = createHTMLRoute(htmlRequest, "alternateRoute.html");
     }
+
+
+    /**
+     * \brief Creates a HTML file containing the components required to display the map retrieved by the request in HTMHRequest. SAves it in "filename"
+     *
+     */
+    private File createHTMLRoute(String HTMLRequest, String filename) {
+        File htmlTemplateFile = new File("templates/Maps.html");
+        File directionFile = null;
+
+        try {
+            String htmlString = FileUtils.readFileToString(htmlTemplateFile);
+            htmlString = htmlString.replace("$source", HTMLRequest);
+            directionFile = new File("./"+filename);
+            FileUtils.writeStringToFile(directionFile, htmlString);
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return directionFile;
+    }
+
 }
 
