@@ -113,6 +113,17 @@ public class Route implements Serializable {
 
                 for(int i = 0; i<detailsQuery.addressComponents.length; i++) {
                     /* @Zach, you have to explain me what's going on here. I think I get the point, but... Yeah */
+                    /*
+
+                     @Matt
+                        This just says (perhaps incorrectly, you decide):
+                        "Okay, make this component's (component[i]) types a list, and if that list
+                         contains the AddressComponentType I'm looking for, assign the components name"
+
+                        Java's Array class has no .contains, so I need to turn it into a List first to ask
+                        it if it contains the object I'm looking for
+
+                    */
                     if(Arrays.asList(detailsQuery.addressComponents[i].types)
                             .contains(AddressComponentType.POSTAL_CODE)) {
                         responderZip = Integer.parseInt(detailsQuery.addressComponents[i].longName);
