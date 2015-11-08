@@ -41,8 +41,19 @@ public class EmergencyRecord implements Serializable{
     /**
      * Default constructor for an emergency record
      */
-    public EmergencyRecord() {
-        this.setMetadata(new Metadata());
+    public EmergencyRecord(
+            Metadata metadata,
+            Caller caller,
+            Location location,
+            Category category,
+            Responder responder,
+            Route route) {
+        this.setMetadata(metadata);
+        this.setCaller(caller);
+        this.setLocation(location);
+        this.setCategory(category);
+        this.setResponder(responder);
+        this.setRoute(route);
     }
 
     /**

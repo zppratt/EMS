@@ -344,7 +344,7 @@ public class EMSDatabase {
      * Attempt to retrieve records from database
      * @return the records on success, null on failure
      */
-    public Map<Instant, EmergencyRecord> getDatabaseRecords() {
+    private Map<Instant, EmergencyRecord> getDatabaseRecords() {
         try {
             return (Map<Instant, EmergencyRecord>) inputStream.readObject();
         } catch (EOFException e) {
@@ -359,7 +359,7 @@ public class EMSDatabase {
      * Attempt to retrieve users from database
      * @return the users on success, null on failure
      */
-    public Map<String, EMSUser> getDatabaseUsers() {
+    private Map<String, EMSUser> getDatabaseUsers() {
         try {
             return (Map<String, EMSUser>) inputStream.readObject();
         } catch (EOFException e) {
