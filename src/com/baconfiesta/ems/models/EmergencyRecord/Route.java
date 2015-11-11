@@ -32,6 +32,11 @@ public class Route implements Serializable {
     private String alternateRouteDuration;
 
 
+    /**
+     * \brief Constructor for a Route object: constructs and determines routes (main and alternate) and calculates directions
+     * @param completeAddressFrom the complete address of the end point beginning of the route
+     * @param completeAddressTo the complete address of the end point of the route
+     * */
     public Route(String completeAddressFrom, String completeAddressTo) {
         this.emergencyLocationAddress = completeAddressFrom;
         this.emergencyResponderAddress = completeAddressTo;
