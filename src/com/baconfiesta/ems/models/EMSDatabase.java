@@ -1,7 +1,6 @@
 package com.baconfiesta.ems.models;
 
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
-import org.apache.log4j.PropertyConfigurator;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -9,8 +8,6 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * The file storage for records and users
@@ -26,11 +23,6 @@ public class EMSDatabase {
      * The file for the user database
      */
     private static final File database = databasePath.toFile();
-
-    /**
-     * Log for debugging, etc.
-     */
-    private Logger log = Logger.getLogger(EMSDatabase.class.getName());
 
     /**
      * Output stream for storing the users and records
@@ -56,14 +48,14 @@ public class EMSDatabase {
      * List of users
      * key: username, value: the user
      */
-    private static Map<String, EMSUser> users;
+    private Map<String, EMSUser> users;
 
     /**
      * List of emergency records
      * key: the creation time
      * value: the emergency record
      */
-    private static Map<Instant, EmergencyRecord> records;
+    private Map<Instant, EmergencyRecord> records;
 
     public EMSDatabase() {
     }
@@ -71,29 +63,27 @@ public class EMSDatabase {
     /**
      * Default builder for a database object
      */
-    public static EMSDatabase getNewDatabase() {
+    public static EMSDatabase getNewDatabase() throws IOException, ClassNotFoundException {
         return new EMSDatabase().withFile(database);
     }
 
     /**
      * Builder for a database object specifying a database location
      */
-    public EMSDatabase withFile(File file) {
+    public EMSDatabase withFile(File file) throws IOException, ClassNotFoundException {
         // Check if the streams for the database reading and writing have been created. If not, create them.
         setupStreams(file);
-        // Setup logger
-        setupLogger();
         // Check if the user and records are initialized in memory
         setupUserDatabase();
         setupRecordDatabase();
-        return new EMSDatabase();
+        return this;
     }
 
     /**
      * Builder that allows the specification of a user
      */
     public EMSDatabase withUsers(Map<String, EMSUser> users)  {
-        EMSDatabase.users = users;
+        this.users = users;
         return new EMSDatabase();
     }
 
@@ -101,71 +91,47 @@ public class EMSDatabase {
      * Builder that allows the specification of a user
      */
     public EMSDatabase withRecords( Map<Instant, EmergencyRecord> records)  {
-        EMSDatabase.records = records;
+        this.records = records;
         return new EMSDatabase();
     }
 
     /**
      * Check input and output streams for setup
      */
-    private void setupStreams(File file) {
+    private void setupStreams(File file) throws IOException {
         closeStreams();
-        try {
-            File directory = new File("db");
-            if (!(directory.isDirectory())) {
-                directory.mkdir();
-            }
-            fileOutputStream = new FileOutputStream(file);
-            outputStream = new ObjectOutputStream(fileOutputStream);
-            fileInputStream = new FileInputStream(database);
-            inputStream = new ObjectInputStream(fileInputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
+        File directory = new File("db");
+        if (!(directory.isDirectory())) {
+            directory.mkdir();
         }
+        fileOutputStream = new FileOutputStream(file);
+        outputStream = new ObjectOutputStream(fileOutputStream);
+        fileInputStream = new FileInputStream(database);
+        inputStream = new ObjectInputStream(fileInputStream);
     }
 
     /**
      * Closes all streams
      */
-    private void closeStreams() {
-        try {
-            if (fileInputStream!=null) {
-                fileInputStream.close();
-            }
-            if (fileOutputStream!=null) {
-                fileOutputStream.close();
-            }
-            if (inputStream!=null) {
-                inputStream.close();
-            }
-            if (outputStream!=null) {
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void closeStreams() throws IOException {
+        if (fileInputStream!=null) {
+            fileInputStream.close();
         }
-    }
-
-    /**
-     * Sets up the logger
-     */
-    private void setupLogger() {
-        Logger logger = Logger.getLogger(this.getClass().toString());
-        String log4JPropertyFile = "./log/log4j.properties";
-        Properties p = new Properties();
-        try {
-            p.load(new FileInputStream(log4JPropertyFile));
-            PropertyConfigurator.configure(p);
-//            logger.info("New log created");
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (fileOutputStream!=null) {
+            fileOutputStream.close();
+        }
+        if (inputStream!=null) {
+            inputStream.close();
+        }
+        if (outputStream!=null) {
+            outputStream.close();
         }
     }
 
     /**
      * Setup the memory space for the user
      */
-    private void setupUserDatabase() {
+    private void setupUserDatabase() throws IOException, ClassNotFoundException {
         if (users == null) {
             users = getDatabaseUsers();
             if (users==null) {
@@ -179,7 +145,7 @@ public class EMSDatabase {
     /**
      * Setup the memory space for the records
      */
-    private void setupRecordDatabase() {
+    private void setupRecordDatabase() throws IOException, ClassNotFoundException {
         if (records == null) {
             records = getDatabaseRecords();
             if (records==null) {
@@ -193,7 +159,7 @@ public class EMSDatabase {
     /**
      * Adds any new users or records to database from memory and vice versa, simply performs a union
      */
-    public void reconcileDatabaseWithMemory() {
+    public void reconcileDatabaseWithMemory() throws IOException, ClassNotFoundException {
         // Get users and records from database
         Map<String, EMSUser> databaseUsers = getDatabaseUsers();
         Map<Instant, EmergencyRecord> databaseRecords = getDatabaseRecords();
@@ -211,7 +177,7 @@ public class EMSDatabase {
      * @param password the password
      * @return the user on succcess, null on failure
      */
-    public EMSUser verifyUser(String username, String password) {
+    public EMSUser verifyUser(String username, String password) throws IOException, ClassNotFoundException {
         // If the user is in the database, check the password
         if (this.getUsers().containsKey(username)) {
             EMSUser userToCheck = this.getUsers().get(username);
@@ -225,20 +191,17 @@ public class EMSDatabase {
      * @param record the record to add
      * @throws IOException
      */
-    public void addEmergencyRecord(EmergencyRecord record) throws IOException {
+    public void addEmergencyRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
         if (!this.getRecords().containsValue(record)) {
             this.getRecords().put(record.getMetadata().getTimeCreated(), record);
-//            log.info("Writing to database...");
-            writeObject(records);
+            writeObject(this.getRecords());
         }
     }
 
-    private void writeObject(Object object) {
-        try {
-            outputStream.writeObject(object);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void writeObject(Object object) throws IOException {
+        outputStream.writeObject(object);
+        outputStream.flush();
+        fileOutputStream.flush();
     }
 
     /**
@@ -246,7 +209,7 @@ public class EMSDatabase {
      * @param time the time the record was created
      * @return the record
      */
-    public EmergencyRecord getEmergencyRecord(Instant time) {
+    public EmergencyRecord getEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
         if (this.getRecords().containsKey(time)) {
             return this.getRecords().get(time);
         }
@@ -261,17 +224,15 @@ public class EMSDatabase {
      * @param password the password
      * @return the user on success, null on failure
      */
-    public EMSUser addUser(String firstname, String lastname, String username, String password) {
+    public EMSUser addUser(String firstname, String lastname, String username, String password) throws IOException, ClassNotFoundException {
         // Create a user object
         EMSUser user = new EMSUser(firstname, lastname, username, password, false);
         // Add it to the database
         this.getUsers().put(username, user);
-        try {
-            outputStream.writeObject(getUsers());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        users.put(user.getUsername(), user);
+        writeObject(this.getUsers());
+        reconcileDatabaseWithMemory();
+        return user;
     }
 
     /**
@@ -279,7 +240,7 @@ public class EMSDatabase {
      * @param username the username
      * @return the user on success, null on failure
      */
-    public EMSUser lookupUser(String username) {
+    public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
         // Return the user if it exists
         if (this.getUsers().containsKey(username)) {
             return this.getUsers().get(username);
@@ -292,7 +253,7 @@ public class EMSDatabase {
      * @param time the creation time
      * @return the emergency record on success, null on failure
      */
-    public EmergencyRecord lookupEmergencyRecord(Instant time) {
+    public EmergencyRecord lookupEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
         // Return the record for this time if it exists
         if (this.getRecords().containsKey(time)) {
             return this.getRecords().get(time);
@@ -305,7 +266,7 @@ public class EMSDatabase {
      * @param username the username of the user to remove
      * @return true on success, false on failure
      */
-    public boolean removeUser(String username) {
+    public boolean removeUser(String username) throws IOException, ClassNotFoundException {
         // Remove a user from the database and list in memory
         if (this.getUsers().containsKey(username)) {
             this.getUsers().remove(username);
@@ -328,7 +289,8 @@ public class EMSDatabase {
      * Retrieve the list of emergency records in the database
      * @return the list of records
      */
-    public Map<Instant, EmergencyRecord> getRecords() {
+    public Map<Instant, EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
+        reconcileDatabaseWithMemory();
         return records;
     }
 
@@ -336,7 +298,8 @@ public class EMSDatabase {
      * Retrieve the list of users in the database
      * @return the list of users
      */
-    public Map<String, EMSUser> getUsers() {
+    public Map<String, EMSUser> getUsers() throws IOException, ClassNotFoundException {
+        reconcileDatabaseWithMemory();
         return users;
     }
 
@@ -344,29 +307,15 @@ public class EMSDatabase {
      * Attempt to retrieve records from database
      * @return the records on success, null on failure
      */
-    private Map<Instant, EmergencyRecord> getDatabaseRecords() {
-        try {
-            return (Map<Instant, EmergencyRecord>) inputStream.readObject();
-        } catch (EOFException e) {
-//            log.info("Nothing to read from database file.");
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
+        return (Map<Instant, EmergencyRecord>) inputStream.readObject();
     }
 
     /**
      * Attempt to retrieve users from database
      * @return the users on success, null on failure
      */
-    private Map<String, EMSUser> getDatabaseUsers() {
-        try {
-            return (Map<String, EMSUser>) inputStream.readObject();
-        } catch (EOFException e) {
-//            log.info("Nothing to read from database file.");
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
+        return (Map<String, EMSUser>) inputStream.readObject();
     }
 }
