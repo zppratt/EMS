@@ -44,7 +44,7 @@ public class EmergencyRecordBuilder implements Serializable{
         location = new Location("","", 99999);
         category = Category.HOAX;
         responder = new Responder("","","", 99999);
-        route = new Route();
+        route = new Route("", "");
     }
 
     public EmergencyRecordBuilder withMetadata(Metadata metadata) {
