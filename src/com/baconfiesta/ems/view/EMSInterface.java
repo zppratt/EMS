@@ -2,10 +2,13 @@ package com.baconfiesta.ems.view;
 
 import com.baconfiesta.ems.controller.EMSController;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import javafx.scene.control.RadioButton;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * The main user interface window of the EMS system.
@@ -308,6 +311,9 @@ public class EMSInterface {
      * Show screen to enter info for an emergency record
      */
     private void enterInfo() {
+        // Change the title
+        frameTitle.setText("Enter Emergency Info");
+
         // Set previous frame
         previous = "user";
 
@@ -482,36 +488,199 @@ public class EMSInterface {
      * Show screen for the user to select the route from responder to the emergency
      */
     private void routeSelection() {
+        // Change the title
+        frameTitle.setText("Select the Route");
+
         // Set previous frame
         previous = "info";
 
         // Enable back button
         back.setEnabled(true);
 
+        // Create local variables
+        JLabel summaryTitle = new JLabel("Case Review");
+
+        JTextArea summaryText = new JTextArea("",18,20);
+        JTextArea route1Text = new JTextArea("",18,20);
+        JTextArea route2Text = new JTextArea("",18,20);
+
+        JEditorPane route1Pane = new JEditorPane();
+        JEditorPane route2Pane = new JEditorPane();
+
+        JScrollPane summaryScroll = new JScrollPane(summaryText);
+        JScrollPane route1Scroll = new JScrollPane(route1Pane);
+        JScrollPane route2Scroll = new JScrollPane(route2Pane);
+        JScrollPane route1DirectionsScroll = new JScrollPane(route1Text);
+        JScrollPane route2DirectionsScroll = new JScrollPane(route2Text);
+
+        JButton route1 = new JButton("Select Route 1");
+        JButton route2 = new JButton("Select Route 2");
+
+        // Set properties of the fields
+        route1Pane.setEditable(false);
+        route2Pane.setEditable(false);
+        route1Text.setEditable(false);
+        route2Text.setEditable(false);
+        summaryText.setEditable(false);
+
+        summaryTitle.setFont(new Font(summaryTitle.getFont().getName(),Font.BOLD, 14));
+
+        // Open the web pages
+        //
+        // GET THE URL TO SHOW ROUTE
+        //
+        try {
+            URL route1URL = new URL("http://www.google.com");
+            URL route2URL = new URL("http://www.google.com");
+            route1Pane.setPage(route1URL);
+            route2Pane.setPage(route2URL);
+        } catch (MalformedURLException e) {
+            System.out.println("Can't open the url");
+        } catch (java.io.IOException e){
+            System.out.println("Can't open the url");
+        }
+
+
+        //
+        // Fill in the route directions
+        //
+
+
+        //
+        // Fill in the summary
+        //
+
+        // Add to the frame
+        mainframe.setLayout(new GridLayout(2,2));
+        mainframe.add(route1Scroll);
+        mainframe.add(route2Scroll);
+        mainframe.add(route1DirectionsScroll);
+        mainframe.add(route2DirectionsScroll);
+
+        sidebar.add(summaryTitle);
+        sidebar.add(summaryScroll);
+
+        footer.add(route1);
+        footer.add(route2);
+
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+        route1.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Update the emergency object
+
+                // Clear the window
+                mainframe.removeAll();
+                footer.removeAll();
+                sidebar.removeAll();
+
+                // Proceed to the next window
+                summaryView();
+            }
+        });
+
+        route2.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Update the emergency object
+
+                // Clear the window
+                mainframe.removeAll();
+                footer.removeAll();
+                sidebar.removeAll();
+
+                // Proceed to the next window
+                summaryView();
+            }
+        });
     }
 
     /**
      * Show a summary of the emergency record to finalize it or cancel
      */
     private void summaryView() {
+        // Change the title
+        frameTitle.setText("Summary");
+
         // Set previous frame
         previous = "route";
 
         // Enable back button
         back.setEnabled(true);
 
+        // Declare local variables
+        JLabel summaryTitle = new JLabel("Case Review");
+
+        JTextArea summaryText = new JTextArea("",18,20);
+        JTextArea routeText = new JTextArea("",18,20);
+
+        JEditorPane routePane = new JEditorPane();
+
+        JScrollPane summaryScroll = new JScrollPane(summaryText);
+        JScrollPane routeScroll = new JScrollPane(routePane);
+        JScrollPane routeDirectionsScroll = new JScrollPane(routeText);
+
+        JButton closecase = new JButton("Close Case");
+
+        // Set properties of the fields
+        routePane.setEditable(false);
+        routeText.setEditable(false);
+        summaryText.setEditable(false);
+
+        summaryTitle.setFont(new Font(summaryTitle.getFont().getName(),Font.BOLD, 14));
+
+        // Open the web pages
+        //
+        // GET THE URL TO SHOW ROUTE
+        //
+        try {
+            URL route1URL = new URL("http://www.google.com");
+            routePane.setPage(route1URL);
+        } catch (MalformedURLException e) {
+            System.out.println("Can't open the url");
+        } catch (java.io.IOException e){
+            System.out.println("Can't open the url");
+        }
+
+        // Add components to the screen
+        mainframe.setLayout(new GridLayout(1,2));
+        mainframe.add(routeScroll);
+        mainframe.add(routeScroll);
+
+        sidebar.add(summaryTitle);
+        sidebar.add(summaryScroll);
+
+        footer.add(closecase);
+
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+        closecase.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Update the emergency object
+
+                // Save the emergency object
+
+                // Clear the window
+                mainframe.removeAll();
+                footer.removeAll();
+                sidebar.removeAll();
+
+                // Proceed to the next window
+                userActions();
+            }
+        });
     }
 
     /**
      * Show the screen to generate some statistics about the emergency records
      */
     private void generateStats() {
+        // Change the title
+        frameTitle.setText("Generate stats");
+
         // Set previous frame
         previous = "user";
 
@@ -527,15 +696,55 @@ public class EMSInterface {
      * Show the screen to view the emergency records
      */
     private void displayRecords() {
+        // Change the title
+        frameTitle.setText("Summary");
+
         // Set previous frame
         previous = "user";
 
         // Enable back button
         back.setEnabled(true);
 
+        // Declare local variables
+        JLabel summaryTitle = new JLabel("Case Review");
+
+        JTextArea summaryText = new JTextArea("",18,20);
+
+        JEditorPane routePane = new JEditorPane();
+
+        JScrollPane summaryScroll = new JScrollPane(summaryText);
+        JScrollPane routeScroll = new JScrollPane(routePane);
+
+        // Set properties of the fields
+        routePane.setEditable(false);
+        summaryText.setEditable(false);
+
+        //
+        // Open the web pages
+        //
+        // GET THE URL TO SHOW ROUTE
+        //
+        try {
+            URL route1URL = new URL("http://www.google.com");
+            routePane.setPage(route1URL);
+        } catch (MalformedURLException e) {
+            System.out.println("Can't open the url");
+        } catch (java.io.IOException e){
+            System.out.println("Can't open the url");
+        }
+
+        // Add components to the screen
+        mainframe.setLayout(new GridLayout(1,2));
+        mainframe.add(routeScroll);
+        mainframe.add(summaryScroll);
+
+        sidebar.add(sidebarList);
+
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+        // Should a record be selected, update the screen
     }
 
     /**
