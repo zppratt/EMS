@@ -1,7 +1,7 @@
 package com.baconfiesta.ems.controller;
 
 import com.baconfiesta.ems.models.EMSDatabase;
-import com.baconfiesta.ems.models.EMSUser;
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;

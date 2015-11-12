@@ -1,4 +1,4 @@
-package com.baconfiesta.ems.models;
+package com.baconfiesta.ems.models.EMSUser;
 
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 

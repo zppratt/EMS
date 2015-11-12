@@ -1,7 +1,7 @@
 package com.baconfiesta.ems.controller;
 
 import com.baconfiesta.ems.models.EMSDatabase;
-import com.baconfiesta.ems.models.EMSUser;
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 
 /**
  * Privileged version of the main controller for the EMS system
