@@ -65,6 +65,8 @@ public class EMSDatabase {
 
     /**
      * Default constructor for a database object
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public EMSDatabase() throws IOException, ClassNotFoundException {
         this(database);
@@ -72,6 +74,9 @@ public class EMSDatabase {
 
     /**
      * Constructor for a database object specifying a database location
+     * @param file the database file
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public EMSDatabase(File file) throws IOException, ClassNotFoundException {
         this(file, null, null);
@@ -82,6 +87,8 @@ public class EMSDatabase {
      * @param file if null, default path is used for the database
      * @param users the users
      * @param records the records
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public EMSDatabase(File file, HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records)
             throws IOException, ClassNotFoundException {
@@ -97,6 +104,8 @@ public class EMSDatabase {
 
     /**
      * Check input and output streams for setup
+     * @param file the file to check as a database
+     * @throws IOException
      */
     private void setupStreams(File file) throws IOException {
         if (file==null) {
@@ -115,6 +124,7 @@ public class EMSDatabase {
 
     /**
      * Closes all streams
+     * @throws IOException
      */
     private void closeStreams() throws IOException {
         if (fileInputStream!=null) {
@@ -133,6 +143,8 @@ public class EMSDatabase {
 
     /**
      * Setup the memory space for the user
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     private void setupUserDatabase() throws IOException, ClassNotFoundException {
         if (users == null) {
@@ -147,6 +159,8 @@ public class EMSDatabase {
 
     /**
      * Setup the memory space for the records
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     private void setupRecordDatabase() throws IOException, ClassNotFoundException {
         if (records == null) {
@@ -161,6 +175,8 @@ public class EMSDatabase {
 
     /**
      * Adds any new users or records to database from memory and vice versa, simply performs a union
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     private void reconcileDatabaseWithMemory() throws IOException, ClassNotFoundException {
         // Get users and records from database
@@ -175,10 +191,12 @@ public class EMSDatabase {
     }
 
     /**
-     * Checks a ` credentials match in the database
+     * Checks a user's credentials match in the database
      * @param username the user id
      * @param password the password
      * @return the user on succcess, null on failure
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public EMSUser verifyUser(String username, String password) throws IOException, ClassNotFoundException {
         // If the user is in the database, check the password
@@ -193,6 +211,7 @@ public class EMSDatabase {
      * Adds an emergency record to the database
      * @param record the record to add
      * @throws IOException
+     * @throws ClassNotFoundException
      */
     public void addEmergencyRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
         if (!this.getRecords().containsValue(record)) {
@@ -201,6 +220,11 @@ public class EMSDatabase {
         }
     }
 
+    /**
+     * Writes an object out to the database file
+     * @param object the object to write out
+     * @throws IOException
+     */
     private void writeObject(Object object) throws IOException {
         outputStream.writeObject(object);
         System.out.println("Writing: " + object + " to the database file.");
@@ -227,6 +251,8 @@ public class EMSDatabase {
      * @param username the username
      * @param password the password
      * @return the user on success, null on failure
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public EMSUser addUser(String firstname, String lastname, String username, String password) throws IOException, ClassNotFoundException {
         // Create a user object
@@ -243,6 +269,8 @@ public class EMSDatabase {
      * Lookup a user by username
      * @param username the username
      * @return the user on success, null on failure
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
         // Return the user if it exists
@@ -256,6 +284,8 @@ public class EMSDatabase {
      * Retrieve an emergency record by the time it was created
      * @param time the creation time
      * @return the emergency record on success, null on failure
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public EmergencyRecord lookupEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
         // Return the record for this time if it exists
@@ -293,6 +323,8 @@ public class EMSDatabase {
     /**
      * Retrieve the list of emergency records in the database
      * @return the list of records
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public Map<Instant, EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
         reconcileDatabaseWithMemory();
@@ -301,7 +333,9 @@ public class EMSDatabase {
 
     /**
      * Retrieve the list of users in the database
-     * @return the list of users
+     * @return the list of user
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public Map<String, EMSUser> getUsers() throws IOException, ClassNotFoundException {
         reconcileDatabaseWithMemory();
@@ -311,6 +345,8 @@ public class EMSDatabase {
     /**
      * Attempt to retrieve records from database
      * @return the records on success, null on failure
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get records from database...");
@@ -328,6 +364,8 @@ public class EMSDatabase {
     /**
      * Attempt to retrieve users from database
      * @return the users on success, null on failure
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get users from database...");
