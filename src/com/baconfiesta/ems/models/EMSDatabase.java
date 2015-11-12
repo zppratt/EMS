@@ -161,7 +161,7 @@ public class EMSDatabase {
     /**
      * Adds any new users or records to database from memory and vice versa, simply performs a union
      */
-    public void reconcileDatabaseWithMemory() throws IOException, ClassNotFoundException {
+    private void reconcileDatabaseWithMemory() throws IOException, ClassNotFoundException {
         // Get users and records from database
         Map<String, EMSUser> databaseUsers = getDatabaseUsers();
         Map<Instant, EmergencyRecord> databaseRecords = getDatabaseRecords();
@@ -270,7 +270,7 @@ public class EMSDatabase {
      * @return true on success, false on failure
      */
     public boolean removeUser(String username) throws IOException, ClassNotFoundException {
-        // Remove a user from the database and list in memory
+        // Remove a user from the list
         if (this.getUsers().containsKey(username)) {
             this.getUsers().remove(username);
             return true;

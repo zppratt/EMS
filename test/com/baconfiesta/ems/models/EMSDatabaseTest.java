@@ -9,12 +9,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -101,6 +103,12 @@ public class EMSDatabaseTest {
     public void testVerifyUser() throws Exception {
         System.out.println("testVerifyUser");
 
+        // Fail to verify a user
+        database.addUser("Frodo", "Baggins", "fbaggins", "password");
+        assertNull(database.verifyUser("fbaggins", "HEHE I'M TRYING TO STEAL YOUR ACCOUNT"));
+
+        // Succeed in verifying a user
+        assertNotNull(database.verifyUser("fbaggins", "password"));
 
     }
 
@@ -118,7 +126,17 @@ public class EMSDatabaseTest {
 
     @Test
     public void testGetEmergencyRecord() throws Exception {
+        System.out.println("testGetEmergencyRecord");
 
+        // Test failed retrieval by putting a current record and trying to find one made at the EPOCH
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
+        assertNull(database.getEmergencyRecord(Instant.EPOCH));
+
+        // Now put one made at the EPOCH and try to get it... should succeed
+        Metadata m = new Metadata();
+        Whitebox.setInternalState(m, "timeCreated", Instant.EPOCH);
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().withMetadata(m).getNewEmergencyRecord());
+        assertNotNull(database.getEmergencyRecord(Instant.EPOCH));
     }
 
     @Test
@@ -127,60 +145,57 @@ public class EMSDatabaseTest {
 
         assertNotNull("Failure adding user to the database.", database.addUser("Bob", "Builder", "bbuilder", "password"));
         assertNotNull("Database memory contained no users: users memory object was null", database.getUsers());
-        assertThat("User was not successfully added.", database.getUsers().containsKey("bbuilder"));
+        assertTrue("User was not successfully added.", database.getUsers().containsKey("bbuilder"));
         assertNotNull("Database contained no users: database users object was null.", database.getDatabaseUsers());
-        assertThat("User was not successfully added to the database.", database.getDatabaseUsers()
-                .containsKey("bbuilder"));
+        assertTrue("User was not successfully added to the database.", database.getDatabaseUsers().containsKey("bbuilder"));
     }
 
     @Test
     public void testLookupUser() throws Exception {
+        System.out.println("testLookupUser");
 
+        // Test failure to find a user
+        assertNull(database.lookupUser("fbaggins"));
+
+        // Test found a user
+        database.addUser("Frodo", "Baggins", "fbaggins", "password");
+        assertNotNull(database.lookupUser("fbaggins"));
     }
 
     @Test
     public void testLookupEmergencyRecord() throws Exception {
+        System.out.println("testLookupEmergencyRecord");
 
+        // Test failure to find a record
+        assertNull(database.lookupEmergencyRecord(Instant.EPOCH));
+
+        // Test found a user
+        Metadata m = new Metadata();
+        Whitebox.setInternalState(m, "timeCreated", Instant.EPOCH);
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().withMetadata(m).getNewEmergencyRecord());
+        assertNotNull(database.lookupEmergencyRecord(Instant.EPOCH));
     }
 
     @Test
     public void testRemoveUser() throws Exception {
+        System.out.println("testRemoveUser");
 
-    }
+        // Test a correct removal
+        database.addUser("Frodo", "Baggins", "fbaggins", "password");
+        database.removeUser("fbaggins");
+        assertFalse(database.getUsers().containsKey("fbaggins"));
 
-    @Test
-    public void testCloseDatabase() throws Exception {
-
-    }
-
-    @Test
-    public void testGetNewDatabase() throws Exception {
-
-    }
-
-    @Test
-    public void testWithFile() throws Exception {
-
-    }
-
-    @Test
-    public void testWithUsers() throws Exception {
-
-    }
-
-    @Test
-    public void testWithRecords() throws Exception {
-
-    }
-
-    @Test
-    public void testReconcileDatabaseWithMemory() throws Exception {
-
+        // Test for a failed removal
+        database.addUser("Frodo", "Baggins", "fbaggins", "password");
+        database.removeUser("fbaggin");
+        assertTrue(database.getUsers().containsKey("fbaggins"));
     }
 
     @Test
     public void testGetRecords() throws Exception {
+        System.out.println("testGetRecords");
 
+        assertNotNull(database.getRecords());
     }
 
     @Test
