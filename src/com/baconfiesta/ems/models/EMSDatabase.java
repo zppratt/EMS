@@ -27,22 +27,22 @@ public class EMSDatabase {
     /**
      * Output stream for storing the users and records
      */
-    private static ObjectOutputStream outputStream;
+    private ObjectOutputStream outputStream;
 
     /**
      * Input stream for receiving the users and records
      */
-    private static ObjectInputStream inputStream;
+    private ObjectInputStream inputStream;
 
     /**
      * File output stream for the database
      */
-    private static FileOutputStream fileOutputStream;
+    private FileOutputStream fileOutputStream;
 
     /**
      * File input stream for the database
      */
-    private static FileInputStream fileInputStream;
+    private FileInputStream fileInputStream;
 
     /**
      * List of users
@@ -57,48 +57,50 @@ public class EMSDatabase {
      */
     private Map<Instant, EmergencyRecord> records;
 
-    public EMSDatabase() {
+    /**
+     * Whether the database is open or not
+     */
+    private boolean isOpen;
+
+    /**
+     * Default constructor for a database object
+     */
+    public EMSDatabase() throws IOException, ClassNotFoundException {
+        this(database);
     }
 
     /**
-     * Default builder for a database object
+     * Constructor for a database object specifying a database location
      */
-    public static EMSDatabase getNewDatabase() throws IOException, ClassNotFoundException {
-        return new EMSDatabase().withFile(database);
+    public EMSDatabase(File file) throws IOException, ClassNotFoundException {
+        this(file, null, null);
     }
 
     /**
-     * Builder for a database object specifying a database location
+     * Create a database, specifying the file, users, and records (for restoration of data)
+     * @param file if null, default path is used for the database
+     * @param users the users
+     * @param records the records
      */
-    public EMSDatabase withFile(File file) throws IOException, ClassNotFoundException {
+    public EMSDatabase(File file, HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records)
+            throws IOException, ClassNotFoundException {
+        this.users = users;
+        this.records = records;
         // Check if the streams for the database reading and writing have been created. If not, create them.
         setupStreams(file);
         // Check if the user and records are initialized in memory
         setupUserDatabase();
         setupRecordDatabase();
-        return this;
-    }
-
-    /**
-     * Builder that allows the specification of a user
-     */
-    public EMSDatabase withUsers(Map<String, EMSUser> users)  {
-        this.users = users;
-        return new EMSDatabase();
-    }
-
-    /**
-     * Builder that allows the specification of a user
-     */
-    public EMSDatabase withRecords( Map<Instant, EmergencyRecord> records)  {
-        this.records = records;
-        return new EMSDatabase();
+        isOpen = true;
     }
 
     /**
      * Check input and output streams for setup
      */
     private void setupStreams(File file) throws IOException {
+        if (file==null) {
+            file = database;
+        }
         closeStreams();
         File directory = new File("db");
         if (!(directory.isDirectory())) {
@@ -200,6 +202,7 @@ public class EMSDatabase {
 
     private void writeObject(Object object) throws IOException {
         outputStream.writeObject(object);
+        System.out.println("Writing: " + object);
         outputStream.flush();
         fileOutputStream.flush();
     }
@@ -283,6 +286,7 @@ public class EMSDatabase {
         closeStreams();
         users = null;
         records = null;
+        isOpen = false;
     }
 
     /**
@@ -308,7 +312,11 @@ public class EMSDatabase {
      * @return the records on success, null on failure
      */
     Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
-        return (Map<Instant, EmergencyRecord>) inputStream.readObject();
+        @SuppressWarnings("unchecked")
+        HashMap<Instant, EmergencyRecord> records = (HashMap<Instant, EmergencyRecord>) inputStream.readObject();
+        for (Instant  k : records.keySet());
+        for (EmergencyRecord v : records.values());
+        return records;
     }
 
     /**
@@ -316,6 +324,18 @@ public class EMSDatabase {
      * @return the users on success, null on failure
      */
     Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
-        return (Map<String, EMSUser>) inputStream.readObject();
+        @SuppressWarnings("unchecked")
+        HashMap<String, EMSUser> users = (HashMap<String, EMSUser>) inputStream.readObject();
+        for (String k : users.keySet());
+        for (EMSUser v : users.values());
+        return users;
+    }
+
+    /**
+     * Returns whether the database is open
+     * @return true if open, false if closed
+     */
+    boolean isOpen() {
+        return isOpen;
     }
 }

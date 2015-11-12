@@ -104,7 +104,7 @@ public class EMSController {
      * Retrieves a list of all the users of the system
      * @return the list of users
      */
-    public EMSUser[] getUsers() {
+    public EMSUser[] getUsers() throws IOException, ClassNotFoundException {
         return (EMSUser[]) database.getUsers().values().toArray();
     }
 
@@ -112,7 +112,7 @@ public class EMSController {
      * Retrieves a list of all the records in the system
      * @return the list of records
      */
-    public EmergencyRecord[] getRecords() {
+    public EmergencyRecord[] getRecords() throws IOException, ClassNotFoundException {
         return (EmergencyRecord[]) database.getRecords().values().toArray();
     }
 
@@ -120,15 +120,10 @@ public class EMSController {
      * Saves all emergency data to a file
      * @param file the file to save to
      */
-    public void backupData(File file) {
-        try (
-                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))
-        ) {
-            oos.writeObject(database.getUsers());
-            oos.writeObject(database.getRecords());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void backupData(File file) throws IOException, ClassNotFoundException {
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+        oos.writeObject(database.getUsers());
+        oos.writeObject(database.getRecords());
     }
 
     /**
@@ -139,8 +134,7 @@ public class EMSController {
         try (
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
         ) {
-            database = EMSDatabase.getNewDatabase().withUsers((HashMap<String, EMSUser>) ois.readObject())
-                    .withRecords((HashMap<Instant, EmergencyRecord>) ois.readObject());
+            database = new EMSDatabase(null, (HashMap<String, EMSUser>) ois.readObject(), (HashMap<Instant, EmergencyRecord>) ois.readObject());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -151,7 +145,7 @@ public class EMSController {
      * @param username the username
      * @param password the password
      */
-    public EMSUser authenticateUser(String username, String password) {
+    public EMSUser authenticateUser(String username, String password) throws IOException, ClassNotFoundException {
         EMSUser user = database.lookupUser(username);
         if (user != null ) {
             if (user.checkPassword(password)) {

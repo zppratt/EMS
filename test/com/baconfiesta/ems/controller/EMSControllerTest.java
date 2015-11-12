@@ -24,7 +24,7 @@ public class EMSControllerTest {
     @Before
     public void setUp() throws Exception {
         controller = new EMSController(new EMSUser("John", "Doe", "jdoe", "jdoe", false),
-                EMSDatabase.getNewDatabase().withFile(new File("test.db")));
+                new EMSDatabase(new File("test.db")));
     }
 
     @After

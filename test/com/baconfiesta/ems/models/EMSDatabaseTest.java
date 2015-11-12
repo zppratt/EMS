@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -43,17 +44,21 @@ public class EMSDatabaseTest {
 
     @Before
     public void setUp() throws Exception {
-        database = EMSDatabase.getNewDatabase().withFile(mockFile);
+        database = new EMSDatabase(mockFile);
+        assertNotNull(database);
         assertNotNull(database.getUsers());
         assertNotNull(database.getRecords());
+        assertTrue(database.isOpen());
     }
 
     @After
     public void tearDown() throws Exception {
+        assertNotNull(database);
         database.closeDatabase();
         Files.delete(testDatabaseLocation);
         assertNull(database.getUsers());
         assertNull(database.getRecords());
+        assertFalse(database.isOpen());
     }
 
     /**
@@ -68,7 +73,7 @@ public class EMSDatabaseTest {
 
         assertThat("Test database was not deleted.", mockFile.delete(), is(true)); // Should succeed...
 
-        database = EMSDatabase.getNewDatabase().withFile(mockFile); // Try to create a new database
+        database = new EMSDatabase(mockFile); // Try to create a new database
         assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
         assertNotNull(database);
         assertNotNull(database.getUsers());
@@ -85,7 +90,7 @@ public class EMSDatabaseTest {
         // Basically just created another database object while the last one has already created the file
         assertThat("Test database was not created on setup.", mockFile.exists(), is(true)); // Make sure the file exists
         database.closeDatabase(); // Open access to the test database file by closing the database object
-        database = EMSDatabase.getNewDatabase().withFile(mockFile); // Try to create a new database
+        database = new EMSDatabase(mockFile); // Try to create a new database
         assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
         assertNotNull(database);
         assertNotNull(database.getUsers());
