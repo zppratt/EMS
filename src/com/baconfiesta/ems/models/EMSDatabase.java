@@ -202,7 +202,7 @@ public class EMSDatabase {
 
     private void writeObject(Object object) throws IOException {
         outputStream.writeObject(object);
-        System.out.println("Writing: " + object);
+        System.out.println("Writing: " + object + " to the database file.");
         outputStream.flush();
         fileOutputStream.flush();
     }
@@ -312,10 +312,15 @@ public class EMSDatabase {
      * @return the records on success, null on failure
      */
     Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
-        @SuppressWarnings("unchecked")
-        HashMap<Instant, EmergencyRecord> records = (HashMap<Instant, EmergencyRecord>) inputStream.readObject();
-        for (Instant  k : records.keySet());
-        for (EmergencyRecord v : records.values());
+//        System.out.println("Try to get records from database...");
+        try {
+            @SuppressWarnings("unchecked")
+            HashMap<Instant, EmergencyRecord> records = (HashMap<Instant, EmergencyRecord>) inputStream.readObject();
+            for (Instant  k : records.keySet());
+            for (EmergencyRecord v : records.values());
+        } catch (IOException e) {
+//            System.out.println("Database file is empty.");
+        }
         return records;
     }
 
@@ -324,10 +329,15 @@ public class EMSDatabase {
      * @return the users on success, null on failure
      */
     Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
-        @SuppressWarnings("unchecked")
-        HashMap<String, EMSUser> users = (HashMap<String, EMSUser>) inputStream.readObject();
-        for (String k : users.keySet());
-        for (EMSUser v : users.values());
+//        System.out.println("Try to get users from database...");
+        try {
+            @SuppressWarnings("unchecked")
+            HashMap<String, EMSUser> users = (HashMap<String, EMSUser>) inputStream.readObject();
+            for (String k : users.keySet());
+            for (EMSUser v : users.values());
+        } catch (IOException e) {
+//            System.out.println("Database file is empty.");
+        }
         return users;
     }
 

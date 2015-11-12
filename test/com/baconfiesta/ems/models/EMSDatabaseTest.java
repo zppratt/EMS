@@ -215,8 +215,8 @@ public class EMSDatabaseTest {
         assertNotNull("No users are in the database.", database.getDatabaseUsers());
 
         // Debugging...
-        System.out.println(database.getDatabaseUsers().values());
-        System.out.println(database.getUsers().values());
+//        System.out.println("\nDatabase file: " +database.getDatabaseUsers().values());
+//        System.out.println("In memory: " + database.getUsers().values());
 
     }
 }
