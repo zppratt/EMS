@@ -104,15 +104,18 @@ public class EMSInterface {
         // Set logout actionListener
         logout.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
-                header.remove(back);
-                header.remove(logout);
+                // Confirm user logout
+                if(JOptionPane.showConfirmDialog(frame,"Are you sure you want to logout?\nAny unsaved data will be lost.",null,JOptionPane.YES_NO_OPTION) == 0){
+                    // Clear the window
+                    mainframe.removeAll();
+                    footer.removeAll();
+                    sidebar.removeAll();
+                    header.remove(back);
+                    header.remove(logout);
 
-                // Go back to login
-                logIn();
+                    // Go back to login
+                    logIn();
+                }
             }
         });
 
@@ -285,7 +288,8 @@ public class EMSInterface {
         // Change the title
         frameTitle.setText("Select an Action");
 
-        // Add the list back
+        // Repopulate the list with the recent records
+        sidebarList.setListData(new String[]{"a case record.........................","a case record.........................","a case record.........................","a case record.........................","a case record........................."});
         sidebar.add(sidebarList);
 
         // Disable the back button
@@ -300,11 +304,16 @@ public class EMSInterface {
         footer.add(viewRecords);
         footer.add(generateReport);
 
+        // Check if admin and add admin options
+        // if(admin)
+        footer.add(manageUsers);
+        footer.add(manageData);
+        footer.add(manageRecords);
+        footer.add(viewActivity);
+
         // Refresh the window
         frame.revalidate();
         frame.repaint();
-
-
     }
 
     /**
@@ -462,7 +471,7 @@ public class EMSInterface {
         sidebar.add(new JLabel("  "));
         sidebar.add(descriptionScroll);
 
-        // Add components to
+        // Add components to footer
         footer.add(selectRoute);
 
         // Check if there was a temp record to repopulate
@@ -530,7 +539,7 @@ public class EMSInterface {
         // GET THE URL TO SHOW ROUTE
         //
         try {
-            URL route1URL = new URL("http://www.google.com");
+            URL route1URL = new URL("file:///C:/Users/cchas/Downloads/Maps.html");
             URL route2URL = new URL("http://www.google.com");
             route1Pane.setPage(route1URL);
             route2Pane.setPage(route2URL);
@@ -751,15 +760,159 @@ public class EMSInterface {
      * Admin only: Show the screen to add and remove users
      */
     private void manageUsers() {
+        // Change the title
+        frameTitle.setText("Manage Users");
+
         // Set previous frame
         previous = "user";
 
         // Enable back button
         back.setEnabled(true);
 
+        // Declare local variables
+        JRadioButton users = new JRadioButton("Users");
+        JRadioButton admins = new JRadioButton("Administrators");
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+
+        JLabel listTitle = new JLabel("Select user type");
+        JLabel addUserLabel = new JLabel("Add User");
+        JLabel firstnameLabel = new JLabel("First Name:");
+        JLabel lastnameLabel = new JLabel("Last Name:");
+        JLabel passwordLabel = new JLabel("Enter Password:");
+        JLabel confirmPasswordLabel = new JLabel("Confirm Password:");
+        JLabel usernameLabel = new JLabel("Username");
+
+        JTextField firstnameText = new JTextField();
+        JTextField lastnameText = new JTextField();
+        JPasswordField passwordField = new JPasswordField();
+        JPasswordField confirmPasswordField = new JPasswordField();
+        JTextField usernameText = new JTextField();
+
+        JButton deleteUser = new JButton("Delete User");
+        JButton upgrade = new JButton("Upgrade User");
+        JButton downgrade = new JButton("Downgrade User");
+        JButton addUser = new JButton("Add User");
+
+        // Set properties of the fields
+        buttonGroup.add(users);
+        buttonGroup.add(admins);
+
+        users.setBackground(Color.WHITE);
+        admins.setBackground(Color.WHITE);
+
+        users.setSelected(true);
+        sidebarList.setListData(new String[]{"user1","user2","user3","user4"});
+
+        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
+        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
+        passwordField.setMaximumSize(new Dimension(200, passwordField.getPreferredSize().height) );
+        confirmPasswordField.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height) );
+        usernameText.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height) );
+
+        addUserLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        firstnameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        lastnameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        passwordLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        confirmPasswordLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        usernameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        firstnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        lastnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        passwordField.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        confirmPasswordField.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        usernameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+
+        // Add components to the screen
+        mainframe.setLayout(new BoxLayout(mainframe, BoxLayout.Y_AXIS));
+        mainframe.add(new JLabel("  "));
+        mainframe.add(addUserLabel);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(firstnameLabel);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(firstnameText);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(lastnameLabel);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(lastnameText);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(passwordLabel);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(passwordField);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(confirmPasswordLabel);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(confirmPasswordField);
+        mainframe.add(usernameLabel);
+        mainframe.add(new JLabel("  "));
+        mainframe.add(usernameText);
+
+        sidebar.add(listTitle);
+        sidebar.add(users);
+        sidebar.add(admins);
+        sidebar.add(sidebarList);
+
+        footer.add(deleteUser);
+        footer.add(upgrade);
+        footer.add(downgrade);
+        footer.add(addUser);
+
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+        users.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Populate the list with users
+                sidebarList.setListData(new String[]{"user1","user2","user3","user4"});
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        admins.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Populate the list with admins
+                sidebarList.setListData(new String[]{"admin1","admin2","admin3","admin4"});
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        deleteUser.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Remove the user from the database
+
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        upgrade.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Upgrade the user to admin
+
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        downgrade.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Downgrade the user from admin
+
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        addUser.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Add the user to the database
+
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
     }
 
     /**
@@ -781,11 +934,20 @@ public class EMSInterface {
      * Admin only: Show the screen to view the activity of a system user
      */
     private void viewUserActivity() {
+        // Change the title
+        frameTitle.setText("View User Activity");
+
         // Set previous frame
         previous = "user";
 
         // Enable back button
         back.setEnabled(true);
+
+        JLabel listTitle = new JLabel("Select user type");
+        JLabel addUserLabel = new JLabel("Add User");
+        JLabel firstnameLabel = new JLabel("First Name:");
+
+        //callerTitle.setFont(new Font(callerTitle.getFont().getName(),Font.BOLD, 14));
 
         // Refresh the window
         frame.revalidate();
@@ -796,15 +958,191 @@ public class EMSInterface {
      * Admin only: Show the screen to modify emergency records
      */
     private void modifyRecords() {
+        // Change the title
+        frameTitle.setText("Modify Record");
+
         // Set previous frame
         previous = "user";
 
         // Enable back button
         back.setEnabled(true);
 
+        // Change the title
+        frameTitle.setText("Enter Emergency Info");
+
+        // Set previous frame
+        previous = "user";
+
+        // Enable back button
+        back.setEnabled(true);
+
+        // Create label, textField, and radioButton local variables
+        JLabel callerTitle = new JLabel("Caller Information");
+        JLabel descriptionTitle = new JLabel("Description of the Emergency");
+        JLabel categorizeTitle = new JLabel("Categorize Emergency");
+        JLabel locationTitle = new JLabel("Location of the Emergency");
+        JLabel firstnameLabel = new JLabel("First Name:");
+        JLabel lastnameLabel = new JLabel("Last Name:");
+        JLabel phoneLabel = new JLabel("Phone Number:");
+        JLabel addressLabel = new JLabel("Address:");
+        JLabel stateLabel = new JLabel("State:");
+        JLabel zipLabel = new JLabel("Zip Code:");
+
+        JTextField firstnameText = new JTextField();
+        JTextField lastnameText = new JTextField();
+        JTextField phoneText = new JTextField();
+        JTextField addressText = new JTextField();
+        JTextField stateText = new JTextField();
+        JTextField zipText = new JTextField();
+
+        JTextArea descriptionText = new JTextArea("",18,20);
+        JScrollPane descriptionScroll = new JScrollPane(descriptionText);
+
+        JPanel left = new JPanel();
+        JPanel middle = new JPanel();
+        JPanel right = new JPanel();
+
+        JRadioButton fire = new JRadioButton("Fire");
+        JRadioButton security = new JRadioButton("Security");
+        JRadioButton health = new JRadioButton("Health");
+        JRadioButton hoax = new JRadioButton("Hoax");
+        ButtonGroup categories = new ButtonGroup();
+
+        JButton saveRecord = new JButton("Save Record");
+        JButton deleteRecord = new JButton("Delete Record");
+
+        // Add radiobuttons to the group
+        categories.add(fire);
+        categories.add(security);
+        categories.add(health);
+        categories.add(hoax);
+
+        // Set properties of the fields
+        callerTitle.setFont(new Font(callerTitle.getFont().getName(),Font.BOLD, 14));
+        descriptionTitle.setFont(new Font(descriptionTitle.getFont().getName(),Font.BOLD, 14));
+        categorizeTitle.setFont(new Font(categorizeTitle.getFont().getName(),Font.BOLD, 14));
+        locationTitle.setFont(new Font(locationTitle.getFont().getName(),Font.BOLD, 14));
+
+        descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        descriptionText.setLineWrap(true);
+
+        fire.setBackground(Color.WHITE);
+        health.setBackground(Color.WHITE);
+        security.setBackground(Color.WHITE);
+        hoax.setBackground(Color.WHITE);
+
+        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
+        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
+        phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height) );
+        addressText.setMaximumSize(new Dimension(200, addressText.getPreferredSize().height) );
+        stateText.setMaximumSize(new Dimension(200, stateText.getPreferredSize().height) );
+        zipText.setMaximumSize(new Dimension(200, zipText.getPreferredSize().height) );
+
+        descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        callerTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        categorizeTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        locationTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        firstnameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        lastnameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        phoneLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        addressLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        stateLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        zipLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        firstnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        lastnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        phoneText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        addressText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        stateText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        zipText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        fire.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        security.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        health.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        hoax.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+
+        left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+        left.setBackground(Color.WHITE);
+        middle.setLayout(new BoxLayout(middle, BoxLayout.Y_AXIS));
+        middle.setBackground(Color.WHITE);
+        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
+        right.setBackground(Color.WHITE);
+
+        mainframe.setLayout(new GridLayout(1,3));
+
+        // Add components to the window
+        mainframe.add(left);
+        mainframe.add(middle);
+        mainframe.add(right);
+
+        // Add components to left part of mainframe
+        left.add(callerTitle);
+        left.add(new JLabel("  "));
+        left.add(firstnameLabel);
+        left.add(new JLabel("  "));
+        left.add(firstnameText);
+        left.add(new JLabel("  "));
+        left.add(lastnameLabel);
+        left.add(new JLabel("  "));
+        left.add(lastnameText);
+        left.add(new JLabel("  "));
+        left.add(phoneLabel);
+        left.add(new JLabel("  "));
+        left.add(phoneText);
+
+        // Add components to middle part of mainframe
+        middle.add(locationTitle);
+        middle.add(new JLabel("  "));
+        middle.add(addressLabel);
+        middle.add(new JLabel("  "));
+        middle.add(addressText);
+        middle.add(new JLabel("  "));
+        middle.add(stateLabel);
+        middle.add(new JLabel("  "));
+        middle.add(stateText);
+        middle.add(new JLabel("  "));
+        middle.add(zipLabel);
+        middle.add(new JLabel("  "));
+        middle.add(zipText);
+
+        // Add components to right part of mainframe
+        right.add(categorizeTitle);
+        right.add(new JLabel("  "));
+        right.add(fire);
+        right.add(new JLabel("  "));
+        right.add(security);
+        right.add(new JLabel("  "));
+        right.add(health);
+        right.add(new JLabel("  "));
+        right.add(hoax);
+        right.add(descriptionTitle);
+        right.add(new JLabel("  "));
+        right.add(descriptionScroll);
+
+        sidebarList.setListData(new String[]{"a case record.........................","a case record.........................","a case record.........................","a case record.........................","a case record........................."});
+        sidebar.add(sidebarList);
+
+        // Add components to footer
+        footer.add(saveRecord);
+        footer.add(deleteRecord);
+
+        // Populate the field with the record info
+
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+        saveRecord.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Save the changes
+
+            }
+        });
+
+        deleteRecord.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Save the changes
+
+            }
+        });
     }
 
 }
