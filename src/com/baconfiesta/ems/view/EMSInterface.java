@@ -99,7 +99,7 @@ public class EMSInterface {
         logIn();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1280,1024);
+        frame.setSize(600,600);
         frame.setVisible(true);
 
         // Set logout actionListener
@@ -278,7 +278,7 @@ public class EMSInterface {
                 EMSUser user = null;
                 try {
                     controller = new EMSController();
-                    user = controller.authenticateUser(usernameText.getText(), passwordText.getPassword().toString());
+                    user = controller.logIn(usernameText.getText(), String.valueOf(passwordText.getPassword()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

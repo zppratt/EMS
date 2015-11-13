@@ -11,6 +11,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -48,10 +49,23 @@ public class EMSControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        assertNotNull(database);
+        database.closeDatabase();
+        Files.delete(mockFilePath);
+        assertNull(database.getUsers());
+        assertNull(database.getRecords());
     }
 
     @Test
     public void testLogIn() throws Exception {
+        System.out.println("testLogIn");
+
+        // Test authentication failure
+        assertNull(controller.logIn("bbaggins", "there and back again"));
+
+        // Test authentication success
+        database.addUser("Bilbo", "Baggins", "bbaggins", "there and back again");
+        assertNotNull(controller.logIn("bbaggins", "there and back again"));
     }
 
     @Test
@@ -61,6 +75,8 @@ public class EMSControllerTest {
 
     @Test
     public void testCreateNewEmergency() throws Exception {
+        System.out.println("testCreateNewEmergency");
+
 
     }
 
@@ -112,19 +128,6 @@ public class EMSControllerTest {
 
     @Test
     public void testRestoreData() throws Exception {
-
-    }
-
-    @Test
-    public void testAuthenticateUser() throws Exception {
-        System.out.println("testAuthenticateUser");
-
-        // Test authentication failure
-        assertNull(controller.authenticateUser("bbaggins", "there and back again"));
-
-        // Test authentication success
-        database.addUser("Bilbo", "Baggins", "bbaggins", "there and back again");
-        assertNotNull(controller.authenticateUser("bbaggins", "there and back again"));
 
     }
 }

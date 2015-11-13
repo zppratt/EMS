@@ -37,12 +37,12 @@ public class EMSDatabaseTest {
     /**
      * String path to test database
      */
-    private static final Path testDatabaseLocation = Paths.get("./db/test.db");
+    private static final Path mockDatabaseLocation = Paths.get("./db/test.db");
 
     /**
      * Test database file
      */
-    private static final File mockFile = testDatabaseLocation.toFile();
+    private static final File mockFile = mockDatabaseLocation.toFile();
 
     @Before
     public void setUp() throws Exception {
@@ -57,7 +57,7 @@ public class EMSDatabaseTest {
     public void tearDown() throws Exception {
         assertNotNull(database);
         database.closeDatabase();
-        Files.delete(testDatabaseLocation);
+        Files.delete(mockDatabaseLocation);
         assertNull(database.getUsers());
         assertNull(database.getRecords());
         assertFalse(database.isOpen());

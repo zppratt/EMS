@@ -56,8 +56,8 @@ public class EMSController {
      * @param password the password
      * @return the User on success, null on failure
      */
-    public EMSUser logIn(String username, String password) {
-        return null;
+    public EMSUser logIn(String username, String password) throws IOException, ClassNotFoundException {
+        return authenticateUser(username, password);
     }
 
     /**
@@ -162,7 +162,7 @@ public class EMSController {
      * @param username the username
      * @param password the password
      */
-    public EMSUser authenticateUser(String username, String password) throws IOException, ClassNotFoundException {
+    private EMSUser authenticateUser(String username, String password) throws IOException, ClassNotFoundException {
         EMSUser user = database.lookupUser(username);
         if (user != null ) {
             if (user.checkPassword(password)) {
