@@ -28,6 +28,13 @@ public class EMSController {
     /**
      * Default constructor for a user controller
      */
+    public EMSController() throws IOException, ClassNotFoundException {
+        this(null, new EMSDatabase());
+    }
+
+    /**
+     * Constructor which allows the specification of a user and database.
+     */
     public EMSController(EMSUser user, EMSDatabase database) {
         this.currentUser = user;
         this.database = database;

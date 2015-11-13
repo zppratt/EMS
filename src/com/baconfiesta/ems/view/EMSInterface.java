@@ -1,12 +1,13 @@
 package com.baconfiesta.ems.view;
 
 import com.baconfiesta.ems.controller.EMSController;
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
-import javafx.scene.control.RadioButton;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -268,15 +269,28 @@ public class EMSInterface {
         frame.repaint();
 
         loginButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent event){
                 // Check if the credentials are successful
-//                EMSUser user = controller.authenticateUser(usernameText.getText(), passwordText.getPassword().toString());
-//                if (user==null) return;
+                EMSUser user = null;
+                try {
+                    controller = new EMSController();
+                    user = controller.authenticateUser(usernameText.getText(), passwordText.getPassword().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (user==null) {
+                    System.out.println("User not found.");
+                    return;
+                }
                 // If successful then clear window
                 mainframe.removeAll();
-                // If a normal user then use useractions()
-                // If an administrator then use adminActions()
-                userActions();
+                if (user.isAdmin()) {
+                    // If a normal user then use userActions()
+                    userActions();
+                } else {
+                    // If an administrator then use adminActions()
+                    adminAcions();
+                }
             }
         });
     }
@@ -304,16 +318,20 @@ public class EMSInterface {
         footer.add(viewRecords);
         footer.add(generateReport);
 
-        // Check if admin and add admin options
-        // if(admin)
+        // Refresh the window
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    /**
+     * Show screen for admin actions
+     */
+    private void adminAcions() {
         footer.add(manageUsers);
         footer.add(manageData);
         footer.add(manageRecords);
         footer.add(viewActivity);
-
-        // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        userActions();
     }
 
     /**
