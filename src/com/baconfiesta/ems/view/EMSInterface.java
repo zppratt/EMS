@@ -1,5 +1,6 @@
 package com.baconfiesta.ems.view;
 
+import com.baconfiesta.ems.controller.EMSAdminController;
 import com.baconfiesta.ems.controller.EMSController;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
@@ -8,8 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * The main user interface window of the EMS system.
@@ -222,7 +225,11 @@ public class EMSInterface {
                 // Find the next window
                 if(previous.equals("user")){
                     back.setEnabled(false);
-                    userActions();
+                    if (controller.getUser().isAdmin()) {
+                        adminAcions();
+                    } else {
+                        userActions();
+                    }
                 } else if (previous.equals("info")){
                     enterInfo();
                 } else if (previous.equals("route")){
@@ -289,11 +296,17 @@ public class EMSInterface {
                 // If successful then clear window
                 mainframe.removeAll();
                 if (user.isAdmin()) {
-                    // If a normal user then use userActions()
-                    userActions();
-                } else {
-                    // If an administrator then use adminActions()
+                    // If a normal user then use adminActions()
+                    try {
+                        controller = new EMSAdminController(user, null);
+                    } catch (IOException | ClassNotFoundException e) {
+                        userActions();
+                        return;
+                    }
                     adminAcions();
+                } else {
+                    // If an administrator then use userActions()
+                    userActions();
                 }
             }
         });
@@ -885,7 +898,11 @@ public class EMSInterface {
         users.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Populate the list with users
-                sidebarList.setListData(new String[]{"user1","user2","user3","user4"});
+                try {
+                    sidebarList.setListData(controller.getUsers());
+                } catch (IOException | ClassNotFoundException e1) {
+                    sidebarList.setListData(new String[]{"No users found."});
+                }
                 frame.revalidate();
                 frame.repaint();
             }
@@ -894,7 +911,11 @@ public class EMSInterface {
         admins.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Populate the list with admins
-                sidebarList.setListData(new String[]{"admin1","admin2","admin3","admin4"});
+                try {
+                    sidebarList.setListData(Arrays.stream(controller.getUsers()).filter(EMSUser::isAdmin).toArray());
+                } catch (IOException | ClassNotFoundException e1) {
+                    sidebarList.setListData(new String[]{"No admin users found."});
+                }
                 frame.revalidate();
                 frame.repaint();
             }
@@ -930,7 +951,16 @@ public class EMSInterface {
         addUser.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Add the user to the database
-
+                ((EMSAdminController)controller).addUser(
+                        firstnameText.getText(),
+                        lastnameText.getText(),
+                        usernameText.getText(),
+                        String.valueOf(passwordField.getPassword()));
+                try {
+                    sidebarList.setListData(controller.getUsers());
+                } catch (IOException | ClassNotFoundException e1) {
+                    sidebarList.setListData(new String []{"Couldn't show users."});
+                }
                 frame.revalidate();
                 frame.repaint();
             }

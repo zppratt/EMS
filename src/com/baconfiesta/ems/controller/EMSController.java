@@ -179,4 +179,13 @@ public class EMSController {
     public void setUser(EMSUser user) {
         this.currentUser = user;
     }
+
+    /**
+     * Gets the current user
+     * @return the current user of the system
+     */
+    public EMSUser getUser() {
+        return currentUser;
+    }
+
 }
