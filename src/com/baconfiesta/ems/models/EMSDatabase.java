@@ -151,6 +151,9 @@ public class EMSDatabase {
             users = getDatabaseUsers();
             if (users==null) {
                 users = new HashMap<>();
+                // Default user
+                EMSUser user = new EMSUser("Adminy", "Administrator", "admin", "admin", true);
+                users.put(user.getUsername(), user);
             }
         } else {
             reconcileDatabaseWithMemory(); // if there are users in memory already, compare to database
@@ -304,6 +307,8 @@ public class EMSDatabase {
         // Remove a user from the list
         if (this.getUsers().containsKey(username)) {
             this.getUsers().remove(username);
+            writeObject(users);
+            reconcileDatabaseWithMemory();
             return true;
         }
         return false;

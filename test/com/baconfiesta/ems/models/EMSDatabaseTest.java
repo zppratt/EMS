@@ -77,6 +77,10 @@ public class EMSDatabaseTest {
 
         database = new EMSDatabase(mockFile); // Try to create a new database
         assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
+
+        // Is the default user present?
+        assertNotNull(database.lookupUser("admin"));
+
         assertNotNull(database);
         assertNotNull(database.getUsers());
         assertNotNull(database.getRecords());

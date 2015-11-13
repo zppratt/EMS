@@ -3,6 +3,8 @@ package com.baconfiesta.ems.controller;
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 
+import java.io.IOException;
+
 /**
  * Privileged version of the main controller for the EMS system
  * @author team_bacon_fiesta
@@ -10,13 +12,19 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 public class EMSAdminController extends EMSController {
 
     /**
+     * The database
+     */
+    EMSDatabase database;
+
+    /**
      * Default constructor for a user controller
      *
      * @param user the user to use the controller
      * @param database the database
      */
-    public EMSAdminController(EMSUser user, EMSDatabase database) {
+    public EMSAdminController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException {
         super(user, database);
+        this.database = database;
     }
 
     /**
@@ -33,11 +41,11 @@ public class EMSAdminController extends EMSController {
 
     /**
      * Removes a user from the system
-     * @param user the user
+     * @param username the username of the user to remove
      * @return whether the removal was successful or not
      */
-    public boolean removeUser(EMSUser user) {
-        return false;
+    public boolean removeUser(String username) throws IOException, ClassNotFoundException {
+        return database.removeUser(username);
     }
 
     /**

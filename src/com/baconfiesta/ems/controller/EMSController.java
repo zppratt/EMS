@@ -29,13 +29,23 @@ public class EMSController {
      * Default constructor for a user controller
      */
     public EMSController() throws IOException, ClassNotFoundException {
-        this(null, new EMSDatabase());
+        this(null, null);
     }
 
     /**
      * Constructor which allows the specification of a user and database.
+     * @param user the user
+     * @param database the database
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
-    public EMSController(EMSUser user, EMSDatabase database) {
+    public EMSController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException {
+        if (database==null) {
+            database = new EMSDatabase();
+        }
+        if (user==null) {
+            user = database.lookupUser("admin");
+        }
         this.currentUser = user;
         this.database = database;
     }
@@ -84,8 +94,8 @@ public class EMSController {
      * Saves a record to the database
      * @param record the record to finalize
      */
-    public void finalizeRecord(EmergencyRecord record) {
-        
+    public void finalizeRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
+        database.addEmergencyRecord(record);
     }
 
     /**
@@ -112,7 +122,7 @@ public class EMSController {
      * @return the list of users
      */
     public EMSUser[] getUsers() throws IOException, ClassNotFoundException {
-        return (EMSUser[]) database.getUsers().values().toArray();
+        return (EMSUser[]) database.getUsers().values().toArray(new EMSUser[0]);
     }
 
     /**
@@ -120,7 +130,7 @@ public class EMSController {
      * @return the list of records
      */
     public EmergencyRecord[] getRecords() throws IOException, ClassNotFoundException {
-        return (EmergencyRecord[]) database.getRecords().values().toArray();
+        return (EmergencyRecord[]) database.getRecords().values().toArray(new EmergencyRecord[0]);
     }
 
     /**

@@ -270,6 +270,10 @@ public class EMSInterface {
 
         loginButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
+
+                // Debugging...
+                System.out.printf("Attempting to login user: '%s'\n", usernameText.getText());
+
                 // Check if the credentials are successful
                 EMSUser user = null;
                 try {
