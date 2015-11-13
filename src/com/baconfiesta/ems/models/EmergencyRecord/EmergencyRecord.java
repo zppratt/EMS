@@ -40,6 +40,12 @@ public class EmergencyRecord implements Serializable{
 
     /**
      * Default constructor for an emergency record
+     * @param metadata the metadata
+     * @param caller the caller
+     * @param location the location
+     * @param category the category
+     * @param responder the responder
+     * @param route the route
      */
     public EmergencyRecord(
             Metadata metadata,

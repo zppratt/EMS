@@ -1,14 +1,15 @@
-package com.baconfiesta.ems.models;
+package com.baconfiesta.ems.models.EMSUser;
 
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
 
 /**
  * A user of the EMS system, such as a Dispatcher or System Administrator
  */
-public class EMSUser {
+public class EMSUser implements Serializable {
 
     /**
      * The first name of the system user
@@ -122,5 +123,12 @@ public class EMSUser {
      */
     private String getPassword() {
         return password;
+    }
+
+    /**
+     * Prints the last, first name and username of a user
+     */
+    public String toString() {
+        return "\"" + this.getLastname() + ", " + this.getFirstname() + "\"";
     }
 }

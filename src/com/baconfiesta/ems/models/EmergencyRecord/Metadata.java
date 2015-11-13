@@ -1,6 +1,6 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
-import com.baconfiesta.ems.models.EMSUser;
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 
 import java.io.Serializable;
 import java.time.Instant;

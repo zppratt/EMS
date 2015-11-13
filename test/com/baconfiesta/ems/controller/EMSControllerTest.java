@@ -1,7 +1,7 @@
 package com.baconfiesta.ems.controller;
 
 import com.baconfiesta.ems.models.EMSDatabase;
-import com.baconfiesta.ems.models.EMSUser;
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class EMSControllerTest {
     @Before
     public void setUp() throws Exception {
         controller = new EMSController(new EMSUser("John", "Doe", "jdoe", "jdoe", false),
-                EMSDatabase.getNewDatabase().withFile(new File("test.db")));
+                new EMSDatabase(new File("test.db")));
     }
 
     @After

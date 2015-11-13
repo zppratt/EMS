@@ -25,6 +25,9 @@ public class Location implements Serializable {
 
     /**
      * Default constructor
+     * @param address the address of the emergency
+     * @param state the state the emergency is in
+     * @param zip the zip code of the emergency
      */
     public Location(String address, String state, int zip) {
         this.address = address;
