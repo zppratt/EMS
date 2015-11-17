@@ -23,7 +23,7 @@ public class EMSController {
     /**
      * The file database the system will use
      */
-    private EMSDatabase database;
+    EMSDatabase database;
 
     /**
      * Default constructor for a user controller
@@ -184,7 +184,7 @@ public class EMSController {
      * Gets the current user
      * @return the current user of the system
      */
-    public EMSUser getUser() {
+    public EMSUser getCurrentUser() {
         return currentUser;
     }
 

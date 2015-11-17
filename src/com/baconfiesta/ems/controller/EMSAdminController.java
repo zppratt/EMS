@@ -12,11 +12,6 @@ import java.io.IOException;
 public class EMSAdminController extends EMSController {
 
     /**
-     * The database
-     */
-    EMSDatabase database;
-
-    /**
      * Default constructor for a user controller
      *
      * @param user the user to use the controller
@@ -24,7 +19,6 @@ public class EMSAdminController extends EMSController {
      */
     public EMSAdminController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException {
         super(user, database);
-        this.database = database;
     }
 
     /**
@@ -35,8 +29,8 @@ public class EMSAdminController extends EMSController {
      * @param password the user's password
      * @return the User on success, null on failure
      */
-    public EMSUser addUser(String firstname, String lastname, String username, String password) {
-        return new EMSUser(firstname,lastname,username,password,false);
+    public EMSUser addUser(String firstname, String lastname, String username, String password) throws IOException, ClassNotFoundException {
+        return database.addUser(firstname, lastname, username, password);
     }
 
     /**

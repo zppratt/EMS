@@ -225,7 +225,7 @@ public class EMSInterface {
                 // Find the next window
                 if(previous.equals("user")){
                     back.setEnabled(false);
-                    if (controller.getUser().isAdmin()) {
+                    if (controller.getCurrentUser().isAdmin()) {
                         adminAcions();
                     } else {
                         userActions();
@@ -296,7 +296,7 @@ public class EMSInterface {
                 // If successful then clear window
                 mainframe.removeAll();
                 if (user.isAdmin()) {
-                    // If a normal user then use adminActions()
+                    // If an administrator user then use adminActions()
                     try {
                         controller = new EMSAdminController(user, null);
                     } catch (IOException | ClassNotFoundException e) {
@@ -305,7 +305,7 @@ public class EMSInterface {
                     }
                     adminAcions();
                 } else {
-                    // If an administrator then use userActions()
+                    // If a normal user then use userActions()
                     userActions();
                 }
             }
@@ -951,11 +951,18 @@ public class EMSInterface {
         addUser.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Add the user to the database
-                ((EMSAdminController)controller).addUser(
-                        firstnameText.getText(),
-                        lastnameText.getText(),
-                        usernameText.getText(),
-                        String.valueOf(passwordField.getPassword()));
+                try {
+                    ((EMSAdminController)controller).addUser(
+                            firstnameText.getText(),
+                            lastnameText.getText(),
+                            usernameText.getText(),
+                            String.valueOf(passwordField.getPassword()));
+                } catch (IOException e1) {
+                    System.out.println("User not added.");
+                } catch (ClassNotFoundException e1) {
+                    System.out.println("User not added.");
+                }
+                System.out.println();
                 try {
                     sidebarList.setListData(controller.getUsers());
                 } catch (IOException | ClassNotFoundException e1) {
