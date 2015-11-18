@@ -46,7 +46,9 @@ public class EMSController {
         if (user==null) {
             user = database.lookupUser("admin");
         }
+        System.out.println(user);
         this.currentUser = user;
+        System.out.println("Database is " + database);
         this.database = database;
     }
 
@@ -162,7 +164,7 @@ public class EMSController {
      * @param username the username
      * @param password the password
      */
-    private EMSUser authenticateUser(String username, String password) throws IOException, ClassNotFoundException {
+    protected EMSUser authenticateUser(String username, String password) throws IOException, ClassNotFoundException {
         EMSUser user = database.lookupUser(username);
         if (user != null ) {
             if (user.checkPassword(password)) {
@@ -176,7 +178,7 @@ public class EMSController {
      * Sets the current user
      * @param user the user
      */
-    public void setUser(EMSUser user) {
+    void setUser(EMSUser user) {
         this.currentUser = user;
     }
 

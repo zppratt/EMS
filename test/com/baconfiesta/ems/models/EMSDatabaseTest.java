@@ -70,13 +70,13 @@ public class EMSDatabaseTest {
     public void testDatabaseNoFile() throws IOException, ClassNotFoundException {
         System.out.println("testDatabaseNoFile");
 
-        assertThat("Test database was not created on setup.", mockFile.exists(), is(true)); // Make sure the file exists
+        assertTrue("Test database was not created on setup.", mockFile.exists()); // Make sure the file exists
         database.closeDatabase(); // Open access to the test database file by closing the database object
 
-        assertThat("Test database was not deleted.", mockFile.delete(), is(true)); // Should succeed...
+        assertTrue("Test database was not deleted.", mockFile.delete()); // Should succeed...
 
         database = new EMSDatabase(mockFile); // Try to create a new database
-        assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
+        assertTrue("Fresh test database was not created after deletion.", mockFile.exists()); // Should succeed...
 
         // Is the default user present?
         assertNotNull(database.lookupUser("admin"));

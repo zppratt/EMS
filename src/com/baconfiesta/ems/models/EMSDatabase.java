@@ -4,6 +4,7 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -92,6 +93,7 @@ public class EMSDatabase {
      */
     public EMSDatabase(File file, HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records)
             throws IOException, ClassNotFoundException {
+        System.out.println("Database constructor. File : " + database);
         this.users = users;
         this.records = records;
         // Check if the streams for the database reading and writing have been created. If not, create them.
@@ -116,7 +118,9 @@ public class EMSDatabase {
         if (!(directory.isDirectory())) {
             directory.mkdir();
         }
-        fileOutputStream = new FileOutputStream(file);
+        if (!Files.exists(databasePath)) {
+            fileOutputStream = new FileOutputStream(file);
+        }
         outputStream = new ObjectOutputStream(fileOutputStream);
         fileInputStream = new FileInputStream(database);
         inputStream = new ObjectInputStream(fileInputStream);
@@ -150,6 +154,7 @@ public class EMSDatabase {
         if (users == null) {
             users = getDatabaseUsers();
             if (users==null) {
+                System.out.println("Getting database failed.");
                 users = new HashMap<>();
                 // Default user
                 EMSUser user = new EMSUser("Adminy", "Administrator", "admin", "admin", true);
@@ -229,7 +234,11 @@ public class EMSDatabase {
      * @throws IOException
      */
     private void writeObject(Object object) throws IOException {
-        outputStream.writeObject(object);
+        try {
+            outputStream.writeObject(object);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("Writing: " + object + " to the database file.");
         outputStream.flush();
         fileOutputStream.flush();
@@ -380,7 +389,7 @@ public class EMSDatabase {
             for (String k : users.keySet());
             for (EMSUser v : users.values());
         } catch (IOException e) {
-//            System.out.println("Database file is empty.");
+            System.out.println("Database file is empty.");
         }
         return users;
     }
