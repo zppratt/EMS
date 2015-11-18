@@ -154,7 +154,7 @@ public class EMSDatabase {
                 System.out.println("Getting database failed.");
                 users = new HashMap<>();
                 // Default user
-                EMSUser user = new EMSUser("Adminy", "Administrator", "admin", "admin", true);
+                EMSUser user = new EMSUser("Adminy", "Administrator", "", "", true);
                 users.put(user.getUsername(), user);
             }
         } else {

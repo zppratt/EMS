@@ -347,6 +347,7 @@ public class EMSInterface {
                     // If a normal user then use userActions()
                     userActions();
                 }
+                adminAcions();
             }
         });
     }
