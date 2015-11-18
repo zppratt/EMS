@@ -4,7 +4,6 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -118,9 +117,7 @@ public class EMSDatabase {
         if (!(directory.isDirectory())) {
             directory.mkdir();
         }
-        if (!Files.exists(databasePath)) {
-            fileOutputStream = new FileOutputStream(file);
-        }
+        fileOutputStream = new FileOutputStream(file);
         outputStream = new ObjectOutputStream(fileOutputStream);
         fileInputStream = new FileInputStream(database);
         inputStream = new ObjectInputStream(fileInputStream);
