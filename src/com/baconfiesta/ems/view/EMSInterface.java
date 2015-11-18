@@ -4,6 +4,12 @@ import com.baconfiesta.ems.controller.EMSAdminController;
 import com.baconfiesta.ems.controller.EMSController;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.sun.javafx.application.PlatformImpl;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +45,16 @@ public class EMSInterface {
     private JButton manageData;
     private JButton manageRecords;
     private JButton viewActivity;
+
+    private WebView browser1;
+    private WebEngine webEngine1;
+    private Group root1;
+    private WebView browser2;
+    private WebEngine webEngine2;
+    private Group root2;
+
+    private JFXPanel route1Panel;
+    private JFXPanel route2Panel;
 
     /*
     * Holds "user" if previous window was user options
@@ -104,6 +120,28 @@ public class EMSInterface {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600,600);
         frame.setVisible(true);
+
+        route1Panel = new JFXPanel();
+        route2Panel = new JFXPanel();
+
+        // Open the web browser
+        PlatformImpl.startup(new Runnable() {
+            @Override
+            public void run() {
+                // First window
+                browser1 = new WebView();
+                webEngine1 = browser1.getEngine();
+                Group root1 = new Group();
+                root1.getChildren().add(browser1);
+                route1Panel.setScene(new Scene(root1));
+                // Second window
+                browser2 = new WebView();
+                webEngine2 = browser2.getEngine();
+                Group root2 = new Group();
+                root2.getChildren().add(browser2);
+                route2Panel.setScene(new Scene(root2));
+            }
+        });
 
         // Set logout actionListener
         logout.addActionListener(new ActionListener(){
@@ -394,6 +432,7 @@ public class EMSInterface {
         JRadioButton security = new JRadioButton("Security");
         JRadioButton health = new JRadioButton("Health");
         JRadioButton hoax = new JRadioButton("Hoax");
+        JRadioButton crash = new JRadioButton("Car Crash");
         ButtonGroup categories = new ButtonGroup();
 
         JButton selectRoute = new JButton("Select Route");
@@ -403,6 +442,7 @@ public class EMSInterface {
         categories.add(security);
         categories.add(health);
         categories.add(hoax);
+        categories.add(crash);
 
         // Set properties of the fields
         callerTitle.setFont(new Font(callerTitle.getFont().getName(),Font.BOLD, 14));
@@ -417,6 +457,7 @@ public class EMSInterface {
         health.setBackground(Color.WHITE);
         security.setBackground(Color.WHITE);
         hoax.setBackground(Color.WHITE);
+        crash.setBackground(Color.WHITE);
 
         firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
         lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
@@ -441,10 +482,11 @@ public class EMSInterface {
         addressText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         stateText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         zipText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        fire.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        security.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        health.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        hoax.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        fire.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        security.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        health.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        hoax.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        crash.setAlignmentX(JFrame.LEFT_ALIGNMENT);
 
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
         left.setBackground(Color.WHITE);
@@ -500,6 +542,8 @@ public class EMSInterface {
         right.add(health);
         right.add(new JLabel("  "));
         right.add(hoax);
+        right.add(new JLabel("  "));
+        right.add(crash);
 
         // Add components to the sidebar
         sidebar.add(descriptionTitle);
@@ -548,12 +592,7 @@ public class EMSInterface {
         JTextArea route1Text = new JTextArea("",18,20);
         JTextArea route2Text = new JTextArea("",18,20);
 
-        JEditorPane route1Pane = new JEditorPane();
-        JEditorPane route2Pane = new JEditorPane();
-
         JScrollPane summaryScroll = new JScrollPane(summaryText);
-        JScrollPane route1Scroll = new JScrollPane(route1Pane);
-        JScrollPane route2Scroll = new JScrollPane(route2Pane);
         JScrollPane route1DirectionsScroll = new JScrollPane(route1Text);
         JScrollPane route2DirectionsScroll = new JScrollPane(route2Text);
 
@@ -561,28 +600,20 @@ public class EMSInterface {
         JButton route2 = new JButton("Select Route 2");
 
         // Set properties of the fields
-        route1Pane.setEditable(false);
-        route2Pane.setEditable(false);
         route1Text.setEditable(false);
         route2Text.setEditable(false);
         summaryText.setEditable(false);
 
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(),Font.BOLD, 14));
 
-        // Open the web pages
-        //
-        // GET THE URL TO SHOW ROUTE
-        //
-        try {
-            URL route1URL = new URL("file:///C:/Users/cchas/Downloads/Maps.html");
-            URL route2URL = new URL("http://www.google.com");
-            route1Pane.setPage(route1URL);
-            route2Pane.setPage(route2URL);
-        } catch (MalformedURLException e) {
-            System.out.println("Can't open the url");
-        } catch (java.io.IOException e){
-            System.out.println("Can't open the url");
-        }
+        // Open the web browser
+        PlatformImpl.startup(new Runnable() {
+            @Override
+            public void run() {
+                webEngine1.load("file:///C:/Users/cchas/Downloads/Maps.html");
+                webEngine2.load("file:///C:/Users/cchas/Downloads/Maps.html");
+            }
+        });
 
 
         //
@@ -596,8 +627,8 @@ public class EMSInterface {
 
         // Add to the frame
         mainframe.setLayout(new GridLayout(2,2));
-        mainframe.add(route1Scroll);
-        mainframe.add(route2Scroll);
+        mainframe.add(route1Panel);
+        mainframe.add(route2Panel);
         mainframe.add(route1DirectionsScroll);
         mainframe.add(route2DirectionsScroll);
 
@@ -657,19 +688,16 @@ public class EMSInterface {
         JLabel summaryTitle = new JLabel("Case Review");
 
         JTextArea summaryText = new JTextArea("",18,20);
-        JTextArea routeText = new JTextArea("",18,20);
 
         JEditorPane routePane = new JEditorPane();
 
         JScrollPane summaryScroll = new JScrollPane(summaryText);
         JScrollPane routeScroll = new JScrollPane(routePane);
-        JScrollPane routeDirectionsScroll = new JScrollPane(routeText);
 
         JButton closecase = new JButton("Close Case");
 
         // Set properties of the fields
         routePane.setEditable(false);
-        routeText.setEditable(false);
         summaryText.setEditable(false);
 
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(),Font.BOLD, 14));
@@ -678,18 +706,17 @@ public class EMSInterface {
         //
         // GET THE URL TO SHOW ROUTE
         //
-        try {
-            URL route1URL = new URL("http://www.google.com");
-            routePane.setPage(route1URL);
-        } catch (MalformedURLException e) {
-            System.out.println("Can't open the url");
-        } catch (java.io.IOException e){
-            System.out.println("Can't open the url");
-        }
+        // Open the web browser
+        PlatformImpl.startup(new Runnable() {
+            @Override
+            public void run() {
+                webEngine1.load("file:///C:/Users/cchas/Downloads/Maps.html");
+            }
+        });
 
         // Add components to the screen
-        mainframe.setLayout(new GridLayout(1,2));
-        mainframe.add(routeScroll);
+        mainframe.setLayout(new GridLayout(2,1));
+        mainframe.add(route1Panel);
         mainframe.add(routeScroll);
 
         sidebar.add(summaryTitle);
@@ -835,6 +862,8 @@ public class EMSInterface {
 
         users.setBackground(Color.WHITE);
         admins.setBackground(Color.WHITE);
+
+        addUserLabel.setFont(new Font(addUserLabel.getFont().getName(),Font.BOLD, 14));
 
         users.setSelected(true);
         sidebarList.setListData(new String[]{"user1","user2","user3","user4"});
@@ -987,6 +1016,8 @@ public class EMSInterface {
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+
     }
 
     /**
@@ -1002,11 +1033,92 @@ public class EMSInterface {
         // Enable back button
         back.setEnabled(true);
 
-        JLabel listTitle = new JLabel("Select user type");
-        JLabel addUserLabel = new JLabel("Add User");
-        JLabel firstnameLabel = new JLabel("First Name:");
+        // Declare local variables
+        JLabel usernameLabel = new JLabel("User ID ________");
+        JLabel loginActivityLabel = new JLabel("Login Activity");
+        JLabel logoutActivityLabel = new JLabel("Log Out Activity");
+        JLabel recordActivityLabel = new JLabel("Emergency Records Created");
 
-        //callerTitle.setFont(new Font(callerTitle.getFont().getName(),Font.BOLD, 14));
+        JPanel left = new JPanel();
+        JPanel right = new JPanel();
+
+        JRadioButton users = new JRadioButton("Users");
+        JRadioButton admins = new JRadioButton("Administrators");
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+
+        // Set properties of the fields
+        buttonGroup.add(users);
+        buttonGroup.add(admins);
+
+        users.setBackground(Color.WHITE);
+        admins.setBackground(Color.WHITE);
+        usernameLabel.setFont(new Font(usernameLabel.getFont().getName(),Font.BOLD, 14));
+
+        left.setBackground(Color.WHITE);
+        left.setLayout(new BoxLayout(left,BoxLayout.Y_AXIS));
+        right.setBackground(Color.WHITE);
+        right.setLayout(new BoxLayout(right,BoxLayout.Y_AXIS));
+
+        // Add to the window
+        mainframe.setLayout(new GridLayout(1,2));
+        mainframe.add(left);
+        mainframe.add(right);
+
+        left.add(usernameLabel);
+        left.add(loginActivityLabel);
+        // For loop through login times
+        for(int i = 0; i < 4; i++){
+            left.add(new JLabel("login at time"));
+        }
+        left.add(new JLabel("  "));
+        left.add(logoutActivityLabel);
+        // For loop through logout times
+        for(int i = 0; i < 4; i++){
+            left.add(new JLabel("logout at time"));
+        }
+
+        right.add(recordActivityLabel);
+        // For loop through emergency records
+        for(int i = 0; i < 10; i++){
+            right.add(new JLabel("record ##### at time #####"));
+        }
+
+        sidebar.add(admins);
+        sidebar.add(users);
+        sidebarList.setListData(new String[]{});
+        sidebar.add(sidebarList);
+
+        // Refresh the window
+        frame.revalidate();
+        frame.repaint();
+
+        users.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Populate the list with users
+                try {
+                    sidebarList.setListData(controller.getUsers());
+                } catch (IOException | ClassNotFoundException e1) {
+                    sidebarList.setListData(new String[]{"No users found."});
+                }
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        admins.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Populate the list with admins
+                try {
+                    sidebarList.setListData(Arrays.stream(controller.getUsers()).filter(EMSUser::isAdmin).toArray());
+                } catch (IOException | ClassNotFoundException e1) {
+                    sidebarList.setListData(new String[]{"No admin users found."});
+                }
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
 
         // Refresh the window
         frame.revalidate();
@@ -1065,6 +1177,7 @@ public class EMSInterface {
         JRadioButton security = new JRadioButton("Security");
         JRadioButton health = new JRadioButton("Health");
         JRadioButton hoax = new JRadioButton("Hoax");
+        JRadioButton crash = new JRadioButton("Car Crash");
         ButtonGroup categories = new ButtonGroup();
 
         JButton saveRecord = new JButton("Save Record");
@@ -1075,6 +1188,7 @@ public class EMSInterface {
         categories.add(security);
         categories.add(health);
         categories.add(hoax);
+        categories.add(crash);
 
         // Set properties of the fields
         callerTitle.setFont(new Font(callerTitle.getFont().getName(),Font.BOLD, 14));
@@ -1089,6 +1203,7 @@ public class EMSInterface {
         health.setBackground(Color.WHITE);
         security.setBackground(Color.WHITE);
         hoax.setBackground(Color.WHITE);
+        crash.setBackground(Color.WHITE);
 
         firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
         lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
@@ -1113,10 +1228,11 @@ public class EMSInterface {
         addressText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         stateText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         zipText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        fire.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        security.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        health.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        hoax.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        fire.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        security.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        health.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        hoax.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        crash.setAlignmentX(JFrame.LEFT_ALIGNMENT);
 
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
         left.setBackground(Color.WHITE);
@@ -1170,6 +1286,8 @@ public class EMSInterface {
         right.add(security);
         right.add(new JLabel("  "));
         right.add(health);
+        right.add(new JLabel("  "));
+        right.add(crash);
         right.add(new JLabel("  "));
         right.add(hoax);
         right.add(descriptionTitle);
