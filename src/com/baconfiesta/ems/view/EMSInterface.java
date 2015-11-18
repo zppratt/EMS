@@ -125,6 +125,7 @@ public class EMSInterface {
         route2Panel = new JFXPanel();
 
         // Open the web browser
+        PlatformImpl.setImplicitExit(false);
         PlatformImpl.startup(new Runnable() {
             @Override
             public void run() {
