@@ -30,6 +30,7 @@ public class Route implements Serializable {
     private String alternateRouteDistance;
     private String mainRouteDuration;
     private String alternateRouteDuration;
+    private Boolean alternateRouteSelected;
 
 
     /**
@@ -224,21 +225,19 @@ public class Route implements Serializable {
         String key;
         String htmlRequest;
 
-        /* Retrieving our Embed API key */
-        key = retrieveKey("EmbedKey");
+        /* Retrieving our Javascript API key */
+        key = retrieveKey("JavascriptKey");
         if(key == null)
             return;
 
         /* Creating the URL for request */
-        htmlRequest = "https://www.google.com/maps/embed/v1/directions?key=" + key + "&origin=" + this.emergencyResponderAddress +
-                "&destination=" + this.emergencyLocationAddress;
+        htmlRequest = "https://maps.googleapis.com/maps/api/js?key="+key+"&callback=initMap";
         /* Main route is the fastest, used with the previous URL */
-        this.mainRoute = createHTMLRoute(htmlRequest, "mainRoute.html");
+        this.mainRoute = createHTMLRoute(htmlRequest, "mainRoute.html", false, false);
 
         /* Adding restrictions to route */
-        htmlRequest += "&avoid=tolls|highways";
         /* Second route is longer */
-        this.alternateRoute = createHTMLRoute(htmlRequest, "alternateRoute.html");
+        this.alternateRoute = createHTMLRoute(htmlRequest, "alternateRoute.html", true, true);
     }
 
 
@@ -263,8 +262,8 @@ public class Route implements Serializable {
 
         /* Creating request and setting parameters */
         DirectionsApiRequest myRequest = DirectionsApi.newRequest(context);
-        myRequest.origin("3015 Glencairn, Fort Wayne, Indiana 46815");
-        myRequest.destination("Entertainment DIstrict, Toronto, ON, Canada");
+        myRequest.origin(this.emergencyResponderAddress);
+        myRequest.destination(this.emergencyLocationAddress);
         myRequest.mode(TravelMode.DRIVING);
 
         /* Avoiding tolls and highways if we want to calculate the directions of the alternate route */
@@ -305,15 +304,30 @@ public class Route implements Serializable {
      * \brief Creates an HTML file containing the components required to display the map retrieved by the request in HTMHRequest. Saves it in "filename"
      *  @param HTMLRequest the URL of the request to include in the HTML file
      *  @param filename the name of the file to create
+     *  @param avoidHighways if set to true, searches for routes avoiding highways if possible
+     *  @param avoidTolls if set to true, searches for routes avoiding tolls if possible
      *  @return a File object containing the HTML file created using the request
      */
-    private File createHTMLRoute(String HTMLRequest, String filename) {
-        File htmlTemplateFile = new File("templates/Maps.html");
+    private File createHTMLRoute(String HTMLRequest, String filename, Boolean avoidHighways, Boolean avoidTolls) {
+        File htmlTemplateFile = null;
+
+        /* Opening file from template */
+        try {
+            htmlTemplateFile = new File("templates/Maps.html");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return null;
+        }
+
         File directionFile = null;
 
         try {
             String htmlString = FileUtils.readFileToString(htmlTemplateFile);
             htmlString = htmlString.replace("$source", HTMLRequest);
+            htmlString = htmlString.replace("$origin", this.emergencyLocationAddress);
+            htmlString = htmlString.replace("$destination", this.emergencyResponderAddress);
+            htmlString = htmlString.replace("$avoidHighways", avoidHighways?"true":"false");
+            htmlString = htmlString.replace("$avoidTolls", avoidTolls?"true":"false");
             directionFile = new File("./"+filename);
             FileUtils.writeStringToFile(directionFile, htmlString);
 
@@ -322,6 +336,18 @@ public class Route implements Serializable {
         }
 
         return directionFile;
+    }
+
+
+    /**
+     * \brief Retrieve the static route (as an image file) according to the selected route: if alternateRouteSelected is set to false, the route retrieved is
+     * the main one, otherwise retrieves the alternate route
+     * @param alternateRouteSelected if set to true, retrieves alternate route static map, retrieves main route maps otherwise
+     */
+    public void retrieveStaticMap(Boolean alternateRouteSelected) {
+        this.alternateRouteSelected = alternateRouteSelected;
+
+
     }
 
 
