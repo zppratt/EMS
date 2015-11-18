@@ -21,7 +21,7 @@ public class RouteTest {
 
     @Test
     public void testDetermineNearestResponder() throws Exception {
-        assertThat("print if fails", 1, is(equals(1)));
+        //assertThat("print if fails", 1, is(equals(1)));
     }
 
 }
