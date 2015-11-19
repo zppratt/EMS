@@ -145,15 +145,22 @@ public class EMSDatabase {
      * @throws ClassNotFoundException
      */
     private void reconcileDatabaseWithMemory() throws IOException, ClassNotFoundException {
+
+        System.out.println("\nreconcileDatabaseWithMemory()------------");
+
         // Get users and records from database
         Map<String, EMSUser> databaseUsers = getDatabaseUsers();
         Map<Instant, EmergencyRecord> databaseRecords = getDatabaseRecords();
         if (databaseUsers != null) {
             users.putAll(databaseUsers);
+            System.out.printf("users.putAll(databaseUsers%s);\n", databaseUsers);
         }
         if (databaseRecords != null) {
             records.putAll(databaseRecords);
+            System.out.printf("users.putAll(databaseRecords%s);\n", databaseRecords);
         }
+
+        System.out.println("-------------------------------------------\n");
     }
 
     /**
@@ -387,4 +394,5 @@ public class EMSDatabase {
     boolean isOpen() {
         return isOpen;
     }
+
 }

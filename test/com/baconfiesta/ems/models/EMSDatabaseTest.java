@@ -120,9 +120,9 @@ public class EMSDatabaseTest {
 
         // Test that the records object gets updated in memory and database
         assertTrue("testAddEmergencyRecord: New records object was not empty", database.getRecords().isEmpty());
-        EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
+        EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder().withTime(Instant.EPOCH).getNewEmergencyRecord();
         database.addEmergencyRecord(testRecord);
-        assertTrue("testAddEmergencyRecord: New record was not added.", database.getRecords().containsValue(testRecord));
+        assertTrue("testAddEmergencyRecord: New record was not added.", database.getRecords().containsKey(Instant.EPOCH));
 
     }
 
