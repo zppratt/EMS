@@ -16,12 +16,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
@@ -110,10 +107,10 @@ public class EMSControllerTest {
         System.out.println("testGetUsers");
 
         // Test success
-        assertThat(controller.getUsers().length, is(not(0)));
+        assertFalse(controller.getUsers().isEmpty());
         // Test failure
         assertTrue(adminController.removeUser("admin"));
-        assertThat(controller.getUsers().length, is(0));
+        assertTrue(controller.getUsers().isEmpty());
     }
 
     @Test

@@ -18,7 +18,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 
 /**
  * The main user interface window of the EMS system.
@@ -930,7 +929,7 @@ public class EMSInterface {
             public void actionPerformed(ActionEvent e){
                 // Populate the list with users
                 try {
-                    sidebarList.setListData(controller.getUsers());
+                    sidebarList.setListData(controller.getUsers().stream().map(EMSUser::getUsername).toArray());
                 } catch (IOException | ClassNotFoundException e1) {
                     sidebarList.setListData(new String[]{"No users found."});
                 }
@@ -943,9 +942,13 @@ public class EMSInterface {
             public void actionPerformed(ActionEvent e){
                 // Populate the list with admins
                 try {
-                    sidebarList.setListData(Arrays.stream(controller.getUsers()).filter(EMSUser::isAdmin).toArray());
-                } catch (IOException | ClassNotFoundException e1) {
+                    sidebarList.setListData(controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray());
+                } catch (IOException e1) {
                     sidebarList.setListData(new String[]{"No admin users found."});
+                } catch (ClassNotFoundException e1) {
+                    sidebarList.setListData(new String[]{"No admin users found."});
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
                 frame.revalidate();
                 frame.repaint();
@@ -995,7 +998,7 @@ public class EMSInterface {
                 }
                 System.out.println();
                 try {
-                    sidebarList.setListData(controller.getUsers());
+                    sidebarList.setListData(controller.getUsers().stream().map(EMSUser::getUsername).toArray());
                 } catch (IOException | ClassNotFoundException e1) {
                     sidebarList.setListData(new String []{"Couldn't show users."});
                 }
@@ -1099,7 +1102,7 @@ public class EMSInterface {
             public void actionPerformed(ActionEvent e){
                 // Populate the list with users
                 try {
-                    sidebarList.setListData(controller.getUsers());
+                    sidebarList.setListData(controller.getUsers().toArray());
                 } catch (IOException | ClassNotFoundException e1) {
                     sidebarList.setListData(new String[]{"No users found."});
                 }
@@ -1112,9 +1115,11 @@ public class EMSInterface {
             public void actionPerformed(ActionEvent e){
                 // Populate the list with admins
                 try {
-                    sidebarList.setListData(Arrays.stream(controller.getUsers()).filter(EMSUser::isAdmin).toArray());
+                    sidebarList.setListData(controller.getAdminUsers().toArray());
                 } catch (IOException | ClassNotFoundException e1) {
                     sidebarList.setListData(new String[]{"No admin users found."});
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
                 frame.revalidate();
                 frame.repaint();

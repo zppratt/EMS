@@ -18,8 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -79,7 +77,7 @@ public class EMSDatabaseTest {
         assertTrue("Fresh test database was not created after deletion.", mockFile.exists()); // Should succeed...
 
         // Is the default user present?
-        assertNotNull(database.lookupUser("admin"));
+        assertNotNull(database.lookupUser(""));
 
         assertNotNull(database);
         assertNotNull(database.getUsers());

@@ -129,6 +129,8 @@ public class EMSUser implements Serializable {
      * Prints the last, first name and username of a user
      */
     public String toString() {
-        return "\"" + this.getLastname() + ", " + this.getFirstname() + "\"";
+        return  ( this.username.equals("") ? "<no username>" : this.username )  + " : "
+                + ( this.lastname.equals("") ? "<no last name>" : this.lastname ) + ", "
+                + ( this.firstname.equals("") ? "<no last name>" : this.firstname );
     }
 }

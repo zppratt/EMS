@@ -6,8 +6,10 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * The main controller for the EMS system
@@ -123,16 +125,24 @@ public class EMSController {
      * Retrieves a list of all the users of the system
      * @return the list of users
      */
-    public EMSUser[] getUsers() throws IOException, ClassNotFoundException {
-        return (EMSUser[]) database.getUsers().values().toArray(new EMSUser[0]);
+    public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
+        return database.getUsers().values().stream().collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Retrieves a list of all the admin users of the system
+     * @return the list of users
+     */
+    public ArrayList<EMSUser> getAdminUsers() throws Exception {
+        return getUsers().stream().filter(user -> user.isAdmin()).collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
      * Retrieves a list of all the records in the system
      * @return the list of records
      */
-    public EmergencyRecord[] getRecords() throws IOException, ClassNotFoundException {
-        return (EmergencyRecord[]) database.getRecords().values().toArray(new EmergencyRecord[0]);
+    public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
+        return database.getRecords().values().stream().collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
