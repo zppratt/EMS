@@ -33,7 +33,14 @@ public class Metadata implements Serializable {
     private Category emergencyCategory;
 
     /**
-     * Default constructor for a Metadata object
+     * Constructor to specify a time
+     */
+    protected Metadata(Instant time) {
+        this.timeCreated = time;
+    }
+
+    /**
+     *  Default constructor for a Metadata object
      */
     public Metadata() {
         this.timeCreated = Instant.now();

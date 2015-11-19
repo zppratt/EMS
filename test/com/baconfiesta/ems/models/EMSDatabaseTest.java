@@ -119,10 +119,10 @@ public class EMSDatabaseTest {
         System.out.println("testAddEmergencyRecord");
 
         // Test that the records object gets updated in memory and database
-        assertTrue("New records object was not empty", database.getRecords().isEmpty());
+        assertTrue("testAddEmergencyRecord: New records object was not empty", database.getRecords().isEmpty());
         EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
         database.addEmergencyRecord(testRecord);
-        assertTrue("New record was not added.", database.getRecords().containsValue(testRecord));
+        assertTrue("testAddEmergencyRecord: New record was not added.", database.getRecords().containsValue(testRecord));
 
     }
 
@@ -135,10 +135,9 @@ public class EMSDatabaseTest {
         assertNull(database.getEmergencyRecord(Instant.EPOCH));
 
         // Now put one made at the EPOCH and try to get it... should succeed
-        Metadata m = new Metadata();
-        Whitebox.setInternalState(m, "timeCreated", Instant.EPOCH);
-        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().withMetadata(m).getNewEmergencyRecord());
-        assertNotNull(database.getEmergencyRecord(Instant.EPOCH));
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().withTime(Instant.EPOCH).getNewEmergencyRecord());
+        assertNotNull("testGetEmergencyRecord: Emergency record not retrieved.",
+                database.getEmergencyRecord(Instant.EPOCH));
     }
 
     @Test
@@ -185,12 +184,12 @@ public class EMSDatabaseTest {
         // Test a correct removal
         database.addUser("Frodo", "Baggins", "fbaggins", "password");
         database.removeUser("fbaggins");
-        assertFalse(database.getUsers().containsKey("fbaggins"));
+        assertFalse("testRemoveUser: User not successfully removed.", database.getUsers().containsKey("fbaggins"));
 
         // Test for a failed removal
         database.addUser("Frodo", "Baggins", "fbaggins", "password");
-        database.removeUser("fbaggin");
-        assertTrue(database.getUsers().containsKey("fbaggins"));
+        database.removeUser("fbaggin"); // Should fail
+        assertTrue("testRemoveUser: User removal succeeded but shouldn't have.", database.getUsers().containsKey("fbaggins"));
     }
 
     @Test

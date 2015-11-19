@@ -110,7 +110,7 @@ public class EMSDatabase {
         if (users == null) {
             users = getDatabaseUsers();
             if (users == null) { // if still null
-                System.out.println("Getting database failed.");
+                System.out.println("Creating new users object...");
                 users = new HashMap<>();
                 // Default user
                 EMSUser user = new EMSUser("Adminy", "Administrator", "", "", true);
@@ -334,6 +334,7 @@ public class EMSDatabase {
      */
     Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get records from database...");
+        Map<Instant, EmergencyRecord> tempRecords;
         if (!Files.exists(databasePath)) {
             return null;
         }
@@ -341,13 +342,15 @@ public class EMSDatabase {
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            records = (HashMap<Instant, EmergencyRecord>) is.readObject();
+            tempRecords = (HashMap<Instant, EmergencyRecord>) is.readObject();
+            // These lines check each element for
+            // validity by accessing them
             for (Instant k : records.keySet()) ;
             for (EmergencyRecord v : records.values()) ;
         } catch (Exception e) {
-            e.printStackTrace();
+            tempRecords = records;
         }
-        return records;
+        return tempRecords;
     }
 
     /**
@@ -359,6 +362,7 @@ public class EMSDatabase {
      */
     Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get users from database...");
+        Map<String, EMSUser> tempUsers;
         if (!Files.exists(databasePath)) {
             return null;
         }
@@ -366,13 +370,13 @@ public class EMSDatabase {
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            users = (HashMap<String, EMSUser>) is.readObject();
+            tempUsers = (HashMap<String, EMSUser>) is.readObject();
             for (String k : users.keySet()) ;
             for (EMSUser v : users.values()) ;
         } catch (Exception e) {
-            e.printStackTrace();
+            tempUsers = users;
         }
-        return users;
+        return tempUsers;
     }
 
     /**

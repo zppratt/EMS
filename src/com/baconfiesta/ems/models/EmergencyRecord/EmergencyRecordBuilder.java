@@ -1,6 +1,7 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 /**
  * An emergency record in the system
@@ -49,6 +50,11 @@ public class EmergencyRecordBuilder implements Serializable{
 
     public EmergencyRecordBuilder withMetadata(Metadata metadata) {
         this.metadata = metadata;
+        return this;
+    }
+
+    public EmergencyRecordBuilder withTime(Instant time) {
+        this.metadata = new Metadata(time);
         return this;
     }
 
