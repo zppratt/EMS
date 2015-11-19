@@ -65,7 +65,7 @@ public class EMSDatabaseTest {
      * Test the creation of a database object if no database file exists
      */
     @Test
-    public void testDatabaseNoFile() throws IOException, ClassNotFoundException {
+    public void testDatabaseNoFile() throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("testDatabaseNoFile");
 
         assertTrue("Test database was not created on setup.", mockFile.exists()); // Make sure the file exists
@@ -88,7 +88,7 @@ public class EMSDatabaseTest {
      * Test the creation of a database object if database file exists prior to creation
      */
     @Test
-    public void testDatabaseWithFile() throws IOException, ClassNotFoundException {
+    public void testDatabaseWithFile() throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("testDatabaseWithFile");
 
         // Basically just created another database object while the last one has already created the file

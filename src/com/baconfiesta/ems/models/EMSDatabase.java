@@ -4,9 +4,7 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,9 +15,14 @@ import java.util.Map;
 public class EMSDatabase {
 
     /**
+     * Default path for the database dir
+     */
+    private static final String databaseDirPath = "./db";
+
+    /**
      * Default path for the database
      */
-    private static final Path databasePath = Paths.get("./db/database.db");
+    private static final Path databasePath = Paths.get(databaseDirPath + "/database.db");
 
     /**
      * The file for the user database
@@ -43,6 +46,16 @@ public class EMSDatabase {
      * Whether the database is open or not
      */
     private boolean isOpen;
+
+    /**
+     * Updates the cache when data is written to the database file
+     */
+    private CacheUpdater cacheUpdater = new CacheUpdater();
+
+    /**
+     * Flag to signal shutdown of cache updater (watcher)
+     */
+    private volatile boolean running = true;
 
     /**
      * Default constructor for a database object
@@ -86,6 +99,8 @@ public class EMSDatabase {
      * Setup database file (check for existence, etc.)
      */
     private void setupDatabase(File file) throws IOException, ClassNotFoundException {
+        // Spin up a thread to watch for changes in the database and update the cache
+        cacheUpdater.start();
         // If no file is specified, use default path. Otherwise, set this object's file to the specified file.
         if (file != null) {
             database = file;
@@ -95,9 +110,22 @@ public class EMSDatabase {
         if (Files.notExists(database.toPath())) {
             Files.createFile(database.toPath());
         }
-        setupUserDatabase();
-        setupRecordDatabase();
+        setupUserCache();
+        setupRecordCache();
         isOpen = true;
+    }
+
+    /**
+     * Closes the the database and any other cleanup
+     *
+     * @throws IOException
+     */
+    public void closeDatabase() throws IOException, InterruptedException {
+        running = false;
+        cacheUpdater.join();
+        users = null;
+        records = null;
+        isOpen = false;
     }
 
     /**
@@ -106,7 +134,7 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void setupUserDatabase() throws IOException, ClassNotFoundException {
+    private void setupUserCache() throws IOException, ClassNotFoundException {
         if (users == null) {
             users = getDatabaseUsers();
             if (users == null) { // if still null
@@ -116,8 +144,6 @@ public class EMSDatabase {
                 EMSUser user = new EMSUser("Adminy", "Administrator", "", "", true);
                 users.put(user.getUsername(), user);
             }
-        } else {
-            reconcileDatabaseWithMemory(); // if there are users in memory already, compare to database
         }
     }
 
@@ -127,40 +153,13 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void setupRecordDatabase() throws IOException, ClassNotFoundException {
+    private void setupRecordCache() throws IOException, ClassNotFoundException {
         if (records == null) {
             records = getDatabaseRecords();
             if (records == null) {
                 records = new HashMap<>();
             }
-        } else {
-            reconcileDatabaseWithMemory(); // if there are records in memory already, compare to database
         }
-    }
-
-    /**
-     * Adds any new users or records to database from memory and vice versa, simply performs a union
-     *
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private void reconcileDatabaseWithMemory() throws IOException, ClassNotFoundException {
-
-        System.out.println("\nreconcileDatabaseWithMemory()------------");
-
-        // Get users and records from database
-        Map<String, EMSUser> databaseUsers = getDatabaseUsers();
-        Map<Instant, EmergencyRecord> databaseRecords = getDatabaseRecords();
-        if (databaseUsers != null) {
-            users.putAll(databaseUsers);
-            System.out.printf("users.putAll(databaseUsers%s);\n", databaseUsers);
-        }
-        if (databaseRecords != null) {
-            records.putAll(databaseRecords);
-            System.out.printf("users.putAll(databaseRecords%s);\n", databaseRecords);
-        }
-
-        System.out.println("-------------------------------------------\n");
     }
 
     /**
@@ -244,7 +243,6 @@ public class EMSDatabase {
         this.getUsers().put(username, user);
         users.put(user.getUsername(), user);
         writeObject(this.getUsers());
-        reconcileDatabaseWithMemory();
         return user;
     }
 
@@ -291,21 +289,9 @@ public class EMSDatabase {
         if (this.getUsers().containsKey(username)) {
             this.getUsers().remove(username);
             writeObject(users);
-            reconcileDatabaseWithMemory();
             return true;
         }
         return false;
-    }
-
-    /**
-     * Closes the streams to the database and any other cleanup
-     *
-     * @throws IOException
-     */
-    public void closeDatabase() throws IOException {
-        users = null;
-        records = null;
-        isOpen = false;
     }
 
     /**
@@ -316,7 +302,6 @@ public class EMSDatabase {
      * @throws ClassNotFoundException
      */
     public Map<Instant, EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
-        reconcileDatabaseWithMemory();
         return records;
     }
 
@@ -328,7 +313,6 @@ public class EMSDatabase {
      * @throws ClassNotFoundException
      */
     public Map<String, EMSUser> getUsers() throws IOException, ClassNotFoundException {
-        reconcileDatabaseWithMemory();
         return users;
     }
 
@@ -339,12 +323,9 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
+    synchronized Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get records from database...");
         Map<Instant, EmergencyRecord> tempRecords;
-        if (!Files.exists(databasePath)) {
-            return null;
-        }
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
@@ -367,12 +348,9 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
+    synchronized Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get users from database...");
         Map<String, EMSUser> tempUsers;
-        if (!Files.exists(databasePath)) {
-            return null;
-        }
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
@@ -393,6 +371,41 @@ public class EMSDatabase {
      */
     boolean isOpen() {
         return isOpen;
+    }
+
+    private class CacheUpdater extends Thread {
+
+        @Override
+        public void run() {
+            final Path path = Paths.get(databaseDirPath);
+            System.out.println(path);
+            try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
+                final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                while (running) {
+                    final WatchKey wk = watchService.take();
+                    for (WatchEvent<?> event : wk.pollEvents()) {
+                        //we only register "ENTRY_MODIFY" so the context is always a Path.
+                        final Path changed = (Path) event.context();
+                        System.out.println("\nUpdating cache...");
+                        getDatabaseRecords();
+                        getDatabaseUsers();
+                        System.out.println("User cache updated to: " + users);
+                        System.out.printf("Record cache updated to: %s\n", records);
+                    }
+                    // reset the key
+                    boolean valid = wk.reset();
+                    if (!valid) {
+                        System.out.println("Key has been unregistered");
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
