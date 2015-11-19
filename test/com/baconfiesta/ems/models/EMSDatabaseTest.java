@@ -92,10 +92,10 @@ public class EMSDatabaseTest {
         System.out.println("testDatabaseWithFile");
 
         // Basically just created another database object while the last one has already created the file
-        //assertThat("Test database was not created on setup.", mockFile.exists(), is(true)); // Make sure the file exists
+        assertTrue("Test database was not created on setup.", mockFile.exists()); // Make sure the file exists
         database.closeDatabase(); // Open access to the test database file by closing the database object
         database = new EMSDatabase(mockFile); // Try to create a new database
-        //assertThat("Fresh test database was not created after deletion.", mockFile.exists(), is(true)); // Should succeed...
+        assertTrue("Fresh test database was not created after deletion.", mockFile.exists()); // Should succeed...
         assertNotNull(database);
         assertNotNull(database.getUsers());
         assertNotNull(database.getRecords());

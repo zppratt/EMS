@@ -4,6 +4,7 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -16,34 +17,14 @@ import java.util.Map;
 public class EMSDatabase {
 
     /**
-     * Path for the database
+     * Default path for the database
      */
-    private static final Path databasePath = Paths.get("db/database.db");
+    private static final Path databasePath = Paths.get("./db/database.db");
 
     /**
      * The file for the user database
      */
-    private static final File database = databasePath.toFile();
-
-    /**
-     * Output stream for storing the users and records
-     */
-    private ObjectOutputStream outputStream;
-
-    /**
-     * Input stream for receiving the users and records
-     */
-    private ObjectInputStream inputStream;
-
-    /**
-     * File output stream for the database
-     */
-    private FileOutputStream fileOutputStream;
-
-    /**
-     * File input stream for the database
-     */
-    private FileInputStream fileInputStream;
+    private File database;
 
     /**
      * List of users
@@ -65,15 +46,17 @@ public class EMSDatabase {
 
     /**
      * Default constructor for a database object
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
     public EMSDatabase() throws IOException, ClassNotFoundException {
-        this(database);
+        this(null);
     }
 
     /**
      * Constructor for a database object specifying a database location
+     *
      * @param file the database file
      * @throws IOException
      * @throws ClassNotFoundException
@@ -84,73 +67,49 @@ public class EMSDatabase {
 
     /**
      * Create a database, specifying the file, users, and records (for restoration of data)
-     * @param file if null, default path is used for the database
-     * @param users the users
+     *
+     * @param file    if null, default path is used for the database
+     * @param users   the users
      * @param records the records
      * @throws IOException
      * @throws ClassNotFoundException
      */
     public EMSDatabase(File file, HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records)
             throws IOException, ClassNotFoundException {
-        System.out.println("Database constructor. File : " + database);
+        System.out.println("Database constructor. File : " + file);
         this.users = users;
         this.records = records;
-        // Check if the streams for the database reading and writing have been created. If not, create them.
-        setupStreams(file);
-        // Check if the user and records are initialized in memory
+        setupDatabase(file);
+    }
+
+    /**
+     * Setup database file (check for existence, etc.)
+     */
+    private void setupDatabase(File file) throws IOException, ClassNotFoundException {
+        // If no file is specified, use default path. Otherwise, set this object's file to the specified file.
+        if (file != null) {
+            database = file;
+        } else {
+            database = databasePath.toFile();
+        }
+        if (Files.notExists(database.toPath())) {
+            Files.createFile(database.toPath());
+        }
         setupUserDatabase();
         setupRecordDatabase();
         isOpen = true;
     }
 
     /**
-     * Check input and output streams for setup
-     * @param file the file to check as a database
-     * @throws IOException
-     */
-    private void setupStreams(File file) throws IOException {
-        if (file==null) {
-            file = database;
-        }
-        closeStreams();
-        File directory = new File("db");
-        if (!(directory.isDirectory())) {
-            directory.mkdir();
-        }
-        fileOutputStream = new FileOutputStream(file);
-        outputStream = new ObjectOutputStream(fileOutputStream);
-        fileInputStream = new FileInputStream(database);
-        inputStream = new ObjectInputStream(fileInputStream);
-    }
-
-    /**
-     * Closes all streams
-     * @throws IOException
-     */
-    private void closeStreams() throws IOException {
-        if (fileInputStream!=null) {
-            fileInputStream.close();
-        }
-        if (fileOutputStream!=null) {
-            fileOutputStream.close();
-        }
-        if (inputStream!=null) {
-            inputStream.close();
-        }
-        if (outputStream!=null) {
-            outputStream.close();
-        }
-    }
-
-    /**
      * Setup the memory space for the user
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
     private void setupUserDatabase() throws IOException, ClassNotFoundException {
         if (users == null) {
             users = getDatabaseUsers();
-            if (users==null) {
+            if (users == null) { // if still null
                 System.out.println("Getting database failed.");
                 users = new HashMap<>();
                 // Default user
@@ -164,13 +123,14 @@ public class EMSDatabase {
 
     /**
      * Setup the memory space for the records
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
     private void setupRecordDatabase() throws IOException, ClassNotFoundException {
         if (records == null) {
             records = getDatabaseRecords();
-            if (records==null) {
+            if (records == null) {
                 records = new HashMap<>();
             }
         } else {
@@ -180,6 +140,7 @@ public class EMSDatabase {
 
     /**
      * Adds any new users or records to database from memory and vice versa, simply performs a union
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -197,6 +158,7 @@ public class EMSDatabase {
 
     /**
      * Checks a user's credentials match in the database
+     *
      * @param username the user id
      * @param password the password
      * @return the user on succcess, null on failure
@@ -214,6 +176,7 @@ public class EMSDatabase {
 
     /**
      * Adds an emergency record to the database
+     *
      * @param record the record to add
      * @throws IOException
      * @throws ClassNotFoundException
@@ -227,22 +190,25 @@ public class EMSDatabase {
 
     /**
      * Writes an object out to the database file
+     *
      * @param object the object to write out
      * @throws IOException
      */
     private void writeObject(Object object) throws IOException {
-        try {
-            outputStream.writeObject(object);
-        } catch (Exception e) {
-            e.printStackTrace();
+        try (
+                FileOutputStream fos = new FileOutputStream(database, true);
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+        ) {
+            oos.writeObject(object);
+            System.out.println("Writing: " + object + " to the database file.");
+            oos.flush();
+            fos.flush();
         }
-        System.out.println("Writing: " + object + " to the database file.");
-        outputStream.flush();
-        fileOutputStream.flush();
     }
 
     /**
      * Retrieves an emergency record from the database
+     *
      * @param time the time the record was created
      * @return the record
      */
@@ -255,10 +221,11 @@ public class EMSDatabase {
 
     /**
      * Create a user and add them to the database
+     *
      * @param firstname the first name
-     * @param lastname the last name
-     * @param username the username
-     * @param password the password
+     * @param lastname  the last name
+     * @param username  the username
+     * @param password  the password
      * @return the user on success, null on failure
      * @throws IOException
      * @throws ClassNotFoundException
@@ -276,6 +243,7 @@ public class EMSDatabase {
 
     /**
      * Lookup a user by username
+     *
      * @param username the username
      * @return the user on success, null on failure
      * @throws IOException
@@ -291,6 +259,7 @@ public class EMSDatabase {
 
     /**
      * Retrieve an emergency record by the time it was created
+     *
      * @param time the creation time
      * @return the emergency record on success, null on failure
      * @throws IOException
@@ -306,6 +275,7 @@ public class EMSDatabase {
 
     /**
      * Remove a user from the database by username
+     *
      * @param username the username of the user to remove
      * @return true on success, false on failure
      */
@@ -322,10 +292,10 @@ public class EMSDatabase {
 
     /**
      * Closes the streams to the database and any other cleanup
+     *
      * @throws IOException
      */
     public void closeDatabase() throws IOException {
-        closeStreams();
         users = null;
         records = null;
         isOpen = false;
@@ -333,6 +303,7 @@ public class EMSDatabase {
 
     /**
      * Retrieve the list of emergency records in the database
+     *
      * @return the list of records
      * @throws IOException
      * @throws ClassNotFoundException
@@ -344,6 +315,7 @@ public class EMSDatabase {
 
     /**
      * Retrieve the list of users in the database
+     *
      * @return the list of user
      * @throws IOException
      * @throws ClassNotFoundException
@@ -355,44 +327,57 @@ public class EMSDatabase {
 
     /**
      * Attempt to retrieve records from database
+     *
      * @return the records on success, null on failure
      * @throws IOException
      * @throws ClassNotFoundException
      */
     Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get records from database...");
-        try {
-            @SuppressWarnings("unchecked")
-            HashMap<Instant, EmergencyRecord> records = (HashMap<Instant, EmergencyRecord>) inputStream.readObject();
-            for (Instant  k : records.keySet());
-            for (EmergencyRecord v : records.values());
-        } catch (IOException e) {
-//            System.out.println("Database file is empty.");
+        if (!Files.exists(databasePath)) {
+            return null;
+        }
+        try (
+                FileInputStream fis = new FileInputStream(database);
+                ObjectInputStream is = new ObjectInputStream(fis)
+        ) {
+            records = (HashMap<Instant, EmergencyRecord>) is.readObject();
+            for (Instant k : records.keySet()) ;
+            for (EmergencyRecord v : records.values()) ;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return records;
     }
 
     /**
      * Attempt to retrieve users from database
+     *
      * @return the users on success, null on failure
      * @throws IOException
      * @throws ClassNotFoundException
      */
     Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
 //        System.out.println("Try to get users from database...");
-        try {
-            @SuppressWarnings("unchecked")
-            HashMap<String, EMSUser> users = (HashMap<String, EMSUser>) inputStream.readObject();
-            for (String k : users.keySet());
-            for (EMSUser v : users.values());
-        } catch (IOException e) {
-            System.out.println("Database file is empty.");
+        if (!Files.exists(databasePath)) {
+            return null;
+        }
+        try (
+                FileInputStream fis = new FileInputStream(database);
+                ObjectInputStream is = new ObjectInputStream(fis)
+        ) {
+            users = (HashMap<String, EMSUser>) is.readObject();
+            for (String k : users.keySet()) ;
+            for (EMSUser v : users.values()) ;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return users;
     }
 
     /**
      * Returns whether the database is open
+     *
      * @return true if open, false if closed
      */
     boolean isOpen() {
