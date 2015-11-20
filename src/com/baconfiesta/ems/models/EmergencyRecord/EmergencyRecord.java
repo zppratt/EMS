@@ -176,4 +176,9 @@ public class EmergencyRecord implements Serializable{
     protected void setMetadata(Metadata metadata) {
         this.metadata = metadata;
     }
+
+    public String toString() {
+        return String.format("EmergencyRecord:%d", this.hashCode());
+    }
+
 }

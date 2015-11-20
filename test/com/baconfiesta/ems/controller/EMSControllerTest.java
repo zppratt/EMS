@@ -49,8 +49,8 @@ public class EMSControllerTest {
         assertNotNull(database);
         database.closeDatabase();
         Files.delete(mockFilePath);
-        assertNull(database.getUsers());
-        assertNull(database.getRecords());
+        assertNull(database.getCachedUsers());
+        assertNull(database.getCachedRecords());
     }
 
     @Test

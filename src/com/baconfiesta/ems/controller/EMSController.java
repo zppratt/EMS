@@ -126,7 +126,7 @@ public class EMSController {
      * @return the list of users
      */
     public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
-        return database.getUsers().values().stream().collect(Collectors.toCollection(ArrayList::new));
+        return database.getCachedUsers().values().stream().collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -142,7 +142,7 @@ public class EMSController {
      * @return the list of records
      */
     public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
-        return database.getRecords().values().stream().collect(Collectors.toCollection(ArrayList::new));
+        return database.getCachedRecords().values().stream().collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -151,8 +151,8 @@ public class EMSController {
      */
     public void backupData(File file) throws IOException, ClassNotFoundException {
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-        oos.writeObject(database.getUsers());
-        oos.writeObject(database.getRecords());
+        oos.writeObject(database.getCachedUsers());
+        oos.writeObject(database.getCachedRecords());
     }
 
     /**

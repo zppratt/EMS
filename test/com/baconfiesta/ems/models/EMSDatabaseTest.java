@@ -46,8 +46,8 @@ public class EMSDatabaseTest {
     public void setUp() throws Exception {
         database = new EMSDatabase(mockFile);
         assertNotNull(database);
-        assertNotNull(database.getUsers());
-        assertNotNull(database.getRecords());
+        assertNotNull(database.getCachedUsers());
+        assertNotNull(database.getCachedRecords());
         assertTrue(database.isOpen());
     }
 
@@ -56,8 +56,8 @@ public class EMSDatabaseTest {
         assertNotNull(database);
         database.closeDatabase();
         Files.delete(mockDatabaseLocation);
-        assertNull(database.getUsers());
-        assertNull(database.getRecords());
+        assertNull(database.getCachedUsers());
+        assertNull(database.getCachedRecords());
         assertFalse(database.isOpen());
     }
 
@@ -80,8 +80,8 @@ public class EMSDatabaseTest {
         assertNotNull(database.lookupUser(""));
 
         assertNotNull(database);
-        assertNotNull(database.getUsers());
-        assertNotNull(database.getRecords());
+        assertNotNull(database.getCachedUsers());
+        assertNotNull(database.getCachedRecords());
     }
 
     /**
@@ -97,8 +97,8 @@ public class EMSDatabaseTest {
         database = new EMSDatabase(mockFile); // Try to create a new database
         assertTrue("Fresh test database was not created after deletion.", mockFile.exists()); // Should succeed...
         assertNotNull(database);
-        assertNotNull(database.getUsers());
-        assertNotNull(database.getRecords());
+        assertNotNull(database.getCachedUsers());
+        assertNotNull(database.getCachedRecords());
     }
 
     @Test
@@ -119,10 +119,10 @@ public class EMSDatabaseTest {
         System.out.println("testAddEmergencyRecord");
 
         // Test that the records object gets updated in memory and database
-        assertTrue("testAddEmergencyRecord: New records object was not empty", database.getRecords().isEmpty());
+        assertTrue("testAddEmergencyRecord: New records object was not empty", database.getCachedRecords().isEmpty());
         EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder().withTime(Instant.EPOCH).getNewEmergencyRecord();
         database.addEmergencyRecord(testRecord);
-        assertTrue("testAddEmergencyRecord: New record was not added.", database.getRecords().containsKey(Instant.EPOCH));
+        assertTrue("testAddEmergencyRecord: New record was not added.", database.getCachedRecords().containsKey(Instant.EPOCH));
 
     }
 
@@ -145,8 +145,8 @@ public class EMSDatabaseTest {
         System.out.println("testAddUser");
 
         assertNotNull("Failure adding user to the database.", database.addUser("Bob", "Builder", "bbuilder", "password"));
-        assertNotNull("Database memory contained no users: users memory object was null", database.getUsers());
-        assertTrue("User was not successfully added.", database.getUsers().containsKey("bbuilder"));
+        assertNotNull("Database memory contained no users: users memory object was null", database.getCachedUsers());
+        assertTrue("User was not successfully added.", database.getCachedUsers().containsKey("bbuilder"));
         assertNotNull("Database contained no users: database users object was null.", database.getDatabaseUsers());
         assertTrue("User was not successfully added to the database.", database.getDatabaseUsers().containsKey("bbuilder"));
     }
@@ -184,26 +184,26 @@ public class EMSDatabaseTest {
         // Test a correct removal
         database.addUser("Frodo", "Baggins", "fbaggins", "password");
         database.removeUser("fbaggins");
-        assertFalse("testRemoveUser: User not successfully removed.", database.getUsers().containsKey("fbaggins"));
+        assertFalse("testRemoveUser: User not successfully removed.", database.getCachedUsers().containsKey("fbaggins"));
 
         // Test for a failed removal
         database.addUser("Frodo", "Baggins", "fbaggins", "password");
         database.removeUser("fbaggin"); // Should fail
-        assertTrue("testRemoveUser: User removal succeeded but shouldn't have.", database.getUsers().containsKey("fbaggins"));
+        assertTrue("testRemoveUser: User removal succeeded but shouldn't have.", database.getCachedUsers().containsKey("fbaggins"));
     }
 
     @Test
     public void testGetRecords() throws Exception {
         System.out.println("testGetRecords");
 
-        assertNotNull(database.getRecords());
+        assertNotNull(database.getCachedRecords());
     }
 
     @Test
     public void testGetUsers() throws Exception {
         System.out.println("testGetUsers");
 
-        assertNotNull(database.getUsers());
+        assertNotNull(database.getCachedUsers());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class EMSDatabaseTest {
         database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
         database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
         // Are there records?
-        assertNotNull(database.getRecords());
+        assertNotNull(database.getCachedRecords());
     }
 
     @Test
@@ -227,12 +227,12 @@ public class EMSDatabaseTest {
         database.addUser("Trump","Donald","dtrump","dtrump");
         database.addUser("Clinton","Hilary","hclinton","hclinton");
         // Are there users?
-        assertNotNull("No users are in memory", database.getUsers());
+        assertNotNull("No users are in memory", database.getCachedUsers());
         assertNotNull("No users are in the database.", database.getDatabaseUsers());
 
         // Debugging...
 //        System.out.println("\nDatabase file: " +database.getDatabaseUsers().values());
-//        System.out.println("In memory: " + database.getUsers().values());
+//        System.out.println("In memory: " + database.getCachedUsers().values());
 
     }
 }

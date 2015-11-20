@@ -48,16 +48,6 @@ public class EMSDatabase {
     private boolean isOpen;
 
     /**
-     * Updates the cache when data is written to the database file
-     */
-    private CacheUpdater cacheUpdater = new CacheUpdater();
-
-    /**
-     * Flag to signal shutdown of cache updater (watcher)
-     */
-    private volatile boolean running = true;
-
-    /**
      * Default constructor for a database object
      *
      * @throws IOException
@@ -99,8 +89,6 @@ public class EMSDatabase {
      * Setup database file (check for existence, etc.)
      */
     private void setupDatabase(File file) throws IOException, ClassNotFoundException {
-        // Spin up a thread to watch for changes in the database and update the cache
-        cacheUpdater.start();
         // If no file is specified, use default path. Otherwise, set this object's file to the specified file.
         if (file != null) {
             database = file;
@@ -121,8 +109,11 @@ public class EMSDatabase {
      * @throws IOException
      */
     public void closeDatabase() throws IOException, InterruptedException {
-        running = false;
-        cacheUpdater.join();
+
+        System.out.println("\nCache contents in the end were:");
+        System.out.printf("Users: %s\n", users);
+        System.out.printf("Records: %s\n", records);
+
         users = null;
         records = null;
         isOpen = false;
@@ -138,10 +129,10 @@ public class EMSDatabase {
         if (users == null) {
             users = getDatabaseUsers();
             if (users == null) { // if still null
-                System.out.println("Creating new users object...");
+                System.out.println("Creating new user cache...");
                 users = new HashMap<>();
                 // Default user
-                EMSUser user = new EMSUser("Adminy", "Administrator", "", "", true);
+                EMSUser user = new EMSUser("Default", "", "", "", true);
                 users.put(user.getUsername(), user);
             }
         }
@@ -157,6 +148,7 @@ public class EMSDatabase {
         if (records == null) {
             records = getDatabaseRecords();
             if (records == null) {
+                System.out.println("Creating new record cache...");
                 records = new HashMap<>();
             }
         }
@@ -173,8 +165,8 @@ public class EMSDatabase {
      */
     public EMSUser verifyUser(String username, String password) throws IOException, ClassNotFoundException {
         // If the user is in the database, check the password
-        if (this.getUsers().containsKey(username)) {
-            EMSUser userToCheck = this.getUsers().get(username);
+        if (this.getCachedUsers().containsKey(username)) {
+            EMSUser userToCheck = this.getCachedUsers().get(username);
             return userToCheck.checkPassword(password) ? userToCheck : null;
         }
         return null;
@@ -188,9 +180,9 @@ public class EMSDatabase {
      * @throws ClassNotFoundException
      */
     public void addEmergencyRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
-        if (!this.getRecords().containsValue(record)) {
-            this.getRecords().put(record.getMetadata().getTimeCreated(), record);
-            writeObject(this.getRecords());
+        if (!this.getCachedRecords().containsValue(record)) {
+            this.getCachedRecords().put(record.getMetadata().getTimeCreated(), record);
+            writeObject(this.getCachedRecords());
         }
     }
 
@@ -219,8 +211,8 @@ public class EMSDatabase {
      * @return the record
      */
     public EmergencyRecord getEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
-        if (this.getRecords().containsKey(time)) {
-            return this.getRecords().get(time);
+        if (this.getCachedRecords().containsKey(time)) {
+            return this.getCachedRecords().get(time);
         }
         return null;
     }
@@ -240,9 +232,9 @@ public class EMSDatabase {
         // Create a user object
         EMSUser user = new EMSUser(firstname, lastname, username, password, false);
         // Add it to the database
-        this.getUsers().put(username, user);
+        this.getCachedUsers().put(username, user);
         users.put(user.getUsername(), user);
-        writeObject(this.getUsers());
+        writeObject(this.getCachedUsers());
         return user;
     }
 
@@ -256,8 +248,8 @@ public class EMSDatabase {
      */
     public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
         // Return the user if it exists
-        if (this.getUsers().containsKey(username)) {
-            return this.getUsers().get(username);
+        if (this.getCachedUsers().containsKey(username)) {
+            return this.getCachedUsers().get(username);
         }
         return null;
     }
@@ -272,8 +264,8 @@ public class EMSDatabase {
      */
     public EmergencyRecord lookupEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
         // Return the record for this time if it exists
-        if (this.getRecords().containsKey(time)) {
-            return this.getRecords().get(time);
+        if (this.getCachedRecords().containsKey(time)) {
+            return this.getCachedRecords().get(time);
         }
         return null;
     }
@@ -286,8 +278,8 @@ public class EMSDatabase {
      */
     public boolean removeUser(String username) throws IOException, ClassNotFoundException {
         // Remove a user from the list
-        if (this.getUsers().containsKey(username)) {
-            this.getUsers().remove(username);
+        if (this.getCachedUsers().containsKey(username)) {
+            this.getCachedUsers().remove(username);
             writeObject(users);
             return true;
         }
@@ -301,7 +293,7 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public Map<Instant, EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
+    public Map<Instant, EmergencyRecord> getCachedRecords() throws IOException, ClassNotFoundException {
         return records;
     }
 
@@ -312,7 +304,7 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public Map<String, EMSUser> getUsers() throws IOException, ClassNotFoundException {
+    public Map<String, EMSUser> getCachedUsers() throws IOException, ClassNotFoundException {
         return users;
     }
 
@@ -333,8 +325,8 @@ public class EMSDatabase {
             tempRecords = (HashMap<Instant, EmergencyRecord>) is.readObject();
             // These lines check each element for
             // validity by accessing them
-            for (Instant k : records.keySet()) ;
-            for (EmergencyRecord v : records.values()) ;
+            for (Instant k : tempRecords.keySet()) ;
+            for (EmergencyRecord v : tempRecords.values()) ;
         } catch (Exception e) {
             tempRecords = records;
         }
@@ -356,8 +348,8 @@ public class EMSDatabase {
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
             tempUsers = (HashMap<String, EMSUser>) is.readObject();
-            for (String k : users.keySet()) ;
-            for (EMSUser v : users.values()) ;
+            for (String k : tempUsers.keySet()) ;
+            for (EMSUser v : tempUsers.values()) ;
         } catch (Exception e) {
             tempUsers = users;
         }
@@ -371,41 +363,6 @@ public class EMSDatabase {
      */
     boolean isOpen() {
         return isOpen;
-    }
-
-    private class CacheUpdater extends Thread {
-
-        @Override
-        public void run() {
-            final Path path = Paths.get(databaseDirPath);
-            System.out.println(path);
-            try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
-                final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-                while (running) {
-                    final WatchKey wk = watchService.take();
-                    for (WatchEvent<?> event : wk.pollEvents()) {
-                        //we only register "ENTRY_MODIFY" so the context is always a Path.
-                        final Path changed = (Path) event.context();
-                        System.out.println("\nUpdating cache...");
-                        getDatabaseRecords();
-                        getDatabaseUsers();
-                        System.out.println("User cache updated to: " + users);
-                        System.out.printf("Record cache updated to: %s\n", records);
-                    }
-                    // reset the key
-                    boolean valid = wk.reset();
-                    if (!valid) {
-                        System.out.println("Key has been unregistered");
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 }
