@@ -53,7 +53,7 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public EMSDatabase() throws IOException, ClassNotFoundException {
+    public EMSDatabase() throws IOException, ClassNotFoundException, InterruptedException {
         this(null);
     }
 
@@ -64,7 +64,7 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public EMSDatabase(File file) throws IOException, ClassNotFoundException {
+    public EMSDatabase(File file) throws IOException, ClassNotFoundException, InterruptedException {
         this(file, null, null);
     }
 
@@ -78,13 +78,14 @@ public class EMSDatabase {
      * @throws ClassNotFoundException
      */
     public EMSDatabase(File file, HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException, InterruptedException {
         if (isOpen()) {
             return;
         }
-        System.out.println("Database constructor. File : " + file);
-        this.users = users;
-        this.records = records;
+        closeDatabase();
+        System.out.printf("EMSDatabase('%s', '%s')\n\n", file, records);
+
+
         setupDatabase(file);
     }
 
@@ -113,9 +114,9 @@ public class EMSDatabase {
      */
     public void closeDatabase() throws IOException, InterruptedException {
 
-        System.out.println("\nCache contents in the end were:");
+        System.out.println("\ncloseDatabase(): Cache contents in the end were:");
         System.out.printf("Users: %s\n", users);
-        System.out.printf("Records: %s\n", records);
+        System.out.printf("Records: %s\n\n", records);
 
         users = null;
         records = null;
@@ -308,6 +309,48 @@ public class EMSDatabase {
      */
     public Map<String, EMSUser> getCachedUsers() throws IOException, ClassNotFoundException {
         return users;
+    }
+
+    /**
+     * Retrieve the list of emergency records in the database
+     *
+     * @return the list of records
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    void setCachedRecords(Map<Instant, EmergencyRecord> records) throws IOException, ClassNotFoundException {
+        // Should only happen on startup
+        if (records == null) {
+            records = getDatabaseRecords();
+            if (records == null) {
+                System.out.println("Creating new record cache...");
+                this.records = new HashMap<>();
+            }
+        } else {
+            this.records = records;
+        }
+    }
+
+    /**
+     * Retrieve the list of users in the database
+     *
+     * @return the list of user
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+   void setCachedUsers(Map<String, EMSUser> users) throws IOException, ClassNotFoundException {
+       // Should only happen on startup
+       if (users == null) {
+           users = getDatabaseUsers();
+           if (users == null) { // if still null
+               System.out.println("Creating new user cache...");
+               this.users = new HashMap<>();
+               // Default user
+               addUser("Default", "", "", "");
+           }
+       } else {
+           this.users = users;
+       }
     }
 
     /**

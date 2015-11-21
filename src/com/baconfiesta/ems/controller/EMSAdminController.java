@@ -17,7 +17,7 @@ public class EMSAdminController extends EMSController {
      * @param user the user to use the controller
      * @param database the database
      */
-    public EMSAdminController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException {
+    public EMSAdminController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException, InterruptedException {
         super(user, database);
     }
 

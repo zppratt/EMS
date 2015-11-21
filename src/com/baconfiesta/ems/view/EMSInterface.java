@@ -331,15 +331,15 @@ public class EMSInterface {
                     for (int i = 0; i < password.length; i++) {
                         password[i] = ' ';
                     }
-                } catch (ClassNotFoundException e) {
-                    JOptionPane.showMessageDialog(frame, "Couldn't find user.");
-                    return;
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(frame, "Trouble reading user dictionary.");
-                    return;
                 } catch (NullPointerException e) {
                     JOptionPane.showMessageDialog(frame, "Sorry, but we could not log you in at this time. Try again " +
                             "in 15 minutes.");
+                    return;
+                } catch (ClassNotFoundException e) {
+                    JOptionPane.showMessageDialog(frame, "Couldn't find user.");
+                    return;
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(frame, "Trouble reading user dictionary.");
                     return;
                 }
 
@@ -349,7 +349,7 @@ public class EMSInterface {
                     // If an administrator user then use adminActions()
                     try {
                         controller = new EMSAdminController(user, null);
-                    } catch (IOException | ClassNotFoundException e) {
+                    } catch (Exception e) {
                         userActions();
                         return;
                     }

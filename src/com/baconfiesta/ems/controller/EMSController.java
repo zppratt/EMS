@@ -30,7 +30,7 @@ public class EMSController {
     /**
      * Default constructor for a user controller
      */
-    public EMSController() throws IOException, ClassNotFoundException {
+    public EMSController() throws IOException, ClassNotFoundException, InterruptedException {
         this(null, null);
     }
 
@@ -41,7 +41,7 @@ public class EMSController {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public EMSController(EMSUser user, EMSDatabase db) throws IOException, ClassNotFoundException {
+    public EMSController(EMSUser user, EMSDatabase db) throws IOException, ClassNotFoundException, InterruptedException {
 
         // If database already exists, do not create a new one unless db parameter contains a different one
         if (db != null) {
@@ -160,13 +160,13 @@ public class EMSController {
      * Restores emergency data from a backup file
      * @param file the file to restore from
      */
-    public void restoreData(File file) {
+    public void restoreData(File file) throws InterruptedException, IOException, ClassNotFoundException {
         try (
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
         ) {
             _database = new EMSDatabase(null, (HashMap<String, EMSUser>) ois.readObject(), (HashMap<Instant, EmergencyRecord>) ois.readObject());
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw e;
         }
     }
 

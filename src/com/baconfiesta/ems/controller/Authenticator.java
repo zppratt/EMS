@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Authenticator extends EMSController {
 
-    public Authenticator() throws IOException, ClassNotFoundException {
+    public Authenticator() throws Exception {
     }
 
     public static EMSUser authenticate(String username, char[] password) throws
@@ -14,7 +14,7 @@ public class Authenticator extends EMSController {
         return authenticateUser(username, password);
     }
 
-    public static void init() throws IOException, ClassNotFoundException {
+    public static void init() throws IOException, ClassNotFoundException, InterruptedException {
         new EMSController();
     }
 

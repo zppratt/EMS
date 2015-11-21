@@ -128,6 +128,7 @@ public class EMSDatabaseTest {
 
         // Test persistence across instances
         database.closeDatabase();
+        Files.exists(mockDatabaseLocation);
         database = new EMSDatabase();
         assertTrue("testAddEmergencyRecord: New record was not persistent.", database.getCachedRecords().containsKey(Instant.EPOCH));
         assertTrue("testAddEmergencyRecord: New record was not persistent.", database.getDatabaseRecords().containsKey(Instant.EPOCH));
