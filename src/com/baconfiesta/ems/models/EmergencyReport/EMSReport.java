@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 /**
  * A report generator class in the system to create different kind of reports
  * */
-public class Report {
+public class EMSReport {
     private final String recordTemplateFilename = "template_Record.xls";
     private final String globalTemplateFilename = "template_Stats.xls";
 
@@ -130,18 +130,18 @@ public class Report {
          /* Emergency Case Time Created */
         row = sheet1.getRow(18);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toString()) // NEEDS TO BE TRANSFORMED TO STRING
+        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toString()); // NEEDS TO BE TRANSFORMED TO STRING
 
          /* Emergency Case Number of Modifications */
         row = sheet1.getRow(18);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getModifications().size())
+        cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
 
 
         /* MODIFICATION ENDS HERE */
 
          /* Create an output stream */
-        FileOutputStream out = null;
+        FileOutputStream out;
         try {
             out = new FileOutputStream(filename);
         } catch(Exception e) {

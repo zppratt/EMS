@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
 
+
+
 /**
  * Contains information about an emergency record
  * @author team_bacon_fiesta
