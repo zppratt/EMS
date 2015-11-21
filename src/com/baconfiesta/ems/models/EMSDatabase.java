@@ -96,14 +96,15 @@ public class EMSDatabase {
             users = getDatabaseUsers();
             if (users == null) {
                 System.out.println("Creating new record cache...");
-                this.users = new HashMap<>();
+                users = new HashMap<>();
+                users.put("", new EMSUser("Default","","","", true));
             }
         }
         if (records == null) {
             records = getDatabaseRecords();
             if (records == null) {
                 System.out.println("Creating new record cache...");
-                this.records = new HashMap<>();
+                records = new HashMap<>();
             }
         }
     }
@@ -112,6 +113,9 @@ public class EMSDatabase {
      * Setup database file (check for existence, etc.)
      */
     private void setupDatabase(File file) throws IOException, ClassNotFoundException {
+        if (!Files.isDirectory(Paths.get(databaseDirPath))) {
+            Files.createDirectory(Paths.get(databaseDirPath));
+        }
         // If no file is specified, use default path. Otherwise, set this object's file to the specified file.
         if (file != null) {
             database = file;
