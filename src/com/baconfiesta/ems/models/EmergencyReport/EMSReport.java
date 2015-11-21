@@ -1,10 +1,11 @@
 package com.baconfiesta.ems.models.EmergencyReport;
 
-import ...
+import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.*;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
