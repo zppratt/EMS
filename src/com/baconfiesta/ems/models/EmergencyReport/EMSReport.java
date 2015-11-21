@@ -13,8 +13,8 @@ import java.io.FileOutputStream;
  * A report generator class in the system to create different kind of reports
  * */
 public class Report {
-    private final String recordTemplateFilename = "Template_Record.xls";
-    private final String globalTemplateFilename = "Template_Stats.xls";
+    private final String recordTemplateFilename = "template_Record.xls";
+    private final String globalTemplateFilename = "template_Stats.xls";
 
     public File generateRecordReport(EmergencyRecord emergencyRecord, String filename) {
 
@@ -53,13 +53,85 @@ public class Report {
         /* MODIFICATION STARTS HERE */
         /* Get the sheet */
         Sheet sheet1 = wb.getSheet("Details");
-        /* get a row */
-        Row row = sheet1.getRow(0);
-        /* get a cell */
-        org.apache.poi.ss.usermodel.Cell cell = row.getCell(0);
 
-        /* modify value of this cell */
-        cell.setCellValue("Test1");
+        Row row;
+        org.apache.poi.ss.usermodel.Cell cell;
+
+        /* Caller firstname */
+        row = sheet1.getRow(3);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getCaller().getFirstName());
+
+        /* Caller lastname */
+        row = sheet1.getRow(4);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getCaller().getLastName());
+
+        /* Caller Phone number */
+        row = sheet1.getRow(5);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getCaller().getPhone());
+
+        /* Emergency Address */
+        row = sheet1.getRow(7);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getLocation().getAddress());
+
+        /* Emergency Address */
+        row = sheet1.getRow(8);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getLocation().getZip());
+
+        /* Emergency State */
+        row = sheet1.getRow(9);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getLocation().getState());
+
+        /* Emergency Category */
+        row = sheet1.getRow(9);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getCategory()); // NEEDS TO BE TRANSFORMED IN STRING
+
+        /* Emergency Response Time */
+        row = sheet1.getRow(10);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord); // DON'T KNOW WHERE THE RESPONSE TIME IS LOCATED
+
+        /* Responder Address */
+        row = sheet1.getRow(12);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getResponder().getAddress());
+
+        /* Responder ZIP */
+        row = sheet1.getRow(13);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getResponder().getZip());
+
+        /* Responder State */
+        row = sheet1.getRow(14);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getResponder().getState());
+
+        /* Route Chosen */
+        row = sheet1.getRow(16);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getRoute().getAlternateRouteSelectedString());
+
+        /* Emergency Case Created By */
+        row = sheet1.getRow(18);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy()); // NEEDS TO BE TRANSFORMED TO STRING
+
+         /* Emergency Case Time Created */
+        row = sheet1.getRow(18);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated()) // NEEDS TO BE TRANSFORMED TO STRING
+
+         /* Emergency Case Number of Modifications */
+        row = sheet1.getRow(18);
+        cell.getCell(2);
+        cell.setCellValue(emergencyRecord.getMetadata().getModifications().length)
+
 
         /* MODIFICATION ENDS HERE */
 

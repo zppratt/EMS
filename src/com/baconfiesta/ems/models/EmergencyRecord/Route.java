@@ -128,6 +128,14 @@ public class Route implements Serializable {
     }
 
     /**
+     * \brief Retrieve a string corresponding to which route has been selected
+     * @return a string corresponding to which route has been selected (alternate or main)
+     * */
+    public String getAlternateRouteSelectedString() {
+        return alternateRouteSelected?"Alternate Route":"Main Route";
+    }
+
+    /**
      * \brief Determines the nearest emergency responder according to the type of the emergency
      *
      * @param record the emergency record currently being created
