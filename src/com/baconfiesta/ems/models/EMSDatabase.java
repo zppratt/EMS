@@ -182,7 +182,7 @@ public class EMSDatabase {
      */
     private void writeObject(Object object) throws IOException {
         try (
-                FileOutputStream fos = new FileOutputStream(database, true);
+                FileOutputStream fos = new FileOutputStream(database, false);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
         ) {
             oos.writeObject(object);
