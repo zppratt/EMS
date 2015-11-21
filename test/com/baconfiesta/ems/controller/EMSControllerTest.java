@@ -58,11 +58,11 @@ public class EMSControllerTest {
         System.out.println("testLogIn");
 
         // Test authentication failure
-        assertNull(controller.logIn("bbaggins", "there and back again"));
+        assertNull(controller.logIn("bbaggins", "there and back again".toCharArray()));
 
         // Test authentication success
         database.addUser("Bilbo", "Baggins", "bbaggins", "there and back again");
-        assertNotNull(controller.logIn("bbaggins", "there and back again"));
+        assertNotNull(controller.logIn("bbaggins", "there and back again".toCharArray()));
     }
 
     @Test

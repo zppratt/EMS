@@ -30,7 +30,7 @@ public class EMSAdminController extends EMSController {
      * @return the User on success, null on failure
      */
     public EMSUser addUser(String firstname, String lastname, String username, String password) throws IOException, ClassNotFoundException {
-        return database.addUser(firstname, lastname, username, password);
+        return _database.addUser(firstname, lastname, username, password);
     }
 
     /**
@@ -39,7 +39,7 @@ public class EMSAdminController extends EMSController {
      * @return whether the removal was successful or not
      */
     public boolean removeUser(String username) throws IOException, ClassNotFoundException {
-        return database.removeUser(username);
+        return _database.removeUser(username);
     }
 
     /**

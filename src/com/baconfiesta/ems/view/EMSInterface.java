@@ -2,6 +2,7 @@ package com.baconfiesta.ems.view;
 
 import com.baconfiesta.ems.controller.EMSAdminController;
 import com.baconfiesta.ems.controller.EMSController;
+import com.baconfiesta.ems.controller.Authenticator;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import com.sun.javafx.application.PlatformImpl;
@@ -316,21 +317,32 @@ public class EMSInterface {
         loginButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
 
-                // Debugging...
-                System.out.printf("Attempting to login user: '%s'\n", usernameText.getText());
+                EMSUser user;
+                String username = usernameText.getText();
+                char[] password = passwordText.getPassword();
 
-                // Check if the credentials are successful
-                EMSUser user = null;
+                System.out.printf("Attempting to login user: '%s'\n", username); // TODO: remove
+
+                // Attempt to login as a user using specified info
                 try {
-                    controller = new EMSController();
-                    user = controller.logIn(usernameText.getText(), String.valueOf(passwordText.getPassword()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (user==null) {
-                    System.out.println("User not found.");
+                    Authenticator.init();
+                    user = Authenticator.authenticate(username, password);
+                    // blank out password for security
+                    for (int i = 0; i < password.length; i++) {
+                        password[i] = ' ';
+                    }
+                } catch (ClassNotFoundException e) {
+                    JOptionPane.showMessageDialog(frame, "Couldn't find user.");
+                    return;
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(frame, "Trouble reading user dictionary.");
+                    return;
+                } catch (NullPointerException e) {
+                    JOptionPane.showMessageDialog(frame, "Sorry, but we could not log you in at this time. Try again " +
+                            "in 15 minutes.");
                     return;
                 }
+
                 // If successful then clear window
                 mainframe.removeAll();
                 if (user.isAdmin()) {

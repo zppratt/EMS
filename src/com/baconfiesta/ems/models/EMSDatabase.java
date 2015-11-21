@@ -45,7 +45,7 @@ public class EMSDatabase {
     /**
      * Whether the database is open or not
      */
-    private boolean isOpen;
+    private static boolean isOpen;
 
     /**
      * Default constructor for a database object
@@ -79,6 +79,9 @@ public class EMSDatabase {
      */
     public EMSDatabase(File file, HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records)
             throws IOException, ClassNotFoundException {
+        if (isOpen()) {
+            return;
+        }
         System.out.println("Database constructor. File : " + file);
         this.users = users;
         this.records = records;
@@ -163,7 +166,7 @@ public class EMSDatabase {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public EMSUser verifyUser(String username, String password) throws IOException, ClassNotFoundException {
+    public EMSUser verifyUser(String username, char[] password) throws IOException, ClassNotFoundException {
         // If the user is in the database, check the password
         if (this.getCachedUsers().containsKey(username)) {
             EMSUser userToCheck = this.getCachedUsers().get(username);
@@ -232,7 +235,6 @@ public class EMSDatabase {
         // Create a user object
         EMSUser user = new EMSUser(firstname, lastname, username, password, false);
         // Add it to the database
-        this.getCachedUsers().put(username, user);
         users.put(user.getUsername(), user);
         writeObject(this.getCachedUsers());
         return user;

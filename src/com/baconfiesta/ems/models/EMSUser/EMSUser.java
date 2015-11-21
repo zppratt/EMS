@@ -4,6 +4,7 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -88,8 +89,8 @@ public class EMSUser implements Serializable {
      * @param password the password to check
      * @return true if the password is the same, otherwise false
      */
-    public Boolean checkPassword(String password) {
-        return this.getPassword().equals(password);
+    public Boolean checkPassword(char[] password) {
+        return Arrays.equals(getPassword().toCharArray(), password);
     }
 
     /**

@@ -34,13 +34,13 @@ public class EMSUserTest {
         System.out.println("testCheckPassword");
 
         // Test regular user failure
-        assertFalse(regularUser.checkPassword("MOUNT DOOOOOM"));
+        assertFalse(regularUser.checkPassword("MOUNT DOOOOOM".toCharArray()));
         // Test regular user success
-        assertTrue(regularUser.checkPassword("password"));
+        assertTrue(regularUser.checkPassword("password".toCharArray()));
         // Test admin failure
-        assertFalse(adminUser.checkPassword("MOUNT DOOOOOM"));
+        assertFalse(adminUser.checkPassword("MOUNT DOOOOOM".toCharArray()));
         // Test admin success
-        assertTrue(adminUser.checkPassword("password"));
+        assertTrue(adminUser.checkPassword("password".toCharArray()));
     }
 
     @Test

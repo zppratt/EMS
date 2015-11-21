@@ -25,7 +25,7 @@ public class EMSController {
     /**
      * The file database the system will use
      */
-    EMSDatabase database;
+    static EMSDatabase _database;
 
     /**
      * Default constructor for a user controller
@@ -37,21 +37,22 @@ public class EMSController {
     /**
      * Constructor which allows the specification of a user and database.
      * @param user the user
-     * @param database the database
+     * @param db the database
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public EMSController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException {
-        if (database==null) {
-            database = new EMSDatabase();
+    public EMSController(EMSUser user, EMSDatabase db) throws IOException, ClassNotFoundException {
+
+        // If database already exists, do not create a new one unless db parameter contains a different one
+        if (db != null) {
+            _database = db;
+        } else if (_database == null) {
+            _database = new EMSDatabase();
         }
-        if (user==null) {
-            user = database.lookupUser("admin");
+        if (user != null) {
+            this.currentUser = user;
         }
-        System.out.println(user);
-        this.currentUser = user;
-        System.out.println("Database is " + database);
-        this.database = database;
+
     }
 
     /**
@@ -60,7 +61,7 @@ public class EMSController {
      * @param password the password
      * @return the User on success, null on failure
      */
-    public EMSUser logIn(String username, String password) throws IOException, ClassNotFoundException {
+    public EMSUser logIn(String username, char[] password) throws IOException, ClassNotFoundException {
         return authenticateUser(username, password);
     }
 
@@ -99,7 +100,7 @@ public class EMSController {
      * @param record the record to finalize
      */
     public void finalizeRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
-        database.addEmergencyRecord(record);
+        _database.addEmergencyRecord(record);
     }
 
     /**
@@ -126,7 +127,7 @@ public class EMSController {
      * @return the list of users
      */
     public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
-        return database.getCachedUsers().values().stream().collect(Collectors.toCollection(ArrayList::new));
+        return _database.getCachedUsers().values().stream().collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -142,7 +143,7 @@ public class EMSController {
      * @return the list of records
      */
     public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
-        return database.getCachedRecords().values().stream().collect(Collectors.toCollection(ArrayList::new));
+        return _database.getCachedRecords().values().stream().collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -151,8 +152,8 @@ public class EMSController {
      */
     public void backupData(File file) throws IOException, ClassNotFoundException {
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-        oos.writeObject(database.getCachedUsers());
-        oos.writeObject(database.getCachedRecords());
+        oos.writeObject(_database.getCachedUsers());
+        oos.writeObject(_database.getCachedRecords());
     }
 
     /**
@@ -163,7 +164,7 @@ public class EMSController {
         try (
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
         ) {
-            database = new EMSDatabase(null, (HashMap<String, EMSUser>) ois.readObject(), (HashMap<Instant, EmergencyRecord>) ois.readObject());
+            _database = new EMSDatabase(null, (HashMap<String, EMSUser>) ois.readObject(), (HashMap<Instant, EmergencyRecord>) ois.readObject());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -174,14 +175,16 @@ public class EMSController {
      * @param username the username
      * @param password the password
      */
-    protected EMSUser authenticateUser(String username, String password) throws IOException, ClassNotFoundException {
-        EMSUser user = database.lookupUser(username);
-        if (user != null ) {
-            if (user.checkPassword(password)) {
-                return user;
-            }
+    protected static EMSUser authenticateUser(String username, char[] password) throws
+            NullPointerException, IOException, ClassNotFoundException {
+        EMSUser user = _database.lookupUser(username);
+        if (user == null ) {
+            throw new ClassNotFoundException();
         }
-        return null;
+        if (!user.checkPassword(password)) {
+            throw new ClassNotFoundException();
+        }
+        return user;
     }
 
     /**

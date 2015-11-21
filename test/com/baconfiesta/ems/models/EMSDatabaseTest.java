@@ -107,10 +107,10 @@ public class EMSDatabaseTest {
 
         // Fail to verify a user
         database.addUser("Frodo", "Baggins", "fbaggins", "password");
-        assertNull(database.verifyUser("fbaggins", "HEHE I'M TRYING TO STEAL YOUR ACCOUNT"));
+        assertNull(database.verifyUser("fbaggins", "HEHE I'M TRYING TO STEAL YOUR ACCOUNT".toCharArray()));
 
         // Succeed in verifying a user
-        assertNotNull(database.verifyUser("fbaggins", "password"));
+        assertNotNull(database.verifyUser("fbaggins", "password".toCharArray()));
 
     }
 
