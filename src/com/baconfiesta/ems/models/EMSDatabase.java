@@ -339,9 +339,9 @@ public class EMSDatabase {
         } catch (IOException e) {
             System.err.println("Trouble accessing file.");
         } catch (ClassCastException e) {
-            System.err.println("Could not find class.");
+            System.err.println("Trouble casting the records.");
         } catch (ClassNotFoundException e) {
-            System.err.println("");
+            System.err.println("Could not find class.");
         }
         return tempRecords;
     }
@@ -369,9 +369,9 @@ public class EMSDatabase {
         } catch (IOException e) {
             System.err.println("Trouble accessing file.");
         } catch (ClassCastException e) {
-            System.err.println("Could not find class.");
+            System.err.println("Trouble casting the users.");
         } catch (ClassNotFoundException e) {
-            System.err.println("");
+            System.err.println("Could not find class.");
         }
         return databaseUsers;
     }
