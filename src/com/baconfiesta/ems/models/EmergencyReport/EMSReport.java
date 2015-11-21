@@ -1,14 +1,15 @@
 package com.baconfiesta.ems.models.EmergencyReport;
 
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+
 
 /**
  * A report generator class in the system to create different kind of reports
@@ -21,34 +22,37 @@ public class Report {
 
         /* copying file from template */
         try {
-            FileUtils.copyFile(recordTemplateFilename, filename)
+            FileUtils.copyFile(new File(recordTemplateFilename), new File(filename));
         } catch(Exception e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
         /* Create new input stream from file */
+        FileInputStream input;
         try {
-            FileInputStream input = new FileInputStream(filename);
+            input = new FileInputStream(filename);
         } catch(Exception e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
         /* Open excel file from input stream */
+        POIFSFileSystem excelFile;
         try {
-            POIFSFileSystem excelFile = new POIFSFileSystem(input);
+            excelFile = new POIFSFileSystem(input);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
          /* Create workbook */
+        HSSFWorkbook wb;
         try {
-            HSSFWorkbook wb = new HSSFWorkbook(excelFile);
+            wb = new HSSFWorkbook(excelFile);
         } catch(Exception e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
         /* MODIFICATION STARTS HERE */
@@ -58,80 +62,80 @@ public class Report {
         Row row;
         org.apache.poi.ss.usermodel.Cell cell;
 
-        /* Caller firstname */
+        /* Caller first name */
         row = sheet1.getRow(3);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCaller().getFirstName());
 
         /* Caller lastname */
         row = sheet1.getRow(4);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCaller().getLastName());
 
         /* Caller Phone number */
         row = sheet1.getRow(5);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCaller().getPhone());
 
         /* Emergency Address */
         row = sheet1.getRow(7);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getLocation().getAddress());
 
         /* Emergency Address */
         row = sheet1.getRow(8);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getLocation().getZip());
 
         /* Emergency State */
         row = sheet1.getRow(9);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getLocation().getState());
 
         /* Emergency Category */
         row = sheet1.getRow(9);
-        cell.getCell(2);
-        cell.setCellValue(emergencyRecord.getCategory()); // NEEDS TO BE TRANSFORMED IN STRING
+        cell = row.getCell(2);
+        cell.setCellValue(emergencyRecord.getCategory().toString()); // NEEDS TO BE TRANSFORMED IN STRING
 
         /* Emergency Response Time */
         row = sheet1.getRow(10);
-        cell.getCell(2);
-        cell.setCellValue(emergencyRecord); // DON'T KNOW WHERE THE RESPONSE TIME IS LOCATED
+        cell = row.getCell(2);
+        //cell.setCellValue(emergencyRecord); // DON'T KNOW WHERE THE RESPONSE TIME IS LOCATED
 
         /* Responder Address */
         row = sheet1.getRow(12);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getAddress());
 
         /* Responder ZIP */
         row = sheet1.getRow(13);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getZip());
 
         /* Responder State */
         row = sheet1.getRow(14);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getState());
 
         /* Route Chosen */
         row = sheet1.getRow(16);
-        cell.getCell(2);
+        cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getRoute().getAlternateRouteSelectedString());
 
         /* Emergency Case Created By */
         row = sheet1.getRow(18);
-        cell.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy()); // NEEDS TO BE TRANSFORMED TO STRING
+        cell = row.getCell(2);
+        cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy().toString()); // NEEDS TO BE TRANSFORMED TO STRING
 
          /* Emergency Case Time Created */
         row = sheet1.getRow(18);
-        cell.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated()) // NEEDS TO BE TRANSFORMED TO STRING
+        cell = row.getCell(2);
+        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toString()) // NEEDS TO BE TRANSFORMED TO STRING
 
          /* Emergency Case Number of Modifications */
         row = sheet1.getRow(18);
-        cell.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getModifications().length)
+        cell = row.getCell(2);
+        cell.setCellValue(emergencyRecord.getMetadata().getModifications().size())
 
 
         /* MODIFICATION ENDS HERE */
@@ -142,7 +146,7 @@ public class Report {
             out = new FileOutputStream(filename);
         } catch(Exception e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
          /* Write the workbook in the output stream  */
@@ -159,11 +163,11 @@ public class Report {
         } catch(Exception e) {
             e.printStackTrace();
         }
-
+        return null;
     }
 
     public File generateGlobalReport(EmergencyRecord[] emergencyRecords) {
-
+        return null;
     }
 
 }

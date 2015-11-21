@@ -67,7 +67,7 @@ public class Metadata implements Serializable {
      * Retrieves the modifications to the record
      * @return the list of modifications by time, user
      */
-    HashMap<Instant, EMSUser> getModifications() {
+    public HashMap<Instant, EMSUser> getModifications() {
         /* Should we return a copy or itself? */
         return modifications;
     }
