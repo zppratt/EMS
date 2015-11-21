@@ -1,9 +1,4 @@
-.idea/*
-*.iml
-dist/
 /class
-/log
-/EMS
 /.idea
 /db
 /doc
