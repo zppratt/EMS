@@ -131,9 +131,9 @@ public class EMSDatabase {
      */
     public void closeDatabase() throws IOException, InterruptedException {
 
-        System.out.println("\ncloseDatabase(): Cache contents in the end were:");
-        System.out.printf("Users: %s\n", users);
-        System.out.printf("Records: %s\n\n", records);
+//        System.out.println("\ncloseDatabase(): Cache contents in the end were:");
+//        System.out.printf("Users: %s\n", users);
+//        System.out.printf("Records: %s\n\n", records);
 
         users = null;
         records = null;
@@ -186,7 +186,7 @@ public class EMSDatabase {
             oos.flush();
             fos.flush();
 
-            System.out.printf("\nDatabase contents after\nwriteObject(%s):\nUsers: %s\nRecords:%s\n\n",
+            System.out.printf("\nDatabase contents after writeObject(%s):\nUsers: %s\nRecords:%s\n\n",
                     object, getDatabaseUsers(), getDatabaseRecords());
         }
     }
@@ -339,7 +339,7 @@ public class EMSDatabase {
         } catch (IOException e) {
             System.err.println("Trouble accessing file.");
         } catch (ClassCastException e) {
-            System.err.println("Trouble casting the records.");
+            System.err.println("No records found in the database. (ClassCastException)");
         } catch (ClassNotFoundException e) {
             System.err.println("Could not find class.");
         }
@@ -369,7 +369,7 @@ public class EMSDatabase {
         } catch (IOException e) {
             System.err.println("Trouble accessing file.");
         } catch (ClassCastException e) {
-            System.err.println("Trouble casting the users.");
+            System.err.println("No users found in database. (ClassCastException)");
         } catch (ClassNotFoundException e) {
             System.err.println("Could not find class.");
         }
