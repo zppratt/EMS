@@ -358,7 +358,6 @@ public class EMSInterface {
                     // If a normal user then use userActions()
                     userActions();
                 }
-                adminAcions();
             }
         });
     }
@@ -864,10 +863,10 @@ public class EMSInterface {
         JPasswordField confirmPasswordField = new JPasswordField();
         JTextField usernameText = new JTextField();
 
-        JButton deleteUser = new JButton("Delete User");
-        JButton upgrade = new JButton("Upgrade User");
-        JButton downgrade = new JButton("Downgrade User");
         JButton addUser = new JButton("Add User");
+        JButton upgrade = new JButton("Make Admin");
+        JButton downgrade = new JButton("Revoke Admin");
+        JButton deleteUser = new JButton("Delete User");
 
         // Set properties of the fields
         buttonGroup.add(users);
@@ -879,7 +878,12 @@ public class EMSInterface {
         addUserLabel.setFont(new Font(addUserLabel.getFont().getName(),Font.BOLD, 14));
 
         users.setSelected(true);
-        sidebarList.setListData(new String[]{"user1","user2","user3","user4"});
+        try {
+            sidebarList.setListData(controller.getUsers().stream().map(EMSUser::getUsername).toArray());
+        }
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(frame, "Trouble reading user dictionary.");
+        }
 
         firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
         lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
@@ -928,10 +932,10 @@ public class EMSInterface {
         sidebar.add(admins);
         sidebar.add(sidebarList);
 
-        footer.add(deleteUser);
+        footer.add(addUser);
         footer.add(upgrade);
         footer.add(downgrade);
-        footer.add(addUser);
+        footer.add(deleteUser);
 
         // Refresh the window
         frame.revalidate();
