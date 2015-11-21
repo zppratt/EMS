@@ -1,0 +1,12 @@
+.idea/*
+*.iml
+dist/
+/class
+/log
+/EMS
+/.idea
+/db
+/doc
+maps.private.properties
+doc/
+db/
