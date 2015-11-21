@@ -116,19 +116,26 @@ public class EMSDatabaseTest {
 
     @Test
     public void testAddEmergencyRecord() throws Exception {
-        System.out.println("testAddEmergencyRecord");
+        System.out.println("addEmergencyRecord");
 
         // Test that the records object gets updated in memory and database
         assertTrue("testAddEmergencyRecord: New records object was not empty", database.getCachedRecords().isEmpty());
+        assertTrue("testAddEmergencyRecord: New records object was not empty", database.getDatabaseRecords().isEmpty());
         EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder().withTime(Instant.EPOCH).getNewEmergencyRecord();
         database.addEmergencyRecord(testRecord);
         assertTrue("testAddEmergencyRecord: New record was not added.", database.getCachedRecords().containsKey(Instant.EPOCH));
+        assertTrue("testAddEmergencyRecord: New record was not added.", database.getDatabaseRecords().containsKey(Instant.EPOCH));
 
+        // Test persistence across instances
+        database.closeDatabase();
+        database = new EMSDatabase();
+        assertTrue("testAddEmergencyRecord: New record was not persistent.", database.getCachedRecords().containsKey(Instant.EPOCH));
+        assertTrue("testAddEmergencyRecord: New record was not persistent.", database.getDatabaseRecords().containsKey(Instant.EPOCH));
     }
 
     @Test
     public void testGetEmergencyRecord() throws Exception {
-        System.out.println("testGetEmergencyRecord");
+        System.out.println("getEmergencyRecord");
 
         // Test failed retrieval by putting a current record and trying to find one made at the EPOCH
         database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
