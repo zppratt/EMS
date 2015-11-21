@@ -95,7 +95,7 @@ public class EMSDatabase {
         if (users == null) {
             users = getDatabaseUsers();
             if (users == null) {
-                System.out.println("Creating new record cache...");
+                System.out.println("Creating new user cache...");
                 users = new HashMap<>();
                 users.put("", new EMSUser("Default","","","", true));
             }
@@ -188,7 +188,6 @@ public class EMSDatabase {
             oos.writeObject(object);
             System.out.println("Writing: " + object + " to the database file.");
             oos.flush();
-            fos.flush();
 
             System.out.printf("\nDatabase contents after writeObject(%s):\nUsers: %s\nRecords:%s\n\n",
                     object, getDatabaseUsers(), getDatabaseRecords());
