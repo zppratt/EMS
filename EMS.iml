@@ -17,5 +17,6 @@
     <orderEntry type="library" name="java" level="application" />
     <orderEntry type="library" name="powermock-easymock-1.6.2-full" level="application" />
     <orderEntry type="library" name="sqlite4java-392" level="application" />
+    <orderEntry type="library" name="poi-3.13-20150929" level="project" />
   </component>
 </module>
