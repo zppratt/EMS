@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -41,7 +43,7 @@ public class EMSControllerTest {
         controller = new EMSController(null, database);
         adminController = new EMSAdminController(null, database);
         // Default user created?
-        assertNotNull(database.lookupUser("admin"));
+        assertNotNull(database.lookupUser(""));
     }
 
     @After
@@ -107,9 +109,15 @@ public class EMSControllerTest {
         System.out.println("testGetUsers");
 
         // Test success
-        assertFalse(controller.getUsers().isEmpty());
+        adminController.addUser("Bilbo", "Baggins", "bbaggins", "bbaggins");
+        adminController.addUser("Frodo", "Baggins", "fbaggins", "fbaggins");
+        adminController.addUser("Samwise", "Gamgee", "sgamgee", "sgamgee");
+        assertThat(controller.getUsers().size(), is(3));
         // Test failure
-        assertTrue(adminController.removeUser("admin"));
+        adminController.removeUser("bbaggins");
+        adminController.removeUser("fbaggins");
+        adminController.removeUser("sgamgee");
+        // At this point, only the admin user is present, and 'getUsers' only returns non-admins at this point
         assertTrue(controller.getUsers().isEmpty());
     }
 
@@ -125,6 +133,26 @@ public class EMSControllerTest {
 
     @Test
     public void testRestoreData() throws Exception {
+
+    }
+
+    @Test
+    public void testGetAdminUsers() throws Exception {
+
+    }
+
+    @Test
+    public void testAuthenticateUser() throws Exception {
+
+    }
+
+    @Test
+    public void testSetUser() throws Exception {
+
+    }
+
+    @Test
+    public void testGetCurrentUser() throws Exception {
 
     }
 }

@@ -24,7 +24,7 @@ import java.net.URL;
  * The main user interface window of the EMS system.
  * @author team_bacon_fiesta
  */
-public class EMSInterface {
+public class EMSInterface implements EMSInterfaceConstants {
 
     private EMSController controller;
     private JFrame frame;
@@ -987,20 +987,13 @@ public class EMSInterface {
                 String username = (String) sidebarList.getSelectedValue();
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
-
-                        System.out.println("e = [" + e + "]");
-
-                        System.out.println("username = " + username);
-
-                        EMSUser user = controller.lookupUser(username);
-                        user.setAdmin(true);
+                        ((EMSAdminController)controller).setUserAdmin(username, true);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, "Burrrrrp. " +
-                            "Couldn't grab the user from the list for some reason.\n" +
-                            "Ask TeamBaconFiesta for a software update.");
+                    JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
                     ex.printStackTrace();
                 }
+                sidebar.repaint();
                 frame.revalidate();
                 frame.repaint();
             }
@@ -1012,14 +1005,12 @@ public class EMSInterface {
                 String username = (String) sidebarList.getSelectedValue();
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
-                        EMSUser user = controller.lookupUser(username);
-                        user.setAdmin(false);
+                        ((EMSAdminController)controller).setUserAdmin(username, false);
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, "Burrrrrp. " +
-                            "Couldn't grab the user from the list for some reason.\n" +
-                            "Ask TeamBaconFiesta for a software update.");
+                    JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
                 }
+                sidebar.repaint();
                 frame.revalidate();
                 frame.repaint();
             }

@@ -47,8 +47,12 @@ public class EMSAdminController extends EMSController {
      * @param username the username
      * @return the User if found, otherwise null
      */
-    public EMSUser lookupUser(String username) {
-        return null;
+    public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
+        return _database.lookupUser(username);
+    }
+
+    public void setUserAdmin(String username, boolean admin) throws IOException {
+        _database.setUserAdmin(username, admin);
     }
 
     /**

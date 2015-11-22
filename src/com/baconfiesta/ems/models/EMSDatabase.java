@@ -228,6 +228,14 @@ public class EMSDatabase {
     }
 
     /**
+     * Makes user admin
+     */
+    public void setUserAdmin(String username, boolean admin) throws IOException {
+        users.get(username).setAdmin(admin);
+        writeObject(users);
+    }
+
+    /**
      * Lookup a user by username
      *
      * @param username the username

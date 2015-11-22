@@ -6,9 +6,7 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -127,7 +125,16 @@ public class EMSController {
      * @return the list of users
      */
     public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
-        return _database.getCachedUsers().values().stream().collect(Collectors.toCollection(ArrayList::new));
+        Collection values = _database.getCachedUsers().values();
+        ArrayList<EMSUser> users = new ArrayList<>(values);
+        for (Iterator<EMSUser> iterator = users.iterator(); iterator.hasNext();) {
+            EMSUser user = iterator.next();
+            if (user.isAdmin()) {
+                // Remove the current element from the iterator and the list.
+                iterator.remove();
+            }
+        }
+        return users;
     }
 
     /**
@@ -135,7 +142,16 @@ public class EMSController {
      * @return the list of users
      */
     public ArrayList<EMSUser> getAdminUsers() throws Exception {
-        return getUsers().stream().filter(user -> user.isAdmin()).collect(Collectors.toCollection(ArrayList::new));
+        Collection values = _database.getCachedUsers().values();
+        ArrayList<EMSUser> users = new ArrayList<>(values);
+        for (Iterator<EMSUser> iterator = users.iterator(); iterator.hasNext();) {
+            EMSUser user = iterator.next();
+            if (!user.isAdmin()) {
+                // Remove the current element from the iterator and the list.
+                iterator.remove();
+            }
+        }
+        return users;
     }
 
     /**
@@ -201,18 +217,6 @@ public class EMSController {
      */
     public EMSUser getCurrentUser() {
         return currentUser;
-    }
-
-    /**
-     * Lookup a user by username
-     *
-     * @param username the username
-     * @return the user on success, null on failure
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
-        return _database.lookupUser(username);
     }
 
 }
