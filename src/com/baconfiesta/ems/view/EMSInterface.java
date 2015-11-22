@@ -975,7 +975,18 @@ public class EMSInterface implements EMSInterfaceConstants {
         deleteUser.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Remove the user from the database
-
+                String username = (String) sidebarList.getSelectedValue();
+                try {
+                    if (controller.getCurrentUser().isAdmin()) {
+                        ((EMSAdminController)controller).removeUser(username);
+                        sidebarList.setListData(admins.isSelected() ?
+                                controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray() :
+                                controller.getUsers().stream().map(EMSUser::getUsername).toArray());
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
+                    ex.printStackTrace();
+                }
                 frame.revalidate();
                 frame.repaint();
             }

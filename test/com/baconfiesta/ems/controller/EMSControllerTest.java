@@ -27,15 +27,15 @@ import static org.junit.Assert.assertTrue;
 @PrepareForTest({EMSDatabase.class})
 public class EMSControllerTest {
 
-    private final Path mockFilePath = Paths.get("db/test.db");
+    final Path mockFilePath = Paths.get("db/test.db");
 
-    private final File mockFile = mockFilePath.toFile();
+    final File mockFile = mockFilePath.toFile();
 
-    private EMSController controller;
+    EMSController controller;
 
-    private EMSAdminController adminController;
+    EMSAdminController adminController;
 
-    private EMSDatabase database;
+    EMSDatabase database;
 
     @Before
     public void setUp() throws Exception {
