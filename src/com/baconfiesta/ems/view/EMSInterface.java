@@ -988,12 +988,14 @@ public class EMSInterface implements EMSInterfaceConstants {
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
                         ((EMSAdminController)controller).setUserAdmin(username, true);
+                        sidebarList.setListData(admins.isSelected() ?
+                                controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray() :
+                                controller.getUsers().stream().map(EMSUser::getUsername).toArray());
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
                     ex.printStackTrace();
                 }
-                sidebar.repaint();
                 frame.revalidate();
                 frame.repaint();
             }
@@ -1006,11 +1008,13 @@ public class EMSInterface implements EMSInterfaceConstants {
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
                         ((EMSAdminController)controller).setUserAdmin(username, false);
+                        sidebarList.setListData(admins.isSelected() ?
+                                controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray() :
+                                controller.getUsers().stream().map(EMSUser::getUsername).toArray());
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
                 }
-                sidebar.repaint();
                 frame.revalidate();
                 frame.repaint();
             }
