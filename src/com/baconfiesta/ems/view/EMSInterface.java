@@ -988,7 +988,9 @@ public class EMSInterface {
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
 
-                        System.err.println(username);
+                        System.out.println("e = [" + e + "]");
+
+                        System.out.println("username = " + username);
 
                         EMSUser user = controller.lookupUser(username);
                         user.setAdmin(true);

@@ -237,8 +237,13 @@ public class EMSDatabase {
      */
     public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
         // Return the user if it exists
-        if (this.getCachedUsers().containsKey(username)) {
-            return this.getCachedUsers().get(username);
+        if (users.containsKey(username)) {
+
+            System.err.println("Found username!");
+            System.out.println("username = " + username);
+            System.err.println("It's " + users.get(username));
+
+            return users.get(username);
         }
         return null;
     }
