@@ -118,7 +118,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         logIn();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600,600);
+        frame.setSize(1024,768);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
