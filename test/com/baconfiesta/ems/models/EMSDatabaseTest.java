@@ -133,8 +133,6 @@ public class EMSDatabaseTest {
         assertTrue("testAddEmergencyRecord: New record was not persistent.", database.getCachedRecords().containsKey(Instant.EPOCH));
         assertTrue("testAddEmergencyRecord: New record was not persistent.", database.getDatabaseRecords().containsKey(Instant.EPOCH));
 
-        System.err.println(database.getDatabaseUsers());
-
     }
 
     @Test

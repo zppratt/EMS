@@ -119,6 +119,7 @@ public class EMSInterface {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600,600);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
         route1Panel = new JFXPanel();
@@ -983,7 +984,21 @@ public class EMSInterface {
         upgrade.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Upgrade the user to admin
+                String username = (String) sidebarList.getSelectedValue();
+                try {
+                    if (controller.getCurrentUser().isAdmin()) {
 
+                        System.err.println(username);
+
+                        EMSUser user = controller.lookupUser(username);
+                        user.setAdmin(true);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, "Burrrrrp. " +
+                            "Couldn't grab the user from the list for some reason.\n" +
+                            "Ask TeamBaconFiesta for a software update.");
+                    ex.printStackTrace();
+                }
                 frame.revalidate();
                 frame.repaint();
             }
@@ -992,7 +1007,17 @@ public class EMSInterface {
         downgrade.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Downgrade the user from admin
-
+                String username = (String) sidebarList.getSelectedValue();
+                try {
+                    if (controller.getCurrentUser().isAdmin()) {
+                        EMSUser user = controller.lookupUser(username);
+                        user.setAdmin(false);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, "Burrrrrp. " +
+                            "Couldn't grab the user from the list for some reason.\n" +
+                            "Ask TeamBaconFiesta for a software update.");
+                }
                 frame.revalidate();
                 frame.repaint();
             }

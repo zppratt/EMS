@@ -203,4 +203,16 @@ public class EMSController {
         return currentUser;
     }
 
+    /**
+     * Lookup a user by username
+     *
+     * @param username the username
+     * @return the user on success, null on failure
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
+        return _database.lookupUser(username);
+    }
+
 }
