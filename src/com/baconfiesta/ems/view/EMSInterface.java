@@ -25,7 +25,6 @@ import java.net.URL;
  * @author team_bacon_fiesta
  */
 public class EMSInterface implements EMSInterfaceConstants {
-    // Does this push
     private EMSController controller;
     private JFrame frame;
     private JPanel header;
@@ -44,7 +43,6 @@ public class EMSInterface implements EMSInterfaceConstants {
     private JButton manageUsers;
     private JButton manageData;
     private JButton manageRecords;
-    private JButton viewActivity;
 
     private WebView browser1;
     private WebEngine webEngine1;
@@ -86,15 +84,10 @@ public class EMSInterface implements EMSInterfaceConstants {
         manageUsers = new JButton("Manage Users");
         manageData = new JButton("Manage Data");
         manageRecords = new JButton("Manage Records");
-        viewActivity = new JButton("View User Activity");
 
         // Set panel properties
-        header.setBackground(Color.WHITE);
         header.setLayout(new BorderLayout());
-        mainframe.setBackground(Color.WHITE);
-        footer.setBackground(Color.WHITE);
         footer.setLayout(new FlowLayout(FlowLayout.LEFT));
-        sidebar.setBackground(Color.WHITE);
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
 
         // Set panel borders
@@ -241,19 +234,6 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        // Set manageData actionListener
-        viewActivity.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
-
-                // Proceed to the next window
-                viewUserActivity();
-            }
-        });
-
         // Set back button actionListener
         back.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -305,6 +285,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Add variables to the panels
         mainframe.setLayout(new BoxLayout(mainframe, BoxLayout.Y_AXIS));
+        mainframe.add(new JLabel("  "));
         mainframe.add(usernameLabel);
         mainframe.add(usernameText);
         mainframe.add(passwordLabel);
@@ -398,7 +379,6 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(manageUsers);
         footer.add(manageData);
         footer.add(manageRecords);
-        footer.add(viewActivity);
         userActions();
     }
 
@@ -463,14 +443,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         categorizeTitle.setFont(new Font(categorizeTitle.getFont().getName(),Font.BOLD, 14));
         locationTitle.setFont(new Font(locationTitle.getFont().getName(),Font.BOLD, 14));
 
-        descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        descriptionTitle.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         descriptionText.setLineWrap(true);
-
-        fire.setBackground(Color.WHITE);
-        health.setBackground(Color.WHITE);
-        security.setBackground(Color.WHITE);
-        hoax.setBackground(Color.WHITE);
-        crash.setBackground(Color.WHITE);
 
         firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
         lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
@@ -502,11 +476,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         crash.setAlignmentX(JFrame.LEFT_ALIGNMENT);
 
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
-        left.setBackground(Color.WHITE);
         middle.setLayout(new BoxLayout(middle, BoxLayout.Y_AXIS));
-        middle.setBackground(Color.WHITE);
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
-        right.setBackground(Color.WHITE);
 
         mainframe.setLayout(new GridLayout(1,3));
 
@@ -850,7 +821,9 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         ButtonGroup buttonGroup = new ButtonGroup();
 
+        JLabel userActivityLabel = new JLabel("User Activity");
         JLabel listTitle = new JLabel("Select user type");
+        JTextArea userActivityText = new JTextArea("Select A User",18,20);
         JLabel addUserLabel = new JLabel("Add User");
         JLabel firstnameLabel = new JLabel("First Name:");
         JLabel lastnameLabel = new JLabel("Last Name:");
@@ -864,19 +837,22 @@ public class EMSInterface implements EMSInterfaceConstants {
         JPasswordField confirmPasswordField = new JPasswordField();
         JTextField usernameText = new JTextField();
 
+        JPanel left = new JPanel();
+        JScrollPane userActivity = new JScrollPane(userActivityText);
+        JPanel right = new JPanel();
+
         JButton addUser = new JButton("Add User");
         JButton upgrade = new JButton("Make Admin");
         JButton downgrade = new JButton("Revoke Admin");
         JButton deleteUser = new JButton("Delete User");
+        JButton selectUser = new JButton(" Select User ");
 
         // Set properties of the fields
         buttonGroup.add(users);
         buttonGroup.add(admins);
 
-        users.setBackground(Color.WHITE);
-        admins.setBackground(Color.WHITE);
-
-        addUserLabel.setFont(new Font(addUserLabel.getFont().getName(),Font.BOLD, 14));
+        addUserLabel.setFont(new Font(addUserLabel.getFont().getName(),Font.BOLD, 16));
+        userActivityLabel.setFont(new Font(userActivity.getFont().getName(),Font.BOLD, 16));
 
         users.setSelected(true);
         try {
@@ -892,6 +868,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         confirmPasswordField.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height) );
         usernameText.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height) );
 
+        userActivityLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         addUserLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         firstnameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         lastnameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
@@ -904,34 +881,46 @@ public class EMSInterface implements EMSInterfaceConstants {
         confirmPasswordField.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         usernameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
 
-        // Add components to the screen
-        mainframe.setLayout(new BoxLayout(mainframe, BoxLayout.Y_AXIS));
-        mainframe.add(new JLabel("  "));
-        mainframe.add(addUserLabel);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(firstnameLabel);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(firstnameText);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(lastnameLabel);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(lastnameText);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(passwordLabel);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(passwordField);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(confirmPasswordLabel);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(confirmPasswordField);
-        mainframe.add(usernameLabel);
-        mainframe.add(new JLabel("  "));
-        mainframe.add(usernameText);
+        userActivityText.setEditable(false);
 
+        // Add components to the screen
+        mainframe.setLayout(new GridLayout(1,2));
+        mainframe.add(left);
+        mainframe.add(right);
+
+        left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+        left.add(new JLabel("  "));
+        left.add(addUserLabel);
+        left.add(new JLabel("  "));
+        left.add(firstnameLabel);
+        left.add(new JLabel("  "));
+        left.add(firstnameText);
+        left.add(new JLabel("  "));
+        left.add(lastnameLabel);
+        left.add(new JLabel("  "));
+        left.add(lastnameText);
+        left.add(new JLabel("  "));
+        left.add(passwordLabel);
+        left.add(new JLabel("  "));
+        left.add(passwordField);
+        left.add(new JLabel("  "));
+        left.add(confirmPasswordLabel);
+        left.add(new JLabel("  "));
+        left.add(confirmPasswordField);
+        left.add(usernameLabel);
+        left.add(new JLabel("  "));
+        left.add(usernameText);
+
+        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
+        right.add(userActivityLabel);
+        right.add(userActivity);
+
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.add(listTitle);
         sidebar.add(users);
         sidebar.add(admins);
         sidebar.add(sidebarList);
+        sidebar.add(selectUser);
 
         footer.add(addUser);
         footer.add(upgrade);
@@ -941,6 +930,20 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+        selectUser.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                // Get the selected user
+                EMSUser tmp = (EMSUser) sidebarList.getSelectedValue();
+                String info = "Populate the info";
+
+                // Populate the panel with the data
+                userActivityText.setText(info);
+
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
 
         users.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -1075,113 +1078,6 @@ public class EMSInterface implements EMSInterfaceConstants {
     }
 
     /**
-     * Admin only: Show the screen to view the activity of a system user
-     */
-    private void viewUserActivity() {
-        // Change the title
-        frameTitle.setText("View User Activity");
-
-        // Set previous frame
-        previous = "user";
-
-        // Enable back button
-        back.setEnabled(true);
-
-        // Declare local variables
-        JLabel usernameLabel = new JLabel("User ID ________");
-        JLabel loginActivityLabel = new JLabel("Login Activity");
-        JLabel logoutActivityLabel = new JLabel("Log Out Activity");
-        JLabel recordActivityLabel = new JLabel("Emergency Records Created");
-
-        JPanel left = new JPanel();
-        JPanel right = new JPanel();
-
-        JRadioButton users = new JRadioButton("Users");
-        JRadioButton admins = new JRadioButton("Administrators");
-
-        ButtonGroup buttonGroup = new ButtonGroup();
-
-        // Set properties of the fields
-        buttonGroup.add(users);
-        buttonGroup.add(admins);
-
-        users.setBackground(Color.WHITE);
-        admins.setBackground(Color.WHITE);
-        usernameLabel.setFont(new Font(usernameLabel.getFont().getName(),Font.BOLD, 14));
-
-        left.setBackground(Color.WHITE);
-        left.setLayout(new BoxLayout(left,BoxLayout.Y_AXIS));
-        right.setBackground(Color.WHITE);
-        right.setLayout(new BoxLayout(right,BoxLayout.Y_AXIS));
-
-        // Add to the window
-        mainframe.setLayout(new GridLayout(1,2));
-        mainframe.add(left);
-        mainframe.add(right);
-
-        left.add(usernameLabel);
-        left.add(loginActivityLabel);
-        // For loop through login times
-        for(int i = 0; i < 4; i++){
-            left.add(new JLabel("login at time"));
-        }
-        left.add(new JLabel("  "));
-        left.add(logoutActivityLabel);
-        // For loop through logout times
-        for(int i = 0; i < 4; i++){
-            left.add(new JLabel("logout at time"));
-        }
-
-        right.add(recordActivityLabel);
-        // For loop through emergency records
-        for(int i = 0; i < 10; i++){
-            right.add(new JLabel("record ##### at time #####"));
-        }
-
-        sidebar.add(admins);
-        sidebar.add(users);
-        sidebarList.setListData(new String[]{});
-        sidebar.add(sidebarList);
-
-        // Refresh the window
-        frame.revalidate();
-        frame.repaint();
-
-        users.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                // Populate the list with users
-                try {
-                    sidebarList.setListData(controller.getUsers().toArray());
-                } catch (IOException | ClassNotFoundException e1) {
-                    sidebarList.setListData(new String[]{"No users found."});
-                }
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
-
-        admins.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                // Populate the list with admins
-                try {
-                    sidebarList.setListData(controller.getAdminUsers().toArray());
-                } catch (IOException | ClassNotFoundException e1) {
-                    sidebarList.setListData(new String[]{"No admin users found."});
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
-
-
-        // Refresh the window
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    /**
      * Admin only: Show the screen to modify emergency records
      */
     private void modifyRecords() {
@@ -1226,7 +1122,6 @@ public class EMSInterface implements EMSInterfaceConstants {
         JScrollPane descriptionScroll = new JScrollPane(descriptionText);
 
         JPanel left = new JPanel();
-        JPanel middle = new JPanel();
         JPanel right = new JPanel();
 
         JRadioButton fire = new JRadioButton("Fire");
@@ -1254,12 +1149,6 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         descriptionText.setLineWrap(true);
-
-        fire.setBackground(Color.WHITE);
-        health.setBackground(Color.WHITE);
-        security.setBackground(Color.WHITE);
-        hoax.setBackground(Color.WHITE);
-        crash.setBackground(Color.WHITE);
 
         firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
         lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
@@ -1291,20 +1180,16 @@ public class EMSInterface implements EMSInterfaceConstants {
         crash.setAlignmentX(JFrame.LEFT_ALIGNMENT);
 
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
-        left.setBackground(Color.WHITE);
-        middle.setLayout(new BoxLayout(middle, BoxLayout.Y_AXIS));
-        middle.setBackground(Color.WHITE);
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
-        right.setBackground(Color.WHITE);
 
-        mainframe.setLayout(new GridLayout(1,3));
+        mainframe.setLayout(new GridLayout(1,2));
 
         // Add components to the window
         mainframe.add(left);
-        mainframe.add(middle);
         mainframe.add(right);
 
         // Add components to left part of mainframe
+        left.add(new JLabel("  "));
         left.add(callerTitle);
         left.add(new JLabel("  "));
         left.add(firstnameLabel);
@@ -1318,23 +1203,23 @@ public class EMSInterface implements EMSInterfaceConstants {
         left.add(phoneLabel);
         left.add(new JLabel("  "));
         left.add(phoneText);
-
-        // Add components to middle part of mainframe
-        middle.add(locationTitle);
-        middle.add(new JLabel("  "));
-        middle.add(addressLabel);
-        middle.add(new JLabel("  "));
-        middle.add(addressText);
-        middle.add(new JLabel("  "));
-        middle.add(stateLabel);
-        middle.add(new JLabel("  "));
-        middle.add(stateText);
-        middle.add(new JLabel("  "));
-        middle.add(zipLabel);
-        middle.add(new JLabel("  "));
-        middle.add(zipText);
+        left.add(new JLabel("  "));
+        left.add(locationTitle);
+        left.add(new JLabel("  "));
+        left.add(addressLabel);
+        left.add(new JLabel("  "));
+        left.add(addressText);
+        left.add(new JLabel("  "));
+        left.add(stateLabel);
+        left.add(new JLabel("  "));
+        left.add(stateText);
+        left.add(new JLabel("  "));
+        left.add(zipLabel);
+        left.add(new JLabel("  "));
+        left.add(zipText);
 
         // Add components to right part of mainframe
+        left.add(new JLabel("  "));
         right.add(categorizeTitle);
         right.add(new JLabel("  "));
         right.add(fire);
