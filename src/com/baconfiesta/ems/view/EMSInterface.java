@@ -13,6 +13,8 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +24,7 @@ import java.net.URL;
 
 /**
  * The main user interface window of the EMS system.
+ *
  * @author team_bacon_fiesta
  */
 public class EMSInterface implements EMSInterfaceConstants {
@@ -64,17 +67,17 @@ public class EMSInterface implements EMSInterfaceConstants {
     private EmergencyRecord tempFile;
     private EmergencyRecord[] recentRecords;
 
-  /**
-   * The constructor for EMSInterface
-   */
-    public EMSInterface(){
+    /**
+     * The constructor for EMSInterface
+     */
+    public EMSInterface() {
         // Initialize the fields
         frame = new JFrame();
         header = new JPanel();
         mainframe = new JPanel();
         footer = new JPanel();
         sidebar = new JPanel();
-        sidebarList = new JList(new String[]{"a case record.........................","a case record.........................","a case record.........................","a case record.........................","a case record........................."});
+        sidebarList = new JList(new String[]{"a case record.........................", "a case record.........................", "a case record.........................", "a case record.........................", "a case record........................."});
         frameTitle = new JLabel();
         back = new JButton("Back");
         logout = new JButton("Logout");
@@ -97,7 +100,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // Set title
-        frameTitle.setFont(new Font(frameTitle.getFont().getName(),Font.BOLD, 20));
+        frameTitle.setFont(new Font(frameTitle.getFont().getName(), Font.BOLD, 20));
         frameTitle.setHorizontalAlignment(SwingConstants.CENTER);
         header.add(frameTitle, BorderLayout.CENTER);
 
@@ -111,7 +114,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         logIn();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,600);
+        frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
@@ -139,10 +142,10 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set logout actionListener
-        logout.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        logout.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Confirm user logout
-                if(JOptionPane.showConfirmDialog(frame,"Are you sure you want to logout?\nAny unsaved data will be lost.",null,JOptionPane.YES_NO_OPTION) == 0){
+                if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == 0) {
                     // Clear the window
                     mainframe.removeAll();
                     footer.removeAll();
@@ -157,8 +160,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set createCase actionListener
-        createCase.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        createCase.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -170,8 +173,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set viewRecords actionListener
-        viewRecords.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        viewRecords.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -183,8 +186,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set generateReport actionListener
-        generateReport.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        generateReport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -196,8 +199,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set manageUsers actionListener
-        manageUsers.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        manageUsers.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -209,8 +212,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set manageData actionListener
-        manageData.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        manageData.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -222,8 +225,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set manageRecords actionListener
-        manageRecords.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        manageRecords.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -235,24 +238,24 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set back button actionListener
-        back.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        back.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
                 sidebar.removeAll();
 
                 // Find the next window
-                if(previous.equals("user")){
+                if (previous.equals("user")) {
                     back.setEnabled(false);
                     if (controller.getCurrentUser().isAdmin()) {
                         adminAcions();
                     } else {
                         userActions();
                     }
-                } else if (previous.equals("info")){
+                } else if (previous.equals("info")) {
                     enterInfo();
-                } else if (previous.equals("route")){
+                } else if (previous.equals("route")) {
                     routeSelection();
                 }
             }
@@ -272,9 +275,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton loginButton = new JButton("Login");
 
         // Configure local variables
-        title.setFont(new Font(title.getFont().getName(),Font.BOLD, 20));
-        usernameText.setMaximumSize(new Dimension(150, usernameText.getPreferredSize().height) );
-        passwordText.setMaximumSize(new Dimension(150, usernameText.getPreferredSize().height) );
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 20));
+        usernameText.setMaximumSize(new Dimension(150, usernameText.getPreferredSize().height));
+        passwordText.setMaximumSize(new Dimension(150, usernameText.getPreferredSize().height));
         title.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         usernameLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         passwordLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
@@ -296,8 +299,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        loginButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent event){
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
 
                 EMSUser user;
                 String username = usernameText.getText();
@@ -352,7 +355,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         frameTitle.setText("Select an Action");
 
         // Repopulate the list with the recent records
-        sidebarList.setListData(new String[]{"a case record.........................","a case record.........................","a case record.........................","a case record.........................","a case record........................."});
+        sidebarList.setListData(new String[]{"a case record.........................", "a case record.........................", "a case record.........................", "a case record.........................", "a case record........................."});
         sidebar.add(sidebarList);
 
         // Disable the back button
@@ -414,7 +417,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         JTextField stateText = new JTextField();
         JTextField zipText = new JTextField();
 
-        JTextArea descriptionText = new JTextArea("",18,20);
+        JTextArea descriptionText = new JTextArea("", 18, 20);
         JScrollPane descriptionScroll = new JScrollPane(descriptionText);
 
         JPanel left = new JPanel();
@@ -438,20 +441,20 @@ public class EMSInterface implements EMSInterfaceConstants {
         categories.add(crash);
 
         // Set properties of the fields
-        callerTitle.setFont(new Font(callerTitle.getFont().getName(),Font.BOLD, 14));
-        descriptionTitle.setFont(new Font(descriptionTitle.getFont().getName(),Font.BOLD, 14));
-        categorizeTitle.setFont(new Font(categorizeTitle.getFont().getName(),Font.BOLD, 14));
-        locationTitle.setFont(new Font(locationTitle.getFont().getName(),Font.BOLD, 14));
+        callerTitle.setFont(new Font(callerTitle.getFont().getName(), Font.BOLD, 14));
+        descriptionTitle.setFont(new Font(descriptionTitle.getFont().getName(), Font.BOLD, 14));
+        categorizeTitle.setFont(new Font(categorizeTitle.getFont().getName(), Font.BOLD, 14));
+        locationTitle.setFont(new Font(locationTitle.getFont().getName(), Font.BOLD, 14));
 
         descriptionTitle.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         descriptionText.setLineWrap(true);
 
-        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
-        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
-        phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height) );
-        addressText.setMaximumSize(new Dimension(200, addressText.getPreferredSize().height) );
-        stateText.setMaximumSize(new Dimension(200, stateText.getPreferredSize().height) );
-        zipText.setMaximumSize(new Dimension(200, zipText.getPreferredSize().height) );
+        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height));
+        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height));
+        phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height));
+        addressText.setMaximumSize(new Dimension(200, addressText.getPreferredSize().height));
+        stateText.setMaximumSize(new Dimension(200, stateText.getPreferredSize().height));
+        zipText.setMaximumSize(new Dimension(200, zipText.getPreferredSize().height));
 
         descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         callerTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
@@ -479,7 +482,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         middle.setLayout(new BoxLayout(middle, BoxLayout.Y_AXIS));
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
 
-        mainframe.setLayout(new GridLayout(1,3));
+        mainframe.setLayout(new GridLayout(1, 3));
 
         // Add components to the window
         mainframe.add(left);
@@ -543,8 +546,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        selectRoute.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        selectRoute.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -572,9 +575,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Create local variables
         JLabel summaryTitle = new JLabel("Case Review");
 
-        JTextArea summaryText = new JTextArea("",18,20);
-        JTextArea route1Text = new JTextArea("",18,20);
-        JTextArea route2Text = new JTextArea("",18,20);
+        JTextArea summaryText = new JTextArea("", 18, 20);
+        JTextArea route1Text = new JTextArea("", 18, 20);
+        JTextArea route2Text = new JTextArea("", 18, 20);
 
         JScrollPane summaryScroll = new JScrollPane(summaryText);
         JScrollPane route1DirectionsScroll = new JScrollPane(route1Text);
@@ -588,7 +591,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         route2Text.setEditable(false);
         summaryText.setEditable(false);
 
-        summaryTitle.setFont(new Font(summaryTitle.getFont().getName(),Font.BOLD, 14));
+        summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
         // Open the web browser
         PlatformImpl.startup(new Runnable() {
@@ -610,7 +613,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         //
 
         // Add to the frame
-        mainframe.setLayout(new GridLayout(2,2));
+        mainframe.setLayout(new GridLayout(2, 2));
         mainframe.add(route1Panel);
         mainframe.add(route2Panel);
         mainframe.add(route1DirectionsScroll);
@@ -626,8 +629,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        route1.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        route1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Update the emergency object
 
                 // Clear the window
@@ -640,8 +643,8 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        route2.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        route2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Update the emergency object
 
                 // Clear the window
@@ -671,7 +674,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Declare local variables
         JLabel summaryTitle = new JLabel("Case Review");
 
-        JTextArea summaryText = new JTextArea("",18,20);
+        JTextArea summaryText = new JTextArea("", 18, 20);
 
         JEditorPane routePane = new JEditorPane();
 
@@ -684,7 +687,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         routePane.setEditable(false);
         summaryText.setEditable(false);
 
-        summaryTitle.setFont(new Font(summaryTitle.getFont().getName(),Font.BOLD, 14));
+        summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
         // Open the web pages
         //
@@ -699,7 +702,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Add components to the screen
-        mainframe.setLayout(new GridLayout(2,1));
+        mainframe.setLayout(new GridLayout(2, 1));
         mainframe.add(route1Panel);
         mainframe.add(routeScroll);
 
@@ -712,8 +715,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        closecase.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        closecase.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Update the emergency object
 
                 // Save the emergency object
@@ -763,7 +766,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Declare local variables
         JLabel summaryTitle = new JLabel("Case Review");
 
-        JTextArea summaryText = new JTextArea("",18,20);
+        JTextArea summaryText = new JTextArea("", 18, 20);
 
         JEditorPane routePane = new JEditorPane();
 
@@ -784,12 +787,12 @@ public class EMSInterface implements EMSInterfaceConstants {
             routePane.setPage(route1URL);
         } catch (MalformedURLException e) {
             System.out.println("Can't open the url");
-        } catch (java.io.IOException e){
+        } catch (java.io.IOException e) {
             System.out.println("Can't open the url");
         }
 
         // Add components to the screen
-        mainframe.setLayout(new GridLayout(1,2));
+        mainframe.setLayout(new GridLayout(1, 2));
         mainframe.add(routeScroll);
         mainframe.add(summaryScroll);
 
@@ -823,7 +826,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         JLabel userActivityLabel = new JLabel("User Activity");
         JLabel listTitle = new JLabel("Select user type");
-        JTextArea userActivityText = new JTextArea("Select A User",18,20);
+        JTextArea userActivityText = new JTextArea("Select A User", 18, 20);
         JLabel addUserLabel = new JLabel("Add User");
         JLabel firstnameLabel = new JLabel("First Name:");
         JLabel lastnameLabel = new JLabel("Last Name:");
@@ -845,28 +848,26 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton upgrade = new JButton("Make Admin");
         JButton downgrade = new JButton("Revoke Admin");
         JButton deleteUser = new JButton("Delete User");
-        JButton selectUser = new JButton(" Select User ");
 
         // Set properties of the fields
         buttonGroup.add(users);
         buttonGroup.add(admins);
 
-        addUserLabel.setFont(new Font(addUserLabel.getFont().getName(),Font.BOLD, 16));
-        userActivityLabel.setFont(new Font(userActivity.getFont().getName(),Font.BOLD, 16));
+        addUserLabel.setFont(new Font(addUserLabel.getFont().getName(), Font.BOLD, 16));
+        userActivityLabel.setFont(new Font(userActivity.getFont().getName(), Font.BOLD, 16));
 
         users.setSelected(true);
         try {
-            sidebarList.setListData(controller.getUsers().stream().map(EMSUser::getUsername).toArray());
-        }
-        catch (Exception e) {
+            sidebarList.setListData(controller.getUsers().toArray());
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(frame, "Trouble reading user dictionary.");
         }
 
-        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
-        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
-        passwordField.setMaximumSize(new Dimension(200, passwordField.getPreferredSize().height) );
-        confirmPasswordField.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height) );
-        usernameText.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height) );
+        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height));
+        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height));
+        passwordField.setMaximumSize(new Dimension(200, passwordField.getPreferredSize().height));
+        confirmPasswordField.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height));
+        usernameText.setMaximumSize(new Dimension(200, confirmPasswordField.getPreferredSize().height));
 
         userActivityLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         addUserLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
@@ -884,7 +885,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         userActivityText.setEditable(false);
 
         // Add components to the screen
-        mainframe.setLayout(new GridLayout(1,2));
+        mainframe.setLayout(new GridLayout(1, 2));
         mainframe.add(left);
         mainframe.add(right);
 
@@ -920,7 +921,6 @@ public class EMSInterface implements EMSInterfaceConstants {
         sidebar.add(users);
         sidebar.add(admins);
         sidebar.add(sidebarList);
-        sidebar.add(selectUser);
 
         footer.add(addUser);
         footer.add(upgrade);
@@ -931,25 +931,33 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        selectUser.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        sidebarList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
                 // Get the selected user
-                //EMSUser tmp = (EMSUser) sidebarList.getSelectedValue();
-                String info = "Populate the info";
+                EMSUser user = (EMSUser) sidebarList.getSelectedValue();
 
                 // Populate the panel with the data
-                userActivityText.setText(info);
-
+                if (user != null) {
+                    userActivityText.setText(
+                            "Username: " + user.getUsername() + "\n" +
+                            "First Name: " + user.getFirstname() + "\n" +
+                            "Last Name: " + user.getLastname() + "\n" +
+                            "Records: " + user.getRecords().values().size() + "\n"
+                    );
+                }
                 frame.revalidate();
                 frame.repaint();
             }
         });
 
-        users.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+
+        users.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Populate the list with users
                 try {
-                    sidebarList.setListData(controller.getUsers().stream().map(EMSUser::getUsername).toArray());
+                    sidebarList.setListData(controller.getUsers().toArray());
+                    sidebarList.setSelectedIndex(0);
                 } catch (IOException | ClassNotFoundException e1) {
                     sidebarList.setListData(new String[]{"No users found."});
                 }
@@ -958,11 +966,12 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        admins.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        admins.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Populate the list with admins
                 try {
-                    sidebarList.setListData(controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray());
+                    sidebarList.setListData(controller.getAdminUsers().toArray());
+                    sidebarList.setSelectedIndex(0);
                 } catch (IOException e1) {
                     sidebarList.setListData(new String[]{"No admin users found."});
                 } catch (ClassNotFoundException e1) {
@@ -975,16 +984,16 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        deleteUser.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        deleteUser.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Remove the user from the database
                 String username = (String) sidebarList.getSelectedValue();
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
-                        ((EMSAdminController)controller).removeUser(username);
+                        ((EMSAdminController) controller).removeUser(username);
                         sidebarList.setListData(admins.isSelected() ?
-                                controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray() :
-                                controller.getUsers().stream().map(EMSUser::getUsername).toArray());
+                                controller.getAdminUsers().toArray() :
+                                controller.getUsers().toArray());
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
@@ -995,16 +1004,16 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        upgrade.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        upgrade.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Upgrade the user to admin
-                String username = (String) sidebarList.getSelectedValue();
+                String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
-                        ((EMSAdminController)controller).setUserAdmin(username, true);
+                        ((EMSAdminController) controller).setUserAdmin(username, true);
                         sidebarList.setListData(admins.isSelected() ?
-                                controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray() :
-                                controller.getUsers().stream().map(EMSUser::getUsername).toArray());
+                                controller.getAdminUsers().toArray() :
+                                controller.getUsers().toArray());
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
@@ -1015,16 +1024,16 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        downgrade.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        downgrade.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Downgrade the user from admin
-                String username = (String) sidebarList.getSelectedValue();
+                String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
-                        ((EMSAdminController)controller).setUserAdmin(username, false);
+                        ((EMSAdminController) controller).setUserAdmin(username, false);
                         sidebarList.setListData(admins.isSelected() ?
-                                controller.getAdminUsers().stream().map(EMSUser::getUsername).toArray() :
-                                controller.getUsers().stream().map(EMSUser::getUsername).toArray());
+                                controller.getAdminUsers().toArray() :
+                                controller.getUsers().toArray());
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
@@ -1034,11 +1043,11 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        addUser.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        addUser.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Add the user to the database
                 try {
-                    ((EMSAdminController)controller).addUser(
+                    ((EMSAdminController) controller).addUser(
                             firstnameText.getText(),
                             lastnameText.getText(),
                             usernameText.getText(),
@@ -1050,9 +1059,9 @@ public class EMSInterface implements EMSInterfaceConstants {
                 }
                 System.out.println();
                 try {
-                    sidebarList.setListData(controller.getUsers().stream().map(EMSUser::getUsername).toArray());
+                    sidebarList.setListData(controller.getUsers().toArray());
                 } catch (IOException | ClassNotFoundException e1) {
-                    sidebarList.setListData(new String []{"Couldn't show users."});
+                    sidebarList.setListData(new String[]{"Couldn't show users."});
                 }
                 frame.revalidate();
                 frame.repaint();
@@ -1118,7 +1127,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         JTextField stateText = new JTextField();
         JTextField zipText = new JTextField();
 
-        JTextArea descriptionText = new JTextArea("",18,20);
+        JTextArea descriptionText = new JTextArea("", 18, 20);
         JScrollPane descriptionScroll = new JScrollPane(descriptionText);
 
         JPanel left = new JPanel();
@@ -1142,20 +1151,20 @@ public class EMSInterface implements EMSInterfaceConstants {
         categories.add(crash);
 
         // Set properties of the fields
-        callerTitle.setFont(new Font(callerTitle.getFont().getName(),Font.BOLD, 14));
-        descriptionTitle.setFont(new Font(descriptionTitle.getFont().getName(),Font.BOLD, 14));
-        categorizeTitle.setFont(new Font(categorizeTitle.getFont().getName(),Font.BOLD, 14));
-        locationTitle.setFont(new Font(locationTitle.getFont().getName(),Font.BOLD, 14));
+        callerTitle.setFont(new Font(callerTitle.getFont().getName(), Font.BOLD, 14));
+        descriptionTitle.setFont(new Font(descriptionTitle.getFont().getName(), Font.BOLD, 14));
+        categorizeTitle.setFont(new Font(categorizeTitle.getFont().getName(), Font.BOLD, 14));
+        locationTitle.setFont(new Font(locationTitle.getFont().getName(), Font.BOLD, 14));
 
         descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         descriptionText.setLineWrap(true);
 
-        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height) );
-        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height) );
-        phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height) );
-        addressText.setMaximumSize(new Dimension(200, addressText.getPreferredSize().height) );
-        stateText.setMaximumSize(new Dimension(200, stateText.getPreferredSize().height) );
-        zipText.setMaximumSize(new Dimension(200, zipText.getPreferredSize().height) );
+        firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height));
+        lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height));
+        phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height));
+        addressText.setMaximumSize(new Dimension(200, addressText.getPreferredSize().height));
+        stateText.setMaximumSize(new Dimension(200, stateText.getPreferredSize().height));
+        zipText.setMaximumSize(new Dimension(200, zipText.getPreferredSize().height));
 
         descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         callerTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
@@ -1182,7 +1191,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
 
-        mainframe.setLayout(new GridLayout(1,2));
+        mainframe.setLayout(new GridLayout(1, 2));
 
         // Add components to the window
         mainframe.add(left);
@@ -1235,7 +1244,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         right.add(new JLabel("  "));
         right.add(descriptionScroll);
 
-        sidebarList.setListData(new String[]{"a case record.........................","a case record.........................","a case record.........................","a case record.........................","a case record........................."});
+        sidebarList.setListData(new String[]{"a case record.........................", "a case record.........................", "a case record.........................", "a case record.........................", "a case record........................."});
         sidebar.add(sidebarList);
 
         // Add components to footer
@@ -1248,15 +1257,15 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        saveRecord.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        saveRecord.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Save the changes
 
             }
         });
 
-        deleteRecord.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+        deleteRecord.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 // Save the changes
 
             }

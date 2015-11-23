@@ -85,6 +85,14 @@ public class EMSUser implements Serializable {
     }
 
     /**
+     * Return true if the user has administrator privilege, false otherwise
+     * @return whether the user is an administrator
+     */
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    /**
      * Check a password against the user's password
      * @param password the password to check
      * @return true if the password is the same, otherwise false
@@ -98,15 +106,7 @@ public class EMSUser implements Serializable {
      * @return the records
      */
     public HashMap<Instant, EmergencyRecord> getRecords() {
-        return this.records;
-    }
-
-    /**
-     * Return true if the user has administrator privilege, false otherwise
-     * @return whether the user is an administrator
-     */
-    public boolean isAdmin() {
-        return admin;
+        return ( this.records == null ? new HashMap<Instant, EmergencyRecord>() : records );
     }
 
     /**
@@ -134,6 +134,6 @@ public class EMSUser implements Serializable {
 //                (this.username.equals("") ? "<blank>" : this.username),
 //                ( this.lastname.equals("") ? "<blank>" : this.lastname ),
 //                ( this.firstname.equals("") ? "<blank>" : this.firstname ));
-        return ( this.firstname.equals("") ? "<blank>" : this.firstname );
+        return ( this.username.equals("") ? "<blank>" : this.username );
     }
 }
