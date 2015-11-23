@@ -934,7 +934,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         selectUser.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 // Get the selected user
-                EMSUser tmp = (EMSUser) sidebarList.getSelectedValue();
+                //EMSUser tmp = (EMSUser) sidebarList.getSelectedValue();
                 String info = "Populate the info";
 
                 // Populate the panel with the data
