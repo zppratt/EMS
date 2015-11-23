@@ -103,38 +103,45 @@ public class EMSReport {
         cell = row.getCell(2);
         //cell.setCellValue(emergencyRecord); // DON'T KNOW WHERE THE RESPONSE TIME IS LOCATED
 
-        /* Responder Address */
+
+        /* Responder Phone Number */
         row = sheet1.getRow(12);
+        cell = row.getCell(2);
+        cell.setCellValue(emergencyRecord.getResponder().getPhoneNumber());
+
+
+        /* Responder Address */
+        row = sheet1.getRow(13);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getAddress());
 
         /* Responder ZIP */
-        row = sheet1.getRow(13);
+        row = sheet1.getRow(14);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getZip());
 
         /* Responder State */
-        row = sheet1.getRow(14);
+        row = sheet1.getRow(15);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getState());
 
         /* Route Chosen */
-        row = sheet1.getRow(16);
+        row = sheet1.getRow(17);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getRoute().getAlternateRouteSelectedString());
 
         /* Emergency Case Created By */
-        row = sheet1.getRow(18);
+        row = sheet1.getRow(19);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy().toString()); // NEEDS TO BE TRANSFORMED TO STRING
 
          /* Emergency Case Time Created */
-        row = sheet1.getRow(18);
+        row = sheet1.getRow(20);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toString()); // NEEDS TO BE TRANSFORMED TO STRING
 
          /* Emergency Case Number of Modifications */
-        row = sheet1.getRow(18);
+        row = sheet1.getRow(21);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
 
