@@ -86,7 +86,7 @@ public class EMSReport {
         /* Emergency Address */
         row = sheet1.getRow(8);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getLocation().getZip());
+        cell.setCellValue(emergencyRecord.getLocation().getCity());
 
         /* Emergency State */
         row = sheet1.getRow(9);

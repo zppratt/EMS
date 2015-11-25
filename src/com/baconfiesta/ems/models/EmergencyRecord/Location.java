@@ -55,7 +55,7 @@ public class Location implements Serializable {
      * Retrieve the zip code where the emergency is/was located
      * @return the zip code
      */
-    public String getZip() {
+    public String getCity() {
         return city;
     }
 

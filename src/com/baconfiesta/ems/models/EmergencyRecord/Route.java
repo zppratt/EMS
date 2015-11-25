@@ -156,7 +156,7 @@ public class Route implements Serializable {
 
         /* Getting location of emergency in order to format the query string */
         Location emergencyLocation = record.getLocation();
-        searchQuery += " near " + emergencyLocation.getAddress() + ", " + emergencyLocation.getZip() + ", " + emergencyLocation.getState();
+        searchQuery += " near " + emergencyLocation.getAddress() + ", " + emergencyLocation.getCity() + ", " + emergencyLocation.getState();
 
         /* Creating a context for the places API query using our team key */
         GeoApiContext context = new GeoApiContext();
@@ -184,7 +184,7 @@ public class Route implements Serializable {
         String responderPhone = "";
         String responderAddress = "";
         String responderState = "";
-        int responderZip = 0;
+        String responderCity = "";
 
         /* Querying places according to the type of the emergency */
         try {
@@ -205,8 +205,8 @@ public class Route implements Serializable {
                 for(int i = 0; i<detailsQuery.addressComponents.length; i++) {
 
                     if(Arrays.asList(detailsQuery.addressComponents[i].types)
-                            .contains(AddressComponentType.POSTAL_CODE)) {
-                        responderZip = Integer.parseInt(detailsQuery.addressComponents[i].longName);
+                            .contains(AddressComponentType.LOCALITY)) {
+                        responderCity = detailsQuery.addressComponents[i].longName;
                     } else if(Arrays.asList(detailsQuery.addressComponents[i].types)
                             .contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
                         responderState = detailsQuery.addressComponents[i].longName;
@@ -222,7 +222,7 @@ public class Route implements Serializable {
         }
 
         /* Creating a new Responder and returning it */
-        return new Responder(responderPhone, responderAddress, responderState, responderZip);
+        return new Responder(responderPhone, responderAddress, responderState, responderCity);
     }
 
     /**
