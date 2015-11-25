@@ -185,12 +185,15 @@ public class EMSDatabase {
                 FileOutputStream fos = new FileOutputStream(database, false);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
         ) {
-            oos.writeObject(object);
-            System.out.println("Writing: " + object + " to the database file.");
+            Serializable[] array = new Serializable[2];
+            array[0] = (Serializable) users;
+            array[1] = (Serializable) records;
+            oos.writeObject(array);
+//            System.out.println("Writing: " + array + " to the database file.");
             oos.flush();
 
-            System.out.printf("\nDatabase contents after writeObject(%s):\nUsers: %s\nRecords:%s\n\n",
-                    object, getDatabaseUsers(), getDatabaseRecords());
+//            System.out.printf("\nDatabase contents after writeObject(%s):\nUsers: %s\nRecords:%s\n\n",
+//                    array, getDatabaseUsers(), getDatabaseRecords());
         }
     }
 
@@ -247,9 +250,9 @@ public class EMSDatabase {
         // Return the user if it exists
         if (users.containsKey(username)) {
 
-            System.err.println("Found username!");
-            System.out.println("username = " + username);
-            System.err.println("It's " + users.get(username));
+//            System.err.println("Found username!");
+//            System.out.println("username = " + username);
+//            System.err.println("It's " + users.get(username));
 
             return users.get(username);
         }
@@ -344,7 +347,7 @@ public class EMSDatabase {
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            tempRecords = (HashMap<Instant, EmergencyRecord>) is.readObject();
+            tempRecords = (HashMap<Instant, EmergencyRecord>) ((Serializable[]) is.readObject())[1];
             // These lines check each element for validity by accessing them
             for (Instant k : tempRecords.keySet()) ;
             for (EmergencyRecord v : tempRecords.values()) ;
@@ -374,7 +377,7 @@ public class EMSDatabase {
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            databaseUsers = (HashMap<String, EMSUser>) is.readObject();
+            databaseUsers = (Map<String, EMSUser>)((Serializable[]) is.readObject())[0];
             // These lines check each element for validity by accessing them
             for (String k : databaseUsers.keySet()) ;
             for (EMSUser v : databaseUsers.values()) ;

@@ -82,4 +82,8 @@ public class Caller implements Serializable {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    public String toString() {
+        return String.format("%s, %s", lastName, firstName);
+    }
 }

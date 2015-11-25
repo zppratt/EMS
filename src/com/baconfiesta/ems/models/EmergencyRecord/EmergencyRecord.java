@@ -232,7 +232,7 @@ public class EmergencyRecord implements Serializable{
     }
 
     public String toString() {
-        return String.format("EmergencyRecord:%d", this.hashCode());
+        return String.format("%s\nCaller: %s\n", getMetadata(), this.caller.toString());
     }
 
 }

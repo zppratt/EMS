@@ -1,6 +1,9 @@
 package com.baconfiesta.ems.controller;
 
+import com.baconfiesta.ems.TestConstants;
 import com.baconfiesta.ems.models.EMSDatabase;
+import com.baconfiesta.ems.models.EmergencyRecord.Caller;
+import com.baconfiesta.ems.models.EmergencyRecord.Category;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecordBuilder;
 import org.junit.After;
@@ -11,11 +14,16 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Random;
 
+import static java.lang.Math.abs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
@@ -25,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EMSDatabase.class})
-public class EMSControllerTest {
+public class EMSControllerTest implements TestConstants{
 
     final Path mockFilePath = Paths.get("db/test.db");
 
@@ -155,4 +163,34 @@ public class EMSControllerTest {
     public void testGetCurrentUser() throws Exception {
 
     }
+
+    @Test
+    public void testGetRecentRecords() throws Exception {
+        System.out.println("getUsers");
+
+        generateRecords();
+        EmergencyRecord[] list = controller.getRecentRecords();
+
+        for (EmergencyRecord emergencyRecord : list) {
+            System.out.println(emergencyRecord);
+            assertTrue(emergencyRecord!=null);
+        }
+
+    }
+
+    private void generateRecords() throws IOException, ClassNotFoundException {
+        Random r = new Random(Instant.now().toEpochMilli());
+        long endTime = Timestamp.valueOf("3000-01-01 00:00:00").getTime();
+        for ( int i = 0; i < 100; i++ ) {
+            controller.finalizeRecord(EmergencyRecordBuilder.newBuilder()
+                    .withCaller(new Caller(
+                            firstNames[abs(r.nextInt()%(firstNames.length-1))],
+                            lastNames[abs(r.nextInt()%(lastNames.length-1))],
+                            "999-999-9999"))
+                    .withCategory(Category.HOAX)
+                    .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))))
+                    .getNewEmergencyRecord());
+        }
+    }
+
 }

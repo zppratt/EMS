@@ -134,6 +134,6 @@ public class EMSUser implements Serializable {
 //                (this.username.equals("") ? "<blank>" : this.username),
 //                ( this.lastname.equals("") ? "<blank>" : this.lastname ),
 //                ( this.firstname.equals("") ? "<blank>" : this.firstname ));
-        return ( this.username.equals("") ? "<blank>" : this.username );
+        return ( this.username.equals("") ? "<blank>" : this.username ) + "\n";
     }
 }

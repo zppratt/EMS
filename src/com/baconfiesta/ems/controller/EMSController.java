@@ -163,6 +163,23 @@ public class EMSController {
     }
 
     /**
+     * Retrieves a sorted list of the last ten records
+     * @return the descending list of records
+     * @throws IOException can be caught from getCachedRecords
+     * @throws ClassNotFoundException can be caught from getCachedRecords
+     */
+    public EmergencyRecord[] getRecentRecords() throws IOException, ClassNotFoundException {
+        Instant[] temp = _database.getCachedRecords().keySet()
+                .toArray(new Instant[]{});
+        Arrays.sort(temp, Collections.reverseOrder());
+        EmergencyRecord[] list = new EmergencyRecord[10];
+        for (int i = 0; i < list.length; i++) {
+            list[i] = _database.getCachedRecords().get(temp[i]);
+        }
+        return list;
+    }
+
+    /**
      * Saves all emergency data to a file
      * @param file the file to save to
      */
