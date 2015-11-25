@@ -1,8 +1,13 @@
 package com.baconfiesta.ems.view;
 
+import java.util.SimpleTimeZone;
+
 public interface EMSInterfaceConstants {
 
-    String manageUsersErrorMessage = "Burrrrrp. Couldn't grab the user from the list for some reason.\n" +
-            "Ask TeamBaconFiesta for a software update.";
+    String BURP = "Burrrrrp. ";
+    String ASK = "\nAsk TeamBaconFiesta for a software update.";
+
+    int FOOTER_HEIGHT = 40;
+    int SIDEBAR_WIDTH = 200;
 
 }

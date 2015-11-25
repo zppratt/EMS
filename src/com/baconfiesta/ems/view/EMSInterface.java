@@ -4,7 +4,7 @@ import com.baconfiesta.ems.controller.EMSAdminController;
 import com.baconfiesta.ems.controller.EMSController;
 import com.baconfiesta.ems.controller.Authenticator;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
-import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.baconfiesta.ems.models.EmergencyRecord.*;
 import com.sun.javafx.application.PlatformImpl;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.InputMismatchException;
 
 /**
  * The main user interface window of the EMS system.
@@ -81,12 +82,18 @@ public class EMSInterface implements EMSInterfaceConstants {
         viewRecords = new JButton("View Emergency Records");
         manageUsers = new JButton("Manage Users");
         manageRecords = new JButton("Manage Records");
-        recentRecords = new String[]{"A record.......","A record.......","A record.......","A record.......","A record......."};
+        recentRecords = new String[]{"A record.............................................................................................","A record.......","A record.......","A record.......","A record......."};
 
         // Set panel properties
         header.setLayout(new BorderLayout());
         footer.setLayout(new FlowLayout(FlowLayout.LEFT));
+        footer.setMaximumSize(new Dimension(Integer.MAX_VALUE, FOOTER_HEIGHT));
+        footer.setMinimumSize(new Dimension(Integer.MAX_VALUE, FOOTER_HEIGHT));
+        footer.setPreferredSize(new Dimension(Integer.MAX_VALUE, FOOTER_HEIGHT));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.setMaximumSize(new Dimension(SIDEBAR_WIDTH,Integer.MAX_VALUE));
+        sidebar.setMinimumSize(new Dimension(SIDEBAR_WIDTH,Integer.MAX_VALUE));
+        sidebar.setPreferredSize(new Dimension(SIDEBAR_WIDTH,Integer.MAX_VALUE));
 
         // Set panel borders
         header.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -217,11 +224,8 @@ public class EMSInterface implements EMSInterfaceConstants {
                 // Find the next window
                 if (previous.equals("user")) {
                     back.setEnabled(false);
-                    if (controller.getCurrentUser().isAdmin()) {
-                        adminAcions();
-                    } else {
-                        userActions();
-                    }
+                    tempFile = null;
+                    userActions();
                 } else if (previous.equals("info")) {
                     enterInfo();
                 } else if (previous.equals("route")) {
@@ -286,14 +290,13 @@ public class EMSInterface implements EMSInterfaceConstants {
                         password[i] = ' ';
                     }
                 } catch (NullPointerException e) {
-                    JOptionPane.showMessageDialog(frame, "Sorry, but we could not log you in at this time. Try again " +
-                            "in 15 minutes.");
+                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
                     return;
                 } catch (ClassNotFoundException e) {
-                    JOptionPane.showMessageDialog(frame, "Couldn't find user.");
+                    JOptionPane.showMessageDialog(frame, "Invalid username or password.");
                     return;
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(frame, "Trouble reading user dictionary.");
+                    JOptionPane.showMessageDialog(frame, BURP + "Trouble reading user directory." + ASK);
                     return;
                 }
 
@@ -304,10 +307,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                     try {
                         controller = new EMSAdminController(user, null);
                     } catch (Exception e) {
-                        userActions();
+                        JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
                         return;
                     }
-                    adminAcions();
+                    userActions();
                 } else {
                     // If a normal user then use userActions()
                     userActions();
@@ -344,6 +347,10 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Refresh the window
         frame.revalidate();
         frame.repaint();
+
+        if(controller instanceof EMSAdminController){
+            adminAcions();
+        }
     }
 
     /**
@@ -352,7 +359,6 @@ public class EMSInterface implements EMSInterfaceConstants {
     private void adminAcions() {
         footer.add(manageUsers);
         footer.add(manageRecords);
-        userActions();
     }
 
     /**
@@ -395,8 +401,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         JPanel right = new JPanel();
 
         JRadioButton fire = new JRadioButton("Fire");
-        JRadioButton security = new JRadioButton("Security");
-        JRadioButton health = new JRadioButton("Health");
+        JRadioButton crime = new JRadioButton("Crime");
+        JRadioButton medical = new JRadioButton("Medical");
         JRadioButton hoax = new JRadioButton("Hoax");
         JRadioButton crash = new JRadioButton("Car Crash");
         ButtonGroup categories = new ButtonGroup();
@@ -405,8 +411,8 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Add radiobuttons to the group
         categories.add(fire);
-        categories.add(security);
-        categories.add(health);
+        categories.add(crime);
+        categories.add(medical);
         categories.add(hoax);
         categories.add(crash);
 
@@ -443,8 +449,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         stateText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         cityText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         fire.setAlignmentX(JFrame.LEFT_ALIGNMENT);
-        security.setAlignmentX(JFrame.LEFT_ALIGNMENT);
-        health.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        crime.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        medical.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         hoax.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         crash.setAlignmentX(JFrame.LEFT_ALIGNMENT);
 
@@ -494,9 +500,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         right.add(new JLabel("  "));
         right.add(fire);
         right.add(new JLabel("  "));
-        right.add(security);
+        right.add(crime);
         right.add(new JLabel("  "));
-        right.add(health);
+        right.add(medical);
         right.add(new JLabel("  "));
         right.add(hoax);
         right.add(new JLabel("  "));
@@ -511,6 +517,26 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(selectRoute);
 
         // Check if there was a temp record to repopulate
+        if(tempFile != null){
+            firstnameText.setText(tempFile.getCaller().getFirstName());
+            lastnameText.setText(tempFile.getCaller().getLastName());
+            phoneText.setText(tempFile.getCaller().getPhone());
+            addressText.setText(tempFile.getLocation().getAddress());
+            stateText.setText(tempFile.getLocation().getState());
+            cityText.setText(tempFile.getLocation().getCity());
+            descriptionText.setText(tempFile.getDescription());
+            if(tempFile.getCategory().equals(Category.FIRE)){
+                fire.setSelected(true);
+            }else if(tempFile.getCategory().equals(Category.CRIME)){
+                crime.setSelected(true);
+            }else if(tempFile.getCategory().equals(Category.MEDICAL)){
+                medical.setSelected(true);
+            }else if(tempFile.getCategory().equals(Category.HOAX)){
+                hoax.setSelected(true);
+            }else if(tempFile.getCategory().equals(Category.CRIME)){
+                crime.setSelected(true);
+            }
+        }
 
         // Refresh the window
         frame.revalidate();
@@ -518,6 +544,34 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         selectRoute.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // Create the temp record
+                tempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
+                try{
+                    tempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
+                    tempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
+                    tempFile.setDescription(descriptionText.getText());
+                    if(fire.isSelected()){
+                        tempFile.setCategory(Category.FIRE);
+                    }else if(crime.isSelected()){
+                        tempFile.setCategory(Category.CRIME);
+                    }else if(medical.isSelected()){
+                        tempFile.setCategory(Category.MEDICAL);
+                    }else if(hoax.isSelected()){
+                        tempFile.setCategory(Category.HOAX);
+                    }else if(crash.isSelected()){
+                        tempFile.setCategory(Category.CRIME);
+                    }else{
+                        throw new InputMismatchException();
+                    }
+                    controller.calculateRoute(tempFile);
+                } catch (InputMismatchException mismatch){
+                    JOptionPane.showMessageDialog(frame, "Every field must be filled.");
+                    return;
+                } catch (Exception exception){
+                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                    return;
+                }
+
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -560,6 +614,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         route1Text.setEditable(false);
         route2Text.setEditable(false);
         summaryText.setEditable(false);
+        summaryText.setLineWrap(true);
 
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
@@ -573,15 +628,11 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-
-        //
         // Fill in the route directions
-        //
 
 
-        //
-        // Fill in the summary
-        //
+        // Set the summary
+        summaryText.setText(tempFile.getParagraphForm());
 
         // Add to the frame
         mainframe.setLayout(new GridLayout(2, 2));
@@ -658,6 +709,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         routePane.setEditable(false);
         summaryText.setEditable(false);
 
+        summaryText.setLineWrap(true);
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
         // Open the web pages
@@ -671,6 +723,9 @@ public class EMSInterface implements EMSInterfaceConstants {
                 webEngine1.load("http://www.google.com");
             }
         });
+
+        // Set the summary
+        summaryText.setText(tempFile.getParagraphForm());
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(2, 1));
@@ -688,17 +743,27 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         closecase.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Update the emergency object
+                // Confirm finalize
+                if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to finalize the record\n This can not be undone.", null, JOptionPane.YES_NO_OPTION) == 0) {
 
-                // Save the emergency object
+                    // Save the emergency object
+                    try {
+                        controller.finalizeRecord(tempFile);
+                    } catch (Exception exception) {
+                        JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                        return;
+                    }
+                    // Reset the record
+                    tempFile = null;
 
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+                    // Clear the window
+                    mainframe.removeAll();
+                    footer.removeAll();
+                    sidebar.removeAll();
 
-                // Proceed to the next window
-                userActions();
+                    // Proceed to the next window
+                    userActions();
+                }
             }
         });
     }
@@ -713,7 +778,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Set previous frame
         previous = "user";
 
-    // Enable back button
+        // Enable back button
         back.setEnabled(true);
 
         // Declare local variables
@@ -738,6 +803,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         routePane.setEditable(false);
         summaryText.setEditable(false);
 
+        summaryText.setLineWrap(true);
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
         left.setLayout(new GridLayout(2,1));
@@ -972,7 +1038,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                                 controller.getUsers().toArray());
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
+                    JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
                     ex.printStackTrace();
                 }
                 frame.revalidate();
@@ -992,7 +1058,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                                 controller.getUsers().toArray());
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
+                    JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
                     ex.printStackTrace();
                 }
                 frame.revalidate();
@@ -1012,7 +1078,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                                 controller.getUsers().toArray());
                     }
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, manageUsersErrorMessage);
+                    JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
                 }
                 frame.revalidate();
                 frame.repaint();
@@ -1093,8 +1159,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         JPanel right = new JPanel();
 
         JRadioButton fire = new JRadioButton("Fire");
-        JRadioButton security = new JRadioButton("Security");
-        JRadioButton health = new JRadioButton("Health");
+        JRadioButton crime = new JRadioButton("Crime");
+        JRadioButton medical = new JRadioButton("Medical");
         JRadioButton hoax = new JRadioButton("Hoax");
         JRadioButton crash = new JRadioButton("Car Crash");
         ButtonGroup categories = new ButtonGroup();
@@ -1110,8 +1176,8 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Add radiobuttons to the group
         categories.add(fire);
-        categories.add(security);
-        categories.add(health);
+        categories.add(crime);
+        categories.add(medical);
         categories.add(hoax);
         categories.add(crash);
 
@@ -1148,8 +1214,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         stateText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         cityText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         fire.setAlignmentX(JFrame.LEFT_ALIGNMENT);
-        security.setAlignmentX(JFrame.LEFT_ALIGNMENT);
-        health.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        crime.setAlignmentX(JFrame.LEFT_ALIGNMENT);
+        medical.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         hoax.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         crash.setAlignmentX(JFrame.LEFT_ALIGNMENT);
 
@@ -1198,9 +1264,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         right.add(new JLabel("  "));
         right.add(fire);
         right.add(new JLabel("  "));
-        right.add(security);
+        right.add(crime);
         right.add(new JLabel("  "));
-        right.add(health);
+        right.add(medical);
         right.add(new JLabel("  "));
         right.add(crash);
         right.add(new JLabel("  "));

@@ -39,6 +39,11 @@ public class EmergencyRecord implements Serializable{
     private Route route;
 
     /**
+     * The description of the emergency
+     */
+    private String description;
+
+    /**
      * Default constructor for an emergency record
      * @param metadata the metadata
      * @param caller the caller
@@ -53,13 +58,15 @@ public class EmergencyRecord implements Serializable{
             Location location,
             Category category,
             Responder responder,
-            Route route) {
+            Route route,
+            String description) {
         this.setMetadata(metadata);
         this.setCaller(caller);
         this.setLocation(location);
         this.setCategory(category);
         this.setResponder(responder);
         this.setRoute(route);
+        this.setDescription(description);
     }
 
     /**
@@ -73,6 +80,7 @@ public class EmergencyRecord implements Serializable{
             this.setCategory(Category.CAR_CRASH);
             this.setLocation(new Location("999 Windmore Ave", "Indiana", "Fort Wayne"));
             this.setResponder(new Responder("2609999999", "999 Benchmark Ave", "Indiana", "Fort Wayne"));
+            this.description = "The first dummy biffed the second dummy.  The second dummy was injured.  But it turned out that he was faking and was given a red card.  Fifteen yard penalty and two free throws.";
             //this.setRoute(new Route());
         }
     }
@@ -129,6 +137,44 @@ public class EmergencyRecord implements Serializable{
     }
 
     /**
+     * Retrieves the description of the emergency
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Returns the emergency record in paragraph form
+     * @return the paragraph form
+     */
+    public String getParagraphForm(){
+        String paragraph = "";
+
+        paragraph += "Emergency Time: " + getMetadata().toString() + "\n";
+        paragraph += "Category: " + category.name() + "\n";
+
+        paragraph += "\nCaller Information:\n";
+        paragraph += "Name: " + caller.getFirstName() + " " + caller.getLastName() + "\n";
+        paragraph += "Phone: " + caller.getPhone() + "\n";
+        paragraph += "Address: " + location.getAddress() + "\n";
+        paragraph += "City: " + location.getCity() + "\n";
+        paragraph += "State: " + location.getState() + "\n";
+
+        paragraph += "\nDescription\n";
+        paragraph += description + "\n";
+
+        paragraph += "\nResponder Information:\n";
+        paragraph += "Phone: " + responder.getPhoneNumber() + "\n";
+        paragraph += "Address: " + responder.getAddress() + "\n";
+        paragraph += "State: " + responder.getState() + "\n";
+        paragraph += "Zip: " + responder.getZip() + "\n";
+
+        return paragraph;
+
+    }
+
+    /**
      * Sets the caller for the emergency
      * @param caller the caller
      */
@@ -175,6 +221,14 @@ public class EmergencyRecord implements Serializable{
      */
     protected void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+    /**
+     * Sets the description of the emergency
+     * @param description of this record
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String toString() {

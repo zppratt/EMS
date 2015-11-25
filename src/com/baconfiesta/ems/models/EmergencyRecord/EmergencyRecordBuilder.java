@@ -35,6 +35,11 @@ public class EmergencyRecordBuilder implements Serializable{
     private Responder responder;
 
     /**
+     * The description of the emergency
+     */
+    private String description;
+
+    /**
      * The route generated from the responder to the emergency
      */
     private Route route;
@@ -45,6 +50,7 @@ public class EmergencyRecordBuilder implements Serializable{
         location = new Location("","", "");
         category = Category.HOAX;
         responder = new Responder("","","", "");
+        description = "";
         //route = new Route();
     }
 
@@ -78,9 +84,14 @@ public class EmergencyRecordBuilder implements Serializable{
         return this;
     }
 
-    public EmergencyRecordBuilder withRoute(Route route) {
-        this.route = route;
+    public EmergencyRecordBuilder withDescription(String description) {
+        this.description = description;
         return this;
+    }
+
+
+    protected void setDescription(String description) {
+        this.description = description;
     }
 
     public static EmergencyRecordBuilder newBuilder() {
@@ -88,7 +99,7 @@ public class EmergencyRecordBuilder implements Serializable{
     }
 
     public EmergencyRecord getNewEmergencyRecord() {
-        return new EmergencyRecord(metadata, caller, location, category, responder, route); // with all the parameters
+        return new EmergencyRecord(metadata, caller, location, category, responder, route, description); // with all the parameters
     }
 
 }
