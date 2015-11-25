@@ -376,14 +376,14 @@ public class EMSInterface implements EMSInterfaceConstants {
         JLabel phoneLabel = new JLabel("Phone Number:");
         JLabel addressLabel = new JLabel("Address:");
         JLabel stateLabel = new JLabel("State:");
-        JLabel zipLabel = new JLabel("Zip Code:");
+        JLabel cityLabel = new JLabel("City:");
 
         JTextField firstnameText = new JTextField();
         JTextField lastnameText = new JTextField();
         JTextField phoneText = new JTextField();
         JTextField addressText = new JTextField();
         JTextField stateText = new JTextField();
-        JTextField zipText = new JTextField();
+        JTextField cityText = new JTextField();
 
         JTextArea descriptionText = new JTextArea("", 18, 20);
         JScrollPane descriptionScroll = new JScrollPane(descriptionText);
@@ -422,7 +422,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height));
         addressText.setMaximumSize(new Dimension(200, addressText.getPreferredSize().height));
         stateText.setMaximumSize(new Dimension(200, stateText.getPreferredSize().height));
-        zipText.setMaximumSize(new Dimension(200, zipText.getPreferredSize().height));
+        cityText.setMaximumSize(new Dimension(200, cityText.getPreferredSize().height));
 
         descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         callerTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
@@ -433,13 +433,13 @@ public class EMSInterface implements EMSInterfaceConstants {
         phoneLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         addressLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         stateLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        zipLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        cityLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         firstnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         lastnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         phoneText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         addressText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         stateText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        zipText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        cityText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         fire.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         security.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         health.setAlignmentX(JFrame.LEFT_ALIGNMENT);
@@ -479,13 +479,13 @@ public class EMSInterface implements EMSInterfaceConstants {
         middle.add(new JLabel("  "));
         middle.add(addressText);
         middle.add(new JLabel("  "));
+        middle.add(cityLabel);
+        middle.add(new JLabel("  "));
+        middle.add(cityText);
+        middle.add(new JLabel("  "));
         middle.add(stateLabel);
         middle.add(new JLabel("  "));
         middle.add(stateText);
-        middle.add(new JLabel("  "));
-        middle.add(zipLabel);
-        middle.add(new JLabel("  "));
-        middle.add(zipText);
 
         // Add components to right part of mainframe
         right.add(categorizeTitle);
@@ -1069,14 +1069,14 @@ public class EMSInterface implements EMSInterfaceConstants {
         JLabel phoneLabel = new JLabel("Phone Number:");
         JLabel addressLabel = new JLabel("Address:");
         JLabel stateLabel = new JLabel("State:");
-        JLabel zipLabel = new JLabel("Zip Code:");
+        JLabel cityLabel = new JLabel("City Code:");
 
         JTextField firstnameText = new JTextField();
         JTextField lastnameText = new JTextField();
         JTextField phoneText = new JTextField();
         JTextField addressText = new JTextField();
         JTextField stateText = new JTextField();
-        JTextField zipText = new JTextField();
+        JTextField cityText = new JTextField();
 
         JTextArea descriptionText = new JTextArea("", 18, 20);
         JScrollPane descriptionScroll = new JScrollPane(descriptionText);
@@ -1117,7 +1117,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height));
         addressText.setMaximumSize(new Dimension(200, addressText.getPreferredSize().height));
         stateText.setMaximumSize(new Dimension(200, stateText.getPreferredSize().height));
-        zipText.setMaximumSize(new Dimension(200, zipText.getPreferredSize().height));
+        cityText.setMaximumSize(new Dimension(200, cityText.getPreferredSize().height));
 
         descriptionTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         callerTitle.setAlignmentX(JFrame.CENTER_ALIGNMENT);
@@ -1128,13 +1128,13 @@ public class EMSInterface implements EMSInterfaceConstants {
         phoneLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         addressLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         stateLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        zipLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        cityLabel.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         firstnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         lastnameText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         phoneText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         addressText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         stateText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
-        zipText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
+        cityText.setAlignmentX(JFrame.CENTER_ALIGNMENT);
         fire.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         security.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         health.setAlignmentX(JFrame.LEFT_ALIGNMENT);
@@ -1172,13 +1172,13 @@ public class EMSInterface implements EMSInterfaceConstants {
         left.add(new JLabel("  "));
         left.add(addressText);
         left.add(new JLabel("  "));
+        left.add(cityLabel);
+        left.add(new JLabel("  "));
+        left.add(cityText);
+        left.add(new JLabel("  "));
         left.add(stateLabel);
         left.add(new JLabel("  "));
         left.add(stateText);
-        left.add(new JLabel("  "));
-        left.add(zipLabel);
-        left.add(new JLabel("  "));
-        left.add(zipText);
 
         // Add components to right part of mainframe
         left.add(new JLabel("  "));

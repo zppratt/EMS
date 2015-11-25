@@ -26,20 +26,20 @@ public class Responder implements Serializable {
     /**
      * The zip code where the responder is located
      */
-    private int zip;
+    private String city;
 
     /**
      * Default constructor for a responder object
      * @param phoneNumber the phone number
      * @param address the street address
      * @param state the state
-     * @param zip the zip code
+     * @param city the zip code
      */
-    public Responder(String phoneNumber, String address, String state, int zip) {
+    public Responder(String phoneNumber, String address, String state, String city) {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.state = state;
-        this.zip = zip;
+        this.city = city;
     }
 
     /**
@@ -70,8 +70,8 @@ public class Responder implements Serializable {
      * Retrieve the zip code where the responder is/was located
      * @return the zip code
      */
-    public int getZip() {
-        return zip;
+    public String getZip() {
+        return city;
     }
 
 }

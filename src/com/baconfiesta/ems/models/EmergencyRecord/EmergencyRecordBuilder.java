@@ -42,9 +42,9 @@ public class EmergencyRecordBuilder implements Serializable{
     public EmergencyRecordBuilder() {
         metadata = new Metadata();
         caller = new Caller("","","");
-        location = new Location("","", 99999);
+        location = new Location("","", "");
         category = Category.HOAX;
-        responder = new Responder("","","", 99999);
+        responder = new Responder("","","", "");
         //route = new Route();
     }
 

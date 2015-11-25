@@ -71,8 +71,8 @@ public class EmergencyRecord implements Serializable{
             this.setMetadata(new Metadata());
             this.setCaller(new Caller("John", "Smith", "2608675309"));
             this.setCategory(Category.CAR_CRASH);
-            this.setLocation(new Location("999 Windmore Ave", "Indiana", 46825));
-            this.setResponder(new Responder("2609999999", "999 Benchmark Ave", "Indiana", 46805));
+            this.setLocation(new Location("999 Windmore Ave", "Indiana", "Fort Wayne"));
+            this.setResponder(new Responder("2609999999", "999 Benchmark Ave", "Indiana", "Fort Wayne"));
             //this.setRoute(new Route());
         }
     }
