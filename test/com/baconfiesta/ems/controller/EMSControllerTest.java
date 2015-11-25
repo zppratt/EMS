@@ -178,7 +178,7 @@ public class EMSControllerTest implements TestConstants{
 
     }
 
-    private void generateRecords() throws IOException, ClassNotFoundException {
+    public void generateRecords() throws IOException, ClassNotFoundException {
         Random r = new Random(Instant.now().toEpochMilli());
         long endTime = Timestamp.valueOf("3000-01-01 00:00:00").getTime();
         for ( int i = 0; i < 100; i++ ) {

@@ -7,7 +7,7 @@ import java.time.Instant;
  * An emergency record in the system
  * @author team_bacon_fiesta
  */
-public class EmergencyRecordBuilder implements Serializable{
+public class EmergencyRecordBuilder implements Serializable {
 
     /**
      * Info about the record

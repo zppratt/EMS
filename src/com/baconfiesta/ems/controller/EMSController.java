@@ -1,19 +1,26 @@
 package com.baconfiesta.ems.controller;
 
+import com.baconfiesta.ems.Constants;
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
+import com.baconfiesta.ems.models.EmergencyRecord.Caller;
+import com.baconfiesta.ems.models.EmergencyRecord.Category;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecordBuilder;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.abs;
 
 /**
  * The main controller for the EMS system
  * @author team_bacon_fiesta
  */
-public class EMSController {
+public class EMSController implements Constants {
 
     /**
      * The current user of the system
@@ -234,6 +241,24 @@ public class EMSController {
      */
     public EMSUser getCurrentUser() {
         return currentUser;
+    }
+
+    /**
+     * Creates users and records for manual testing
+     */
+    public void generateTestData() throws IOException, ClassNotFoundException {
+        Random r = new Random(Instant.now().toEpochMilli());
+        long endTime = Timestamp.valueOf("3000-01-01 00:00:00").getTime();
+        for (int i = 0; i < 100; i++) {
+            finalizeRecord(EmergencyRecordBuilder.newBuilder()
+                    .withCaller(new Caller(
+                            firstNames[abs(r.nextInt() % (firstNames.length - 1))],
+                            lastNames[abs(r.nextInt() % (lastNames.length - 1))],
+                            "999-999-9999"))
+                    .withCategory(Category.HOAX)
+                    .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))))
+                    .getNewEmergencyRecord());
+        }
     }
 
 }
