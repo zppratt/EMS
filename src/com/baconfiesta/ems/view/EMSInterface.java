@@ -34,7 +34,6 @@ public class EMSInterface implements EMSInterfaceConstants {
     private JPanel mainframe;
     private JPanel footer;
     private JPanel sidebar;
-    private JList sidebarList;
 
     private JLabel frameTitle;
 
@@ -63,7 +62,7 @@ public class EMSInterface implements EMSInterfaceConstants {
     private String previous;
 
     private EmergencyRecord tempFile;
-    private EmergencyRecord[] recentRecords;
+    private String[] recentRecords;
 
     /**
      * The constructor for EMSInterface
@@ -75,7 +74,6 @@ public class EMSInterface implements EMSInterfaceConstants {
         mainframe = new JPanel();
         footer = new JPanel();
         sidebar = new JPanel();
-        sidebarList = new JList();
         frameTitle = new JLabel();
         back = new JButton("Back");
         logout = new JButton("Logout");
@@ -83,6 +81,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         viewRecords = new JButton("View Emergency Records");
         manageUsers = new JButton("Manage Users");
         manageRecords = new JButton("Manage Records");
+        recentRecords = new String[]{"A record.......","A record.......","A record.......","A record.......","A record......."};
 
         // Set panel properties
         header.setLayout(new BorderLayout());
@@ -324,12 +323,15 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Change the title
         frameTitle.setText("Select an Action");
 
-        // Repopulate the list with the recent records
-        sidebarList.setListData(new String[]{"a case record.........................", "a case record.........................", "a case record.........................", "a case record.........................", "a case record........................."});
-        sidebar.add(sidebarList);
-
         // Disable the back button
         back.setEnabled(false);
+
+        // Create local variables
+        JList sidebarList = new JList(recentRecords);
+        JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
+
+        // Add components to the header
+        sidebar.add(sidebarListScroll);
 
         // Add components to the header
         header.add(back, BorderLayout.WEST);
@@ -729,6 +731,9 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         JButton generateReport = new JButton("Generate Stats");
 
+        JList sidebarList = new JList(recentRecords);
+        JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
+
         // Set properties of the fields
         routePane.setEditable(false);
         summaryText.setEditable(false);
@@ -761,7 +766,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         right.add(summaryTitle);
         right.add(summaryScroll);
 
-        sidebar.add(sidebarList);
+        sidebar.add(sidebarListScroll);
 
         footer.add(generateReport);
 
@@ -815,6 +820,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton upgrade = new JButton("Make Admin");
         JButton downgrade = new JButton("Revoke Admin");
         JButton deleteUser = new JButton("Delete User");
+
+        JList sidebarList = new JList();
+        JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
 
         // Set properties of the fields
         buttonGroup.add(users);
@@ -888,7 +896,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         sidebar.add(listTitle);
         sidebar.add(users);
         sidebar.add(admins);
-        sidebar.add(sidebarList);
+        sidebar.add(sidebarListScroll);
 
         footer.add(addUser);
         footer.add(upgrade);
@@ -1096,6 +1104,10 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton backupData = new JButton("Backup Data");
         JButton restoreData = new JButton("Restore Data");
 
+
+        JList sidebarList = new JList(recentRecords);
+        JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
+
         // Add radiobuttons to the group
         categories.add(fire);
         categories.add(security);
@@ -1197,8 +1209,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         right.add(new JLabel("  "));
         right.add(descriptionScroll);
 
-        sidebarList.setListData(new String[]{"a case record.........................", "a case record.........................", "a case record.........................", "a case record.........................", "a case record........................."});
-        sidebar.add(sidebarList);
+        sidebar.add(sidebarListScroll);
 
         // Add components to footer
         footer.add(saveRecord);
