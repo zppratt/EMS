@@ -42,9 +42,7 @@ public class EMSInterface implements EMSInterfaceConstants {
     private JButton logout;
     private JButton createCase;
     private JButton viewRecords;
-    private JButton generateReport;
     private JButton manageUsers;
-    private JButton manageData;
     private JButton manageRecords;
 
     private WebView browser1;
@@ -77,15 +75,13 @@ public class EMSInterface implements EMSInterfaceConstants {
         mainframe = new JPanel();
         footer = new JPanel();
         sidebar = new JPanel();
-        sidebarList = new JList(new String[]{"a case record.........................", "a case record.........................", "a case record.........................", "a case record.........................", "a case record........................."});
+        sidebarList = new JList();
         frameTitle = new JLabel();
         back = new JButton("Back");
         logout = new JButton("Logout");
         createCase = new JButton("Create a New Emergency Case");
         viewRecords = new JButton("View Emergency Records");
-        generateReport = new JButton("Generate Reports");
         manageUsers = new JButton("Manage Users");
-        manageData = new JButton("Manage Data");
         manageRecords = new JButton("Manage Records");
 
         // Set panel properties
@@ -185,19 +181,6 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        // Set generateReport actionListener
-        generateReport.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
-
-                // Proceed to next window
-                generateStats();
-            }
-        });
-
         // Set manageUsers actionListener
         manageUsers.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -211,19 +194,6 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         });
 
-        // Set manageData actionListener
-        manageData.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
-
-                // Proceed to the next window
-                manageData();
-            }
-        });
-
         // Set manageRecords actionListener
         manageRecords.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -233,7 +203,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 sidebar.removeAll();
 
                 // Proceed to the next window
-                modifyRecords();
+                manageRecords();
             }
         });
 
@@ -368,7 +338,6 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Add components to the footer
         footer.add(createCase);
         footer.add(viewRecords);
-        footer.add(generateReport);
 
         // Refresh the window
         frame.revalidate();
@@ -380,7 +349,6 @@ public class EMSInterface implements EMSInterfaceConstants {
      */
     private void adminAcions() {
         footer.add(manageUsers);
-        footer.add(manageData);
         footer.add(manageRecords);
         userActions();
     }
@@ -597,8 +565,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         PlatformImpl.startup(new Runnable() {
             @Override
             public void run() {
-                webEngine1.load("file:///C:/Users/cchas/Downloads/Maps.html");
-                webEngine2.load("file:///C:/Users/cchas/Downloads/Maps.html");
+
+                webEngine1.load("http://www.google.com");
+                webEngine2.load("http://www.google.com");
             }
         });
 
@@ -697,7 +666,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         PlatformImpl.startup(new Runnable() {
             @Override
             public void run() {
-                webEngine1.load("file:///C:/Users/cchas/Downloads/Maps.html");
+                webEngine1.load("http://www.google.com");
             }
         });
 
@@ -733,24 +702,6 @@ public class EMSInterface implements EMSInterfaceConstants {
     }
 
     /**
-     * Show the screen to generate some statistics about the emergency records
-     */
-    private void generateStats() {
-        // Change the title
-        frameTitle.setText("Generate stats");
-
-        // Set previous frame
-        previous = "user";
-
-        // Enable back button
-        back.setEnabled(true);
-
-        // Refresh the window
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    /**
      * Show the screen to view the emergency records
      */
     private void displayRecords() {
@@ -760,7 +711,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Set previous frame
         previous = "user";
 
-        // Enable back button
+    // Enable back button
         back.setEnabled(true);
 
         // Declare local variables
@@ -773,30 +724,46 @@ public class EMSInterface implements EMSInterfaceConstants {
         JScrollPane summaryScroll = new JScrollPane(summaryText);
         JScrollPane routeScroll = new JScrollPane(routePane);
 
+        JPanel left = new JPanel();
+        JPanel right = new JPanel();
+
+        JButton generateReport = new JButton("Generate Stats");
+
         // Set properties of the fields
         routePane.setEditable(false);
         summaryText.setEditable(false);
 
-        //
+        summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
+
+        left.setLayout(new GridLayout(2,1));
+        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
+
         // Open the web pages
         //
         // GET THE URL TO SHOW ROUTE
         //
-        try {
-            URL route1URL = new URL("http://www.google.com");
-            routePane.setPage(route1URL);
-        } catch (MalformedURLException e) {
-            System.out.println("Can't open the url");
-        } catch (java.io.IOException e) {
-            System.out.println("Can't open the url");
-        }
+        // Open the web browser
+        PlatformImpl.startup(new Runnable() {
+            @Override
+            public void run() {
+                webEngine1.load("http://www.google.com");
+            }
+        });
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(1, 2));
-        mainframe.add(routeScroll);
-        mainframe.add(summaryScroll);
+        mainframe.add(left);
+        mainframe.add(right);
+
+        left.add(route1Panel);
+        left.add(routeScroll);
+
+        right.add(summaryTitle);
+        right.add(summaryScroll);
 
         sidebar.add(sidebarList);
+
+        footer.add(generateReport);
 
         // Refresh the window
         frame.revalidate();
@@ -913,6 +880,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         left.add(usernameText);
 
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
+        right.add(new JLabel("  "));
         right.add(userActivityLabel);
         right.add(userActivity);
 
@@ -1070,26 +1038,9 @@ public class EMSInterface implements EMSInterfaceConstants {
     }
 
     /**
-     * Admin only: Show the screen to backup and restore data
-     */
-    private void manageData() {
-        // Set previous frame
-        previous = "user";
-
-        // Enable back button
-        back.setEnabled(true);
-
-        // Refresh the window
-        frame.revalidate();
-        frame.repaint();
-
-
-    }
-
-    /**
      * Admin only: Show the screen to modify emergency records
      */
-    private void modifyRecords() {
+    private void manageRecords() {
         // Change the title
         frameTitle.setText("Modify Record");
 
@@ -1142,6 +1093,8 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         JButton saveRecord = new JButton("Save Record");
         JButton deleteRecord = new JButton("Delete Record");
+        JButton backupData = new JButton("Backup Data");
+        JButton restoreData = new JButton("Restore Data");
 
         // Add radiobuttons to the group
         categories.add(fire);
@@ -1250,6 +1203,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Add components to footer
         footer.add(saveRecord);
         footer.add(deleteRecord);
+        footer.add(backupData);
+        footer.add(restoreData);
 
         // Populate the field with the record info
 
@@ -1267,6 +1222,27 @@ public class EMSInterface implements EMSInterfaceConstants {
         deleteRecord.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Save the changes
+
+            }
+        });
+
+        backupData.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Open the file
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.showSaveDialog(frame);
+
+                // Save database to the file
+            }
+        });
+
+        restoreData.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Open the file
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.showOpenDialog(frame);
+
+                // Load database from file
 
             }
         });
