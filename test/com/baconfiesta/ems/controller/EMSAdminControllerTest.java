@@ -2,6 +2,8 @@ package com.baconfiesta.ems.controller;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -65,4 +67,5 @@ public class EMSAdminControllerTest extends EMSControllerTest {
     public void testViewUserActivity() throws Exception {
 
     }
+
 }

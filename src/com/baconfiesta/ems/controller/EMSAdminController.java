@@ -2,8 +2,17 @@ package com.baconfiesta.ems.controller;
 
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
+import com.baconfiesta.ems.models.EmergencyRecord.Caller;
+import com.baconfiesta.ems.models.EmergencyRecord.Category;
+import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecordBuilder;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Random;
+
+import static java.lang.Math.abs;
 
 /**
  * Privileged version of the main controller for the EMS system
@@ -63,4 +72,34 @@ public class EMSAdminController extends EMSController {
     public String viewUserActivity(EMSUser user) {
         return null;
     }
+
+    /**
+     * Creates users and records for manual testing
+     */
+    public void generateTestData() throws IOException, ClassNotFoundException {
+        Random r = new Random(Instant.now().toEpochMilli());
+        long endTime = Timestamp.valueOf("3000-01-01 00:00:00").getTime();
+        System.out.println("Generating Records:");
+        for (int i = 0; i < 100; i++) {
+            EmergencyRecord er = EmergencyRecordBuilder.newBuilder()
+                    .withCaller(new Caller(
+                            firstNames[abs(r.nextInt() % (firstNames.length - 1))],
+                            lastNames[abs(r.nextInt() % (lastNames.length - 1))],
+                            "999-999-9999"))
+                    .withCategory(Category.HOAX)
+                    .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))))
+                    .getNewEmergencyRecord();
+            finalizeRecord(er);
+            System.out.println(er);
+        }
+        System.out.println("Generating Users:");
+        for (int i = 0; i < 100; i++) {
+            String firstName = firstNames[abs(r.nextInt() % (firstNames.length - 1))];
+            String lastName = lastNames[abs(r.nextInt() % (lastNames.length - 1))];
+            String id = firstName.substring(0,1).toLowerCase() + lastName.toLowerCase();
+            EMSUser usr = addUser(firstName, lastName, id, id);
+            System.out.println(usr);
+        }
+    }
+
 }
