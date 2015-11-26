@@ -1,8 +1,8 @@
 package com.baconfiesta.ems.view;
 
+import com.baconfiesta.ems.controller.Authenticator;
 import com.baconfiesta.ems.controller.EMSAdminController;
 import com.baconfiesta.ems.controller.EMSController;
-import com.baconfiesta.ems.controller.Authenticator;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.*;
 import com.sun.javafx.application.PlatformImpl;
@@ -19,8 +19,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.InputMismatchException;
 
 /**
@@ -63,7 +61,7 @@ public class EMSInterface implements EMSInterfaceConstants {
     private String previous;
 
     private EmergencyRecord tempFile;
-    private String[] recentRecords;
+    private EmergencyRecord[] recentRecords;
 
     /**
      * The constructor for EMSInterface
@@ -82,7 +80,6 @@ public class EMSInterface implements EMSInterfaceConstants {
         viewRecords = new JButton("View Emergency Records");
         manageUsers = new JButton("Manage Users");
         manageRecords = new JButton("Manage Records");
-        recentRecords = new String[]{"A record.............................................................................................","A record.......","A record.......","A record.......","A record......."};
 
         // Set panel properties
         header.setLayout(new BorderLayout());
@@ -323,6 +320,13 @@ public class EMSInterface implements EMSInterfaceConstants {
      * Show screen for user actions
      */
     private void userActions() {
+
+        try {
+            recentRecords = controller.getRecentRecords();
+        } catch (IOException | ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+        }
+
         // Change the title
         frameTitle.setText("Select an Action");
 
