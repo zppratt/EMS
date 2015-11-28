@@ -13,8 +13,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -269,49 +267,47 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        loginButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        loginButton.addActionListener(event -> {
 
-                EMSUser user;
-                String username = usernameText.getText();
-                char[] password = passwordText.getPassword();
+            EMSUser user;
+            String username = usernameText.getText();
+            char[] password = passwordText.getPassword();
 
-                System.out.printf("Attempting to login user: '%s'\n", username); // TODO: remove
+            System.out.printf("Attempting to login user: '%s'\n", username); // TODO: remove
 
-                // Attempt to login as a user using specified info
+            // Attempt to login as a user using specified info
+            try {
+                Authenticator.init();
+                user = Authenticator.authenticate(username, password);
+                // blank out password for security
+                for (int i = 0; i < password.length; i++) {
+                    password[i] = ' ';
+                }
+            } catch (NullPointerException e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                return;
+            } catch (ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(frame, "Invalid username or password.");
+                return;
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Trouble reading user directory." + ASK);
+                return;
+            }
+
+            // If successful then clear window
+            mainframe.removeAll();
+            if (user.isAdmin()) {
+                // If an administrator user then use adminActions()
                 try {
-                    Authenticator.init();
-                    user = Authenticator.authenticate(username, password);
-                    // blank out password for security
-                    for (int i = 0; i < password.length; i++) {
-                        password[i] = ' ';
-                    }
-                } catch (NullPointerException e) {
+                    controller = new EMSAdminController(user, null);
+                } catch (Exception e) {
                     JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
                     return;
-                } catch (ClassNotFoundException e) {
-                    JOptionPane.showMessageDialog(frame, "Invalid username or password.");
-                    return;
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(frame, BURP + "Trouble reading user directory." + ASK);
-                    return;
                 }
-
-                // If successful then clear window
-                mainframe.removeAll();
-                if (user.isAdmin()) {
-                    // If an administrator user then use adminActions()
-                    try {
-                        controller = new EMSAdminController(user, null);
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
-                        return;
-                    }
-                    userActions();
-                } else {
-                    // If a normal user then use userActions()
-                    userActions();
-                }
+                userActions();
+            } else {
+                // If a normal user then use userActions()
+                userActions();
             }
         });
     }
@@ -334,7 +330,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         back.setEnabled(false);
 
         // Create local variables
-        JList sidebarList = new JList(recentRecords);
+        JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
         JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
 
         // Add components to the header
@@ -353,14 +349,14 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.repaint();
 
         if(controller instanceof EMSAdminController){
-            adminAcions();
+            adminActions();
         }
     }
 
     /**
      * Show screen for admin actions
      */
-    private void adminAcions() {
+    private void adminActions() {
         footer.add(manageUsers);
         footer.add(manageRecords);
     }
@@ -546,44 +542,42 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        selectRoute.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Create the temp record
-                tempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
-                try{
-                    tempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
-                    tempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
-                    tempFile.setDescription(descriptionText.getText());
-                    if(fire.isSelected()){
-                        tempFile.setCategory(Category.FIRE);
-                    }else if(crime.isSelected()){
-                        tempFile.setCategory(Category.CRIME);
-                    }else if(medical.isSelected()){
-                        tempFile.setCategory(Category.MEDICAL);
-                    }else if(hoax.isSelected()){
-                        tempFile.setCategory(Category.HOAX);
-                    }else if(crash.isSelected()){
-                        tempFile.setCategory(Category.CRIME);
-                    }else{
-                        throw new InputMismatchException();
-                    }
-                    controller.calculateRoute(tempFile);
-                } catch (InputMismatchException mismatch){
-                    JOptionPane.showMessageDialog(frame, "Every field must be filled.");
-                    return;
-                } catch (Exception exception){
-                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
-                    return;
+        selectRoute.addActionListener(event -> {
+            // Create the temp record
+            tempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
+            try{
+                tempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
+                tempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
+                tempFile.setDescription(descriptionText.getText());
+                if(fire.isSelected()){
+                    tempFile.setCategory(Category.FIRE);
+                }else if(crime.isSelected()){
+                    tempFile.setCategory(Category.CRIME);
+                }else if(medical.isSelected()){
+                    tempFile.setCategory(Category.MEDICAL);
+                }else if(hoax.isSelected()){
+                    tempFile.setCategory(Category.HOAX);
+                }else if(crash.isSelected()){
+                    tempFile.setCategory(Category.CRIME);
+                }else{
+                    throw new InputMismatchException();
                 }
-
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
-
-                // Proceed to the next window
-                routeSelection();
+                controller.calculateRoute(tempFile);
+            } catch (InputMismatchException mismatch){
+                JOptionPane.showMessageDialog(frame, "Every field must be filled.");
+                return;
+            } catch (Exception exception){
+                JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                return;
             }
+
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
+
+            // Proceed to the next window
+            routeSelection();
         });
     }
 
@@ -623,13 +617,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
         // Open the web browser
-        PlatformImpl.startup(new Runnable() {
-            @Override
-            public void run() {
-
-                webEngine1.load("http://www.google.com");
-                webEngine2.load("http://www.google.com");
-            }
+        PlatformImpl.startup(() -> {
+            webEngine1.load("http://www.google.com");
+            webEngine2.load("http://www.google.com");
         });
 
         // Fill in the route directions
@@ -655,32 +645,28 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        route1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Update the emergency object
+        route1.addActionListener(event -> {
+            // Update the emergency object
 
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
 
-                // Proceed to the next window
-                summaryView();
-            }
+            // Proceed to the next window
+            summaryView();
         });
 
-        route2.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Update the emergency object
+        route2.addActionListener(event -> {
+            // Update the emergency object
 
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
 
-                // Proceed to the next window
-                summaryView();
-            }
+            // Proceed to the next window
+            summaryView();
         });
     }
 
@@ -721,12 +707,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // GET THE URL TO SHOW ROUTE
         //
         // Open the web browser
-        PlatformImpl.startup(new Runnable() {
-            @Override
-            public void run() {
-                webEngine1.load("http://www.google.com");
-            }
-        });
+        PlatformImpl.startup(() -> webEngine1.load("http://www.google.com"));
 
         // Set the summary
         summaryText.setText(tempFile.getParagraphForm());
@@ -745,29 +726,27 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        closecase.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Confirm finalize
-                if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to finalize the record\n This can not be undone.", null, JOptionPane.YES_NO_OPTION) == 0) {
+        closecase.addActionListener(event -> {
+            // Confirm finalize
+            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to finalize the record\n This can not be undone.", null, JOptionPane.YES_NO_OPTION) == 0) {
 
-                    // Save the emergency object
-                    try {
-                        controller.finalizeRecord(tempFile);
-                    } catch (Exception exception) {
-                        JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
-                        return;
-                    }
-                    // Reset the record
-                    tempFile = null;
-
-                    // Clear the window
-                    mainframe.removeAll();
-                    footer.removeAll();
-                    sidebar.removeAll();
-
-                    // Proceed to the next window
-                    userActions();
+                // Save the emergency object
+                try {
+                    controller.finalizeRecord(tempFile);
+                } catch (Exception exception) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                    return;
                 }
+                // Reset the record
+                tempFile = null;
+
+                // Clear the window
+                mainframe.removeAll();
+                footer.removeAll();
+                sidebar.removeAll();
+
+                // Proceed to the next window
+                userActions();
             }
         });
     }
@@ -800,7 +779,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         JButton generateReport = new JButton("Generate Stats");
 
-        JList sidebarList = new JList(recentRecords);
+        JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
         JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
 
         // Set properties of the fields
@@ -818,12 +797,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // GET THE URL TO SHOW ROUTE
         //
         // Open the web browser
-        PlatformImpl.startup(new Runnable() {
-            @Override
-            public void run() {
-                webEngine1.load("http://www.google.com");
-            }
-        });
+        PlatformImpl.startup(() -> webEngine1.load("http://www.google.com"));
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(1, 2));
@@ -891,7 +865,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton downgrade = new JButton("Revoke Admin");
         JButton deleteUser = new JButton("Delete User");
 
-        JList sidebarList = new JList();
+        JList<Object> sidebarList = new JList<>();
         JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
 
         // Set properties of the fields
@@ -977,141 +951,124 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        sidebarList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                // Get the selected user
-                EMSUser user = (EMSUser) sidebarList.getSelectedValue();
+        sidebarList.addListSelectionListener(event -> {
+            // Get the selected user
+            EMSUser user = (EMSUser) sidebarList.getSelectedValue();
 
-                // Populate the panel with the data
-                if (user != null) {
-                    userActivityText.setText(
-                            "Username: " + user.getUsername() + "\n" +
-                            "First Name: " + user.getFirstname() + "\n" +
-                            "Last Name: " + user.getLastname() + "\n" +
-                            "Records: " + user.getRecords().values().size() + "\n"
-                    );
-                }
-                frame.revalidate();
-                frame.repaint();
+            // Populate the panel with the data
+            if (user != null) {
+                userActivityText.setText(
+                        "Username: " + user.getUsername() + "\n" +
+                        "First Name: " + user.getFirstname() + "\n" +
+                        "Last Name: " + user.getLastname() + "\n" +
+                        "Records: " + user.getRecords().values().size() + "\n"
+                );
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
 
-        users.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Populate the list with users
-                try {
-                    sidebarList.setListData(controller.getUsers().toArray());
-                    sidebarList.setSelectedIndex(0);
-                } catch (IOException | ClassNotFoundException e1) {
-                    sidebarList.setListData(new String[]{"No users found."});
-                }
-                frame.revalidate();
-                frame.repaint();
+        users.addActionListener(event -> {
+            // Populate the list with users
+            try {
+                sidebarList.setListData(controller.getUsers().toArray());
+                sidebarList.setSelectedIndex(0);
+            } catch (IOException | ClassNotFoundException e1) {
+                sidebarList.setListData(new String[]{"No users found."});
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
-        admins.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Populate the list with admins
-                try {
-                    sidebarList.setListData(controller.getAdminUsers().toArray());
-                    sidebarList.setSelectedIndex(0);
-                } catch (IOException e1) {
-                    sidebarList.setListData(new String[]{"No admin users found."});
-                } catch (ClassNotFoundException e1) {
-                    sidebarList.setListData(new String[]{"No admin users found."});
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-                frame.revalidate();
-                frame.repaint();
+        admins.addActionListener(event -> {
+            // Populate the list with admins
+            try {
+                sidebarList.setListData(controller.getAdminUsers().toArray());
+                sidebarList.setSelectedIndex(0);
+            } catch (IOException | ClassNotFoundException e1) {
+                sidebarList.setListData(new String[]{"No admin users found."});
+            } catch (Exception e1) {
+                e1.printStackTrace();
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
-        deleteUser.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Remove the user from the database
-                String username = (String) sidebarList.getSelectedValue();
-                try {
-                    if (controller.getCurrentUser().isAdmin()) {
-                        ((EMSAdminController) controller).removeUser(username);
-                        sidebarList.setListData(admins.isSelected() ?
-                                controller.getAdminUsers().toArray() :
-                                controller.getUsers().toArray());
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
-                    ex.printStackTrace();
+        deleteUser.addActionListener(event -> {
+            // Remove the user from the database
+            String username = (String) sidebarList.getSelectedValue();
+            try {
+                if (controller.getCurrentUser().isAdmin()) {
+                    ((EMSAdminController) controller).removeUser(username);
+                    sidebarList.setListData(admins.isSelected() ?
+                            controller.getAdminUsers().toArray() :
+                            controller.getUsers().toArray());
                 }
-                frame.revalidate();
-                frame.repaint();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
+                ex.printStackTrace();
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
-        upgrade.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Upgrade the user to admin
-                String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
-                try {
-                    if (controller.getCurrentUser().isAdmin()) {
-                        ((EMSAdminController) controller).setUserAdmin(username, true);
-                        sidebarList.setListData(admins.isSelected() ?
-                                controller.getAdminUsers().toArray() :
-                                controller.getUsers().toArray());
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
-                    ex.printStackTrace();
+        upgrade.addActionListener(event -> {
+            // Upgrade the user to admin
+            String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
+            try {
+                if (controller.getCurrentUser().isAdmin()) {
+                    ((EMSAdminController) controller).setUserAdmin(username, true);
+                    sidebarList.setListData(admins.isSelected() ?
+                            controller.getAdminUsers().toArray() :
+                            controller.getUsers().toArray());
                 }
-                frame.revalidate();
-                frame.repaint();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
+                ex.printStackTrace();
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
-        downgrade.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Downgrade the user from admin
-                String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
-                try {
-                    if (controller.getCurrentUser().isAdmin()) {
-                        ((EMSAdminController) controller).setUserAdmin(username, false);
-                        sidebarList.setListData(admins.isSelected() ?
-                                controller.getAdminUsers().toArray() :
-                                controller.getUsers().toArray());
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
+        downgrade.addActionListener(event -> {
+            // Downgrade the user from admin
+            String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
+            try {
+                if (controller.getCurrentUser().isAdmin()) {
+                    ((EMSAdminController) controller).setUserAdmin(username, false);
+                    sidebarList.setListData(admins.isSelected() ?
+                            controller.getAdminUsers().toArray() :
+                            controller.getUsers().toArray());
                 }
-                frame.revalidate();
-                frame.repaint();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
-        addUser.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Add the user to the database
-                try {
-                    ((EMSAdminController) controller).addUser(
-                            firstnameText.getText(),
-                            lastnameText.getText(),
-                            usernameText.getText(),
-                            String.valueOf(passwordField.getPassword()));
-                } catch (IOException e1) {
-                    System.out.println("User not added.");
-                } catch (ClassNotFoundException e1) {
-                    System.out.println("User not added.");
-                }
-                System.out.println();
-                try {
-                    sidebarList.setListData(controller.getUsers().toArray());
-                } catch (IOException | ClassNotFoundException e1) {
-                    sidebarList.setListData(new String[]{"Couldn't show users."});
-                }
-                frame.revalidate();
-                frame.repaint();
+        addUser.addActionListener(event -> {
+            // Add the user to the database
+            try {
+                ((EMSAdminController) controller).addUser(
+                        firstnameText.getText(),
+                        lastnameText.getText(),
+                        usernameText.getText(),
+                        String.valueOf(passwordField.getPassword()));
+            } catch (IOException e1) {
+                System.out.println("User not added.");
+            } catch (ClassNotFoundException e1) {
+                System.out.println("User not added.");
             }
+            System.out.println();
+            try {
+                sidebarList.setListData(controller.getUsers().toArray());
+            } catch (IOException | ClassNotFoundException e1) {
+                sidebarList.setListData(new String[]{"Couldn't show users."});
+            }
+            frame.revalidate();
+            frame.repaint();
         });
     }
 
@@ -1175,7 +1132,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton restoreData = new JButton("Restore Data");
 
 
-        JList sidebarList = new JList(recentRecords);
+        JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
         JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
 
         // Add radiobuttons to the group
@@ -1293,39 +1250,31 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.revalidate();
         frame.repaint();
 
-        saveRecord.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Save the changes
+        saveRecord.addActionListener(event -> {
+            // Save the changes
 
-            }
         });
 
-        deleteRecord.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Save the changes
+        deleteRecord.addActionListener(event -> {
+            // Save the changes
 
-            }
         });
 
-        backupData.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Open the file
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.showSaveDialog(frame);
+        backupData.addActionListener(event -> {
+            // Open the file
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.showSaveDialog(frame);
 
-                // Save database to the file
-            }
+            // Save database to the file
         });
 
-        restoreData.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Open the file
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.showOpenDialog(frame);
+        restoreData.addActionListener(event -> {
+            // Open the file
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.showOpenDialog(frame);
 
-                // Load database from file
+            // Load database from file
 
-            }
         });
     }
 
