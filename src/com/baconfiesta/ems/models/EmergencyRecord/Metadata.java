@@ -3,9 +3,9 @@ package com.baconfiesta.ems.models.EmergencyRecord;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 
 
@@ -101,9 +101,7 @@ public class Metadata implements Serializable {
     }
 
     public String toString() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm");
-        Date date = new Date(getTimeCreated().toEpochMilli());
-        String time = sdf.format(date);
-        return time;
+        DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+        return dtf.format(getTimeCreated());
     }
 }
