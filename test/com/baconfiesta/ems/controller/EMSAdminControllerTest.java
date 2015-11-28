@@ -2,9 +2,8 @@ package com.baconfiesta.ems.controller;
 
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +12,8 @@ public class EMSAdminControllerTest extends EMSControllerTest {
 
     @Test
     public void testAddUser() throws Exception {
+
+        System.out.println("addUser");
 
         assertTrue(controller.getUsers().isEmpty());
 
@@ -24,6 +25,8 @@ public class EMSAdminControllerTest extends EMSControllerTest {
 
     @Test
     public void testRemoveUser() throws Exception {
+
+        System.out.println("removeUser");
 
         assertTrue(controller.getUsers().isEmpty());
 
@@ -40,6 +43,8 @@ public class EMSAdminControllerTest extends EMSControllerTest {
     @Test
     public void testLookupUser() throws Exception {
 
+        System.out.println("lookupUser");
+
         assertTrue(controller.getUsers().isEmpty());
 
         adminController.addUser("Bilbo", "Baggins", "bbaggins", "bbaggins");
@@ -52,6 +57,8 @@ public class EMSAdminControllerTest extends EMSControllerTest {
 
     @Test
     public void testSetUserAdmin() throws Exception {
+
+        System.out.println("setUserAdmin");
 
         assertThat(controller.getAdminUsers().size(), is(1)); // Default user
 
@@ -68,4 +75,25 @@ public class EMSAdminControllerTest extends EMSControllerTest {
 
     }
 
+    @Test
+    public void testRemoveRecord() throws Exception {
+
+        System.out.println("removeRecord");
+
+        controller.finalizeRecord(testRecord);
+        assertTrue(controller.getRecords().stream()
+                .anyMatch(p -> p.getMetadata().getTimeCreated().equals(testRecord.getMetadata().getTimeCreated())
+                )
+        );
+        adminController.removeRecord(testRecord);
+        assertFalse(controller.getRecords().stream()
+                .anyMatch(p -> p.getMetadata().getTimeCreated().equals(testRecord.getMetadata().getTimeCreated())
+                )
+        );
+    }
+
+    @Test
+    public void testGenerateTestData() throws Exception {
+
+    }
 }

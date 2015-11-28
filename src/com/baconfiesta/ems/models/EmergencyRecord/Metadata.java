@@ -4,6 +4,7 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.HashMap;
@@ -101,7 +102,8 @@ public class Metadata implements Serializable {
     }
 
     public String toString() {
-        DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+        DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                .withZone(ZoneId.systemDefault());
         return dtf.format(getTimeCreated());
     }
 }

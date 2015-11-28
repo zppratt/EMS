@@ -51,6 +51,10 @@ public class EMSAdminController extends EMSController {
         return _database.removeUser(username);
     }
 
+    public boolean removeRecord(EmergencyRecord record) throws IOException {
+        return _database.removeRecord(record);
+    }
+
     /**
      * Get a user from the system by name
      * @param username the username
@@ -78,7 +82,7 @@ public class EMSAdminController extends EMSController {
      */
     public void generateTestData() throws IOException, ClassNotFoundException {
         Random r = new Random(Instant.now().toEpochMilli());
-        long endTime = Timestamp.valueOf("3000-01-01 00:00:00").getTime();
+        long endTime = Timestamp.valueOf("2015-01-01 00:00:00").getTime();
         System.out.println("Generating Records:");
         for (int i = 0; i < 100; i++) {
             EmergencyRecord er = EmergencyRecordBuilder.newBuilder()

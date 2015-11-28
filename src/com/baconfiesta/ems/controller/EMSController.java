@@ -7,8 +7,10 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
 import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The main controller for the EMS system
@@ -67,8 +69,10 @@ public class EMSController implements Constants {
     /**
      * Logs a user out of the system
      */
-    public void logOut() {
-
+    public void logOut() throws IOException, InterruptedException {
+        _database.closeDatabase();
+        _database = null;
+        this.currentUser = null;
     }
 
     /**
@@ -126,15 +130,8 @@ public class EMSController implements Constants {
      * @return the list of users
      */
     public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
-        Collection values = _database.getCachedUsers().values();
-        ArrayList<EMSUser> users = new ArrayList<>(values);
-        for (Iterator<EMSUser> iterator = users.iterator(); iterator.hasNext();) {
-            EMSUser user = iterator.next();
-            if (user.isAdmin()) {
-                // Remove the current element from the iterator and the list.
-                iterator.remove();
-            }
-        }
+        ArrayList<EMSUser> users = (ArrayList<EMSUser>) _database.getCachedUsers().values();
+        users.stream().filter(EMSUser::isAdmin).forEach(users::remove); // removes admins
         return users;
     }
 
@@ -143,15 +140,8 @@ public class EMSController implements Constants {
      * @return the list of users
      */
     public ArrayList<EMSUser> getAdminUsers() throws Exception {
-        Collection values = _database.getCachedUsers().values();
-        ArrayList<EMSUser> users = new ArrayList<>(values);
-        for (Iterator<EMSUser> iterator = users.iterator(); iterator.hasNext();) {
-            EMSUser user = iterator.next();
-            if (!user.isAdmin()) {
-                // Remove the current element from the iterator and the list.
-                iterator.remove();
-            }
-        }
+        ArrayList<EMSUser> users = (ArrayList<EMSUser>) _database.getCachedUsers().values();
+        users.stream().filter(u -> !u.isAdmin()).forEach(users::remove); // removes non-admins
         return users;
     }
 
@@ -160,7 +150,7 @@ public class EMSController implements Constants {
      * @return the list of records
      */
     public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
-        return _database.getCachedRecords().values().stream().collect(Collectors.toCollection(ArrayList::new));
+        return (ArrayList<EmergencyRecord>) _database.getCachedRecords().values();
     }
 
     /**
@@ -170,14 +160,15 @@ public class EMSController implements Constants {
      * @throws ClassNotFoundException can be caught from getCachedRecords
      */
     public EmergencyRecord[] getRecentRecords() throws IOException, ClassNotFoundException {
-        Instant[] temp = _database.getCachedRecords().keySet()
-                .toArray(new Instant[]{});
-        Arrays.sort(temp, Collections.reverseOrder());
-        EmergencyRecord[] list = new EmergencyRecord[10];
-        for (int i = 0; i < list.length; i++) {
-            list[i] = _database.getCachedRecords().get(temp[i]);
-        }
-        return list;
+
+        ArrayList<EmergencyRecord> list = new ArrayList<>();
+
+        _database.getCachedRecords().entrySet().stream()
+                .sorted(Map.Entry.<Instant, EmergencyRecord>comparingByKey().reversed())
+                .limit(10)
+                .forEach(r -> list.add(r.getValue()));
+
+        return list.toArray(new EmergencyRecord[10]);
     }
 
     /**
@@ -212,11 +203,8 @@ public class EMSController implements Constants {
     protected static EMSUser authenticateUser(String username, char[] password) throws
             NullPointerException, IOException, ClassNotFoundException {
         EMSUser user = _database.lookupUser(username);
-        if (user == null ) {
-            throw new ClassNotFoundException();
-        }
-        if (!user.checkPassword(password)) {
-            throw new ClassNotFoundException();
+        if (user != null ) {
+            user = user.checkPassword(password) ? user : null;
         }
         return user;
     }

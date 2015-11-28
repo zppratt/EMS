@@ -174,6 +174,12 @@ public class EMSDatabase {
         writeObject(records);
     }
 
+    public boolean removeRecord(EmergencyRecord record) throws IOException, NullPointerException {
+        records.remove(record.getMetadata().getTimeCreated());
+        writeObject(records);
+        return true;
+    }
+
     /**
      * Writes an object out to the database file
      *
@@ -403,5 +409,4 @@ public class EMSDatabase {
     boolean isOpen() {
         return isOpen;
     }
-
 }

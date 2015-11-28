@@ -279,6 +279,10 @@ public class EMSInterface implements EMSInterfaceConstants {
             try {
                 Authenticator.init();
                 user = Authenticator.authenticate(username, password);
+                if (user == null) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                    return;
+                }
                 // blank out password for security
                 for (int i = 0; i < password.length; i++) {
                     password[i] = ' ';
@@ -1252,12 +1256,26 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         saveRecord.addActionListener(event -> {
             // Save the changes
-
+            EmergencyRecord record = sidebarList.getSelectedValue();
+            if (record != null) {
+                try {
+                    controller.finalizeRecord(record);
+                } catch (IOException | ClassNotFoundException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Had trouble saving the record, actually." + ASK);
+                }
+            }
         });
 
         deleteRecord.addActionListener(event -> {
             // Save the changes
-
+            EmergencyRecord record = sidebarList.getSelectedValue();
+            if (record != null) {
+                try {
+                    ((EMSAdminController)controller).removeRecord(record);
+                } catch (IOException | NullPointerException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Had trouble deleting the record, actually." + ASK);
+                }
+            }
         });
 
         backupData.addActionListener(event -> {

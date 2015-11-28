@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Random;
 
 import static java.lang.Math.abs;
@@ -39,6 +38,10 @@ public class EMSControllerTest implements TestConstants{
 
     final File mockFile = mockFilePath.toFile();
 
+    EmergencyRecordBuilder b = EmergencyRecordBuilder.newBuilder();
+
+    EmergencyRecord testRecord = b.withTime(Instant.EPOCH).getNewEmergencyRecord();
+
     EMSController controller;
 
     EMSAdminController adminController;
@@ -50,6 +53,7 @@ public class EMSControllerTest implements TestConstants{
         database = new EMSDatabase(mockFile);
         controller = new EMSController(null, database);
         adminController = new EMSAdminController(null, database);
+        controller.finalizeRecord(testRecord);
         // Default user created?
         assertNotNull(database.lookupUser(""));
     }
@@ -77,14 +81,17 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testLogOut() throws Exception {
+        System.out.println("logOut");
 
+        controller.logOut();
+        assertNull(controller.getCurrentUser());
     }
 
     @Test
     public void testCreateNewEmergency() throws Exception {
         System.out.println("testCreateNewEmergency");
 
-
+        controller.createNewEmergency(testRecord);
     }
 
     @Test
@@ -94,12 +101,16 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testFinalizeRecord() throws Exception {
-        System.out.println("testFinalizeRecord");
+        System.out.println("finalizeRecord");
 
         EmergencyRecord record = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
-        assertFalse(Arrays.asList(controller.getRecords()).contains(record));
+        assertFalse(controller.getRecords().stream()
+                .anyMatch(r -> r.getMetadata().getTimeCreated().equals(record.getMetadata().getTimeCreated()))
+        );
         controller.finalizeRecord(record);
-        assertTrue(Arrays.asList(controller.getRecords()).contains(record));
+        assertTrue(controller.getRecords().stream()
+                .anyMatch(r -> r.getMetadata().getTimeCreated().equals(record.getMetadata().getTimeCreated()))
+        );
     }
 
     @Test
@@ -131,7 +142,9 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testGetRecords() throws Exception {
+        System.out.println("getRecords");
 
+        controller.getRecords();
     }
 
     @Test
