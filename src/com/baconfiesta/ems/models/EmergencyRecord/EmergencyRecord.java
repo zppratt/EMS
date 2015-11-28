@@ -168,7 +168,7 @@ public class EmergencyRecord implements Serializable{
         paragraph += "Phone: " + responder.getPhoneNumber() + "\n";
         paragraph += "Address: " + responder.getAddress() + "\n";
         paragraph += "State: " + responder.getState() + "\n";
-        paragraph += "Zip: " + responder.getZip() + "\n";
+        paragraph += "City: " + responder.getCity() + "\n";
 
         return paragraph;
 

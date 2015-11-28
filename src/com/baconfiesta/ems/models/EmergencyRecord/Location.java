@@ -19,7 +19,7 @@ public class Location implements Serializable {
     private String state;
 
     /**
-     * The zip code where the emergency is/was located
+     * The city where the emergency is/was located
      */
     private String city;
 
@@ -27,7 +27,7 @@ public class Location implements Serializable {
      * Default constructor
      * @param address the address of the emergency
      * @param state the state the emergency is in
-     * @param city the zip code of the emergency
+     * @param city the city the emergency is in
      */
     public Location(String address, String state, String city) {
         this.address = address;
@@ -52,8 +52,8 @@ public class Location implements Serializable {
     }
 
     /**
-     * Retrieve the zip code where the emergency is/was located
-     * @return the zip code
+     * Retrieve the city where the emergency is/was located
+     * @return the city
      */
     public String getCity() {
         return city;

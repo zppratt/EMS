@@ -115,10 +115,10 @@ public class EMSReport {
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getAddress());
 
-        /* Responder ZIP */
+        /* Responder City */
         row = sheet1.getRow(14);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getResponder().getZip());
+        cell.setCellValue(emergencyRecord.getResponder().getCity());
 
         /* Responder State */
         row = sheet1.getRow(15);

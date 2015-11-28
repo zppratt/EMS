@@ -24,7 +24,7 @@ public class Responder implements Serializable {
     private String state;
 
     /**
-     * The zip code where the responder is located
+     * The city where the responder is located
      */
     private String city;
 
@@ -33,7 +33,7 @@ public class Responder implements Serializable {
      * @param phoneNumber the phone number
      * @param address the street address
      * @param state the state
-     * @param city the zip code
+     * @param city the city
      */
     public Responder(String phoneNumber, String address, String state, String city) {
         this.phoneNumber = phoneNumber;
@@ -67,10 +67,10 @@ public class Responder implements Serializable {
     }
 
     /**
-     * Retrieve the zip code where the responder is/was located
-     * @return the zip code
+     * Retrieve the city where the responder is/was located
+     * @return the city
      */
-    public String getZip() {
+    public String getCity() {
         return city;
     }
 
