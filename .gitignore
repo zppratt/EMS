@@ -5,4 +5,5 @@
 maps.private.properties
 doc/
 db/
-/dist
+dist/
+*.class
