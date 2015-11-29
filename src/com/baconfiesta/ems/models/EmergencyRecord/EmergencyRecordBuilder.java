@@ -1,5 +1,7 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
+
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -98,8 +100,8 @@ public class EmergencyRecordBuilder implements Serializable {
         return new EmergencyRecordBuilder();
     }
 
-    public EmergencyRecord getNewEmergencyRecord() {
-        return new EmergencyRecord(metadata, caller, location, category, responder, route, description); // with all the parameters
+    public EmergencyRecord getNewEmergencyRecord(EMSUser user) {
+        return new EmergencyRecord(metadata, caller, location, category, responder, route, description, user); // with all the parameters
     }
 
 }

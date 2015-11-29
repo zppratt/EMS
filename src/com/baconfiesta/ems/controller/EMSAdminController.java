@@ -2,10 +2,7 @@ package com.baconfiesta.ems.controller;
 
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
-import com.baconfiesta.ems.models.EmergencyRecord.Caller;
-import com.baconfiesta.ems.models.EmergencyRecord.Category;
-import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
-import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecordBuilder;
+import com.baconfiesta.ems.models.EmergencyRecord.*;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -83,26 +80,41 @@ public class EMSAdminController extends EMSController {
     public void generateTestData() throws IOException, ClassNotFoundException {
         Random r = new Random(Instant.now().toEpochMilli());
         long endTime = Timestamp.valueOf("2015-01-01 00:00:00").getTime();
+        System.out.println("Generating Users:");
+        for (int i = 0; i < 15; i++) {
+            String firstName = firstNames[abs(r.nextInt() % (firstNames.length - 1))];
+            String lastName = lastNames[abs(r.nextInt() % (lastNames.length - 1))];
+            String id = firstName.substring(0,1).toLowerCase() + lastName.toLowerCase();
+            EMSUser usr = addUser(firstName, lastName, id, id);
+            if (Math.random() > .7) {
+                setUserAdmin(usr.getUsername(), true);
+            }
+            System.out.println(usr + ":" + (usr.isAdmin() ? "admin" : "not admin"));
+        }
         System.out.println("Generating Records:");
         for (int i = 0; i < 100; i++) {
             EmergencyRecord er = EmergencyRecordBuilder.newBuilder()
                     .withCaller(new Caller(
                             firstNames[abs(r.nextInt() % (firstNames.length - 1))],
                             lastNames[abs(r.nextInt() % (lastNames.length - 1))],
-                            "999-999-9999"))
+                            "999-999-9999"
+                    ))
+                    .withResponder(new Responder(
+                            "999-999-9999",
+                            "2101 E Coliseum Blvd",
+                            "Indiana",
+                            "Fort Wayne"
+                    ))
+                    .withDescription(
+                            "Some really bad stuff is happening." +
+                            "Some really bad stuff is happening." +
+                            "Some really bad stuff is happening."
+                    )
                     .withCategory(Category.HOAX)
                     .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))))
-                    .getNewEmergencyRecord();
+                    .getNewEmergencyRecord(getUsers().get((int)(Math.random() * (getUsers().size()-1))));
             finalizeRecord(er);
             System.out.println(er);
-        }
-        System.out.println("Generating Users:");
-        for (int i = 0; i < 100; i++) {
-            String firstName = firstNames[abs(r.nextInt() % (firstNames.length - 1))];
-            String lastName = lastNames[abs(r.nextInt() % (lastNames.length - 1))];
-            String id = firstName.substring(0,1).toLowerCase() + lastName.toLowerCase();
-            EMSUser usr = addUser(firstName, lastName, id, id);
-            System.out.println(usr);
         }
     }
 

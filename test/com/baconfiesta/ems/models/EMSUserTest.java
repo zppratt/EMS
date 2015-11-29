@@ -60,9 +60,15 @@ public class EMSUserTest {
         Metadata m = new Metadata();
         Whitebox.setInternalState(m, "timeCreated", Instant.EPOCH);
         HashMap<Instant, EmergencyRecord> records = new HashMap<>();
-        records.put(Instant.EPOCH, EmergencyRecordBuilder.newBuilder().withMetadata(m).getNewEmergencyRecord());
-        records.put(Instant.EPOCH, EmergencyRecordBuilder.newBuilder().withMetadata(m).getNewEmergencyRecord());
-        records.put(Instant.EPOCH, EmergencyRecordBuilder.newBuilder().withMetadata(m).getNewEmergencyRecord());
+        records.put(Instant.EPOCH, EmergencyRecordBuilder.newBuilder()
+                .withMetadata(m)
+                .getNewEmergencyRecord(adminUser));
+        records.put(Instant.EPOCH, EmergencyRecordBuilder.newBuilder()
+                .withMetadata(m)
+                .getNewEmergencyRecord(adminUser));
+        records.put(Instant.EPOCH, EmergencyRecordBuilder.newBuilder()
+                .withMetadata(m)
+                .getNewEmergencyRecord(adminUser));
         return records;
     }
 

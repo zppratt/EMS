@@ -17,9 +17,6 @@ import java.util.HashMap;
  */
 public class Metadata implements Serializable {
 
-    /**
-     * The user who created the emergency record
-     */
     private EMSUser createdBy;
 
     /**
@@ -105,5 +102,9 @@ public class Metadata implements Serializable {
         DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
                 .withZone(ZoneId.systemDefault());
         return dtf.format(getTimeCreated());
+    }
+
+    public void setCreatedBy(EMSUser createdBy) {
+        this.createdBy = createdBy;
     }
 }

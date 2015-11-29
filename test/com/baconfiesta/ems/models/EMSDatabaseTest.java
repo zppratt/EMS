@@ -1,5 +1,6 @@
 package com.baconfiesta.ems.models;
 
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecordBuilder;
 import com.baconfiesta.ems.models.EmergencyRecord.Metadata;
@@ -121,7 +122,9 @@ public class EMSDatabaseTest {
         // Test that the records object gets updated in memory and database
         assertTrue("testAddEmergencyRecord: New records object was not empty", database.getCachedRecords().isEmpty());
         assertTrue("testAddEmergencyRecord: New records object was not empty", database.getDatabaseRecords().isEmpty());
-        EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder().withTime(Instant.EPOCH).getNewEmergencyRecord();
+        EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder()
+                .withTime(Instant.EPOCH)
+                .getNewEmergencyRecord(new EMSUser("","","","",true));
         database.addEmergencyRecord(testRecord);
         assertTrue("testAddEmergencyRecord: New record was not added.", database.getCachedRecords().containsKey(Instant.EPOCH));
         assertTrue("testAddEmergencyRecord: New record was not added.", database.getDatabaseRecords().containsKey(Instant.EPOCH));
@@ -140,11 +143,14 @@ public class EMSDatabaseTest {
         System.out.println("getEmergencyRecord");
 
         // Test failed retrieval by putting a current record and trying to find one made at the EPOCH
-        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder()
+                .getNewEmergencyRecord(new EMSUser("","","","", true)));
         assertNull(database.getEmergencyRecord(Instant.EPOCH));
 
         // Now put one made at the EPOCH and try to get it... should succeed
-        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().withTime(Instant.EPOCH).getNewEmergencyRecord());
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder()
+                .withTime(Instant.EPOCH)
+                .getNewEmergencyRecord(new EMSUser("","","","", true)));
         assertNotNull("testGetEmergencyRecord: Emergency record not retrieved.",
                 database.getEmergencyRecord(Instant.EPOCH));
     }
@@ -182,7 +188,9 @@ public class EMSDatabaseTest {
         // Test found a user
         Metadata m = new Metadata();
         Whitebox.setInternalState(m, "timeCreated", Instant.EPOCH);
-        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().withMetadata(m).getNewEmergencyRecord());
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder()
+                .withMetadata(m)
+                .getNewEmergencyRecord(new EMSUser("","","","", true)));
         assertNotNull(database.lookupEmergencyRecord(Instant.EPOCH));
     }
 
@@ -220,9 +228,12 @@ public class EMSDatabaseTest {
         System.out.println("testGetDatabaseRecords");
 
         // Add some records
-        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
-        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
-        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord());
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder()
+                .getNewEmergencyRecord(new EMSUser("","","","", true)));
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder()
+                .getNewEmergencyRecord(new EMSUser("","","","", true)));
+        database.addEmergencyRecord(EmergencyRecordBuilder.newBuilder()
+                .getNewEmergencyRecord(new EMSUser("","","","", true)));
         // Are there records?
         assertNotNull(database.getCachedRecords());
     }

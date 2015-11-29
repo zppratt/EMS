@@ -1,5 +1,7 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
+
 import java.io.Serializable;
 
 /**
@@ -51,6 +53,7 @@ public class EmergencyRecord implements Serializable{
      * @param category the category
      * @param responder the responder
      * @param route the route
+     * @param creator the creator of the record
      */
     public EmergencyRecord(
             Metadata metadata,
@@ -59,30 +62,17 @@ public class EmergencyRecord implements Serializable{
             Category category,
             Responder responder,
             Route route,
-            String description) {
+            String description,
+            EMSUser creator
+    ) {
         this.setMetadata(metadata);
+        this.metadata.setCreatedBy(creator);
         this.setCaller(caller);
         this.setLocation(location);
         this.setCategory(category);
         this.setResponder(responder);
         this.setRoute(route);
         this.setDescription(description);
-    }
-
-    /**
-     * Constructor that builds a dummy object
-     * @param dummy tells the Emergency record to build a dummy object
-     */
-    public EmergencyRecord(boolean dummy) {
-        if (dummy) {
-            this.setMetadata(new Metadata());
-            this.setCaller(new Caller("John", "Smith", "2608675309"));
-            this.setCategory(Category.CAR_CRASH);
-            this.setLocation(new Location("999 Windmore Ave", "Indiana", "Fort Wayne"));
-            this.setResponder(new Responder("2609999999", "999 Benchmark Ave", "Indiana", "Fort Wayne"));
-            this.description = "The first dummy biffed the second dummy.  The second dummy was injured.  But it turned out that he was faking and was given a red card.  Fifteen yard penalty and two free throws.";
-            //this.setRoute(new Route());
-        }
     }
 
     /**
@@ -232,7 +222,7 @@ public class EmergencyRecord implements Serializable{
     }
 
     public String toString() {
-        return String.format("%s\nCaller: %s\n", getMetadata(), this.caller.toString());
+        return String.format("%s\n : %s\n", getMetadata(), getMetadata().getCreatedBy());
     }
 
 }

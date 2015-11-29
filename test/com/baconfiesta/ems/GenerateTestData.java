@@ -17,7 +17,7 @@ public class GenerateTestData {
     @Test
     public void testGenerateData() throws IOException, ClassNotFoundException, InterruptedException {
 
-//        backupAndDeleteDatabase();
+        backupAndDeleteDatabase();
 
         ac = new EMSAdminController(new EMSUser("","","","",true),new EMSDatabase());
         ac.generateTestData();

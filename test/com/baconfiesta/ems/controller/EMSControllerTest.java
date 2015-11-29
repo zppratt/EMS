@@ -41,9 +41,9 @@ public class EMSControllerTest implements TestConstants{
 
     final File mockFile = mockFilePath.toFile();
 
-    EmergencyRecordBuilder b = EmergencyRecordBuilder.newBuilder();
+    EmergencyRecordBuilder erBuilder = EmergencyRecordBuilder.newBuilder();
 
-    EmergencyRecord testRecord = b.withTime(Instant.EPOCH).getNewEmergencyRecord();
+    EmergencyRecord testRecord;
 
     EMSController controller;
 
@@ -56,7 +56,9 @@ public class EMSControllerTest implements TestConstants{
         database = new EMSDatabase(mockFile);
         controller = new EMSController(null, database);
         adminController = new EMSAdminController(null, database);
+        testRecord = erBuilder.withTime(Instant.EPOCH).getNewEmergencyRecord(new EMSUser("","","","",true));
         controller.finalizeRecord(testRecord);
+        controller.setUser(controller.getAdminUsers().get(0));
         // Default user created?
         assertNotNull(database.lookupUser(""));
     }
@@ -109,7 +111,7 @@ public class EMSControllerTest implements TestConstants{
     public void testFinalizeRecord() throws Exception {
         System.out.println("finalizeRecord");
 
-        EmergencyRecord record = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
+        EmergencyRecord record = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(controller.getCurrentUser());
         assertFalse(controller.getRecords().stream()
                 .anyMatch(r -> r.getMetadata().getTimeCreated().equals(record.getMetadata().getTimeCreated()))
         );
@@ -223,7 +225,7 @@ public class EMSControllerTest implements TestConstants{
                             "999-999-9999"))
                     .withCategory(Category.HOAX)
                     .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))))
-                    .getNewEmergencyRecord());
+                    .getNewEmergencyRecord(controller.getCurrentUser()));
         }
     }
 

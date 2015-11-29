@@ -548,7 +548,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         selectRoute.addActionListener(event -> {
             // Create the temp record
-            tempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
+            tempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(controller.getCurrentUser());
             try{
                 tempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
                 tempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
