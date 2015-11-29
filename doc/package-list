@@ -1,9 +1,0 @@
-com.baconfiesta.ems
-com.baconfiesta.ems.controller
-com.baconfiesta.ems.models
-com.baconfiesta.ems.models.EMSUser
-com.baconfiesta.ems.models.EmergencyRecord
-com.baconfiesta.ems.models.EmergencyReport
-com.baconfiesta.ems.view
-org.apache.commons.io
-org.apache.commons.io.filefilter
