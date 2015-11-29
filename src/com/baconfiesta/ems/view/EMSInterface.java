@@ -14,7 +14,10 @@ import javafx.scene.web.WebView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.InputMismatchException;
 
@@ -821,7 +824,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // GET THE URL TO SHOW ROUTE
         //
         // Open the web browser
-        PlatformImpl.startup(() -> webEngine1.load("http://www.google.com"));
+        PlatformImpl.startup(() -> webEngine1.load("http://www.google.com/maps"));
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(1, 2));
@@ -1271,6 +1274,31 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(restoreData);
 
         // Populate the field with the record info
+        sidebarList.addListSelectionListener(e ->{
+            EmergencyRecord record = sidebarList.getSelectedValue();
+            if (record != null) {
+                Caller caller = record.getCaller();
+                firstnameText.setText(caller.getFirstName());
+                lastnameText.setText(caller.getLastName());
+                phoneText.setText(caller.getPhone());
+                Location location = record.getLocation();
+                addressText.setText(location.getAddress());
+                stateText.setText(location.getState());
+                cityText.setText(location.getCity());
+
+                switch (record.getCategory()) {
+                    case FIRE: fire.setSelected(true);
+                    case CRIME: crime.setSelected(true);
+                    case MEDICAL: medical.setSelected(true);
+                    case HOAX: hoax.setSelected(true);
+                    case CAR_CRASH: crash.setSelected(true);
+                    default: categories.setSelected(null, true);
+                }
+
+                descriptionText.setText(record.getDescription());
+
+            }
+        });
 
         // Refresh the window
         frame.revalidate();

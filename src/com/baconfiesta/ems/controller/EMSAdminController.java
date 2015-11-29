@@ -99,11 +99,14 @@ public class EMSAdminController extends EMSController {
                             lastNames[abs(r.nextInt() % (lastNames.length - 1))],
                             "999-999-9999"
                     ))
+                    .withLocation(new Location(
+                            "4000 Parnell Ave",
+                            "Fort Wayne", "Indiana"
+                    ))
                     .withResponder(new Responder(
                             "999-999-9999",
                             "2101 E Coliseum Blvd",
-                            "Indiana",
-                            "Fort Wayne"
+                            "Fort Wayne", "Indiana"
                     ))
                     .withDescription(
                             "Some really bad stuff is happening." +
