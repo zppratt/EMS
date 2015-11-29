@@ -1000,21 +1000,23 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         deleteUser.addActionListener(event -> {
-            // Remove the user from the database
-            String username = (String) sidebarList.getSelectedValue();
-            try {
-                if (controller.getCurrentUser().isAdmin()) {
-                    ((EMSAdminController) controller).removeUser(username);
-                    sidebarList.setListData(admins.isSelected() ?
-                            controller.getAdminUsers().toArray() :
-                            controller.getUsers().toArray());
+                // Remove the user from the database
+            String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
+            if (JOptionPane.showConfirmDialog(frame, "Sure you want to delete " + username + "?") == JOptionPane.YES_OPTION) {
+                try {
+                    if (controller.getCurrentUser().isAdmin()) {
+                        ((EMSAdminController) controller).removeUser(username);
+                        sidebarList.setListData(admins.isSelected() ?
+                                controller.getAdminUsers().toArray() :
+                                controller.getUsers().toArray());
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
+                    ex.printStackTrace();
                 }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
-                ex.printStackTrace();
+                frame.revalidate();
+                frame.repaint();
             }
-            frame.revalidate();
-            frame.repaint();
         });
 
         upgrade.addActionListener(event -> {
