@@ -2,6 +2,7 @@ package com.baconfiesta.ems.controller;
 
 import com.baconfiesta.ems.TestConstants;
 import com.baconfiesta.ems.models.EMSDatabase;
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.Caller;
 import com.baconfiesta.ems.models.EmergencyRecord.Category;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
@@ -24,6 +25,8 @@ import java.util.Random;
 
 import static java.lang.Math.abs;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -92,6 +95,9 @@ public class EMSControllerTest implements TestConstants{
         System.out.println("testCreateNewEmergency");
 
         controller.createNewEmergency(testRecord);
+        assertTrue(controller.getRecords().stream()
+                .anyMatch(r -> r.getMetadata().getTimeCreated().equals(testRecord.getMetadata().getTimeCreated()))
+        );
     }
 
     @Test
@@ -115,6 +121,9 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testAccessEmergencyRecord() throws Exception {
+        System.out.println("accessEmergencyRecord");
+
+        assertNotNull(controller.accessEmergencyRecord(Instant.EPOCH));
 
     }
 
@@ -141,10 +150,20 @@ public class EMSControllerTest implements TestConstants{
     }
 
     @Test
+    public void testGetAdminUsers() throws Exception {
+        System.out.println("getAdminUsers");
+
+        adminController.addUser("Bilbo", "Baggins", "bbaggins", "bbaggins");
+        adminController.setUserAdmin("bbaggins", true);
+        assertThat(controller.getAdminUsers(), is(not(empty())));
+    }
+
+    @Test
     public void testGetRecords() throws Exception {
         System.out.println("getRecords");
 
-        controller.getRecords();
+        controller.finalizeRecord(testRecord);
+        assertThat(controller.getRecords(), is(not(empty())));
     }
 
     @Test
@@ -154,11 +173,6 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testRestoreData() throws Exception {
-
-    }
-
-    @Test
-    public void testGetAdminUsers() throws Exception {
 
     }
 
@@ -174,7 +188,14 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testGetCurrentUser() throws Exception {
+        System.out.println("getCurrentUser");
 
+        EMSUser admin = adminController.addUser("Admin", "Admin", "admin", "Admin");
+        adminController.setUserAdmin("admin", true);
+
+        controller.setUser(admin);
+
+        assertNotNull(controller.getCurrentUser());
     }
 
     @Test

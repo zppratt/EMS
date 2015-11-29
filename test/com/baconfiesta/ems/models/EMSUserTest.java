@@ -11,9 +11,11 @@ import org.powermock.reflect.Whitebox;
 import java.time.Instant;
 import java.util.HashMap;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class EMSUserTest {
@@ -48,10 +50,10 @@ public class EMSUserTest {
         System.out.println("testGetRecords");
 
         // Test failure
-        assertNull(regularUser.getRecords());
+        assertThat(regularUser.getRecords().values(), is(empty()));
         // Test success
         Whitebox.setInternalState(regularUser, "records", createTestRecords());
-        assertNotNull(regularUser.getRecords());
+        assertThat(regularUser.getRecords().values(), is(not(empty())));
     }
 
     private HashMap<Instant, EmergencyRecord> createTestRecords() {

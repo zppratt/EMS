@@ -7,10 +7,8 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The main controller for the EMS system
@@ -111,8 +109,8 @@ public class EMSController implements Constants {
      * @param time the time of the record to access
      * @return the emergency record
      */
-    public EmergencyRecord accessEmergencyRecord(Instant time) {
-        return null;
+    public EmergencyRecord accessEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
+        return _database.getCachedRecords().get(time);
     }
 
     /**
@@ -130,8 +128,10 @@ public class EMSController implements Constants {
      * @return the list of users
      */
     public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
-        ArrayList<EMSUser> users = (ArrayList<EMSUser>) _database.getCachedUsers().values();
-        users.stream().filter(EMSUser::isAdmin).forEach(users::remove); // removes admins
+        ArrayList<EMSUser> users = new ArrayList<>();
+        _database.getCachedUsers().values().stream()
+                .filter(u -> !u.isAdmin())
+                .forEach(users::add);
         return users;
     }
 
@@ -140,8 +140,10 @@ public class EMSController implements Constants {
      * @return the list of users
      */
     public ArrayList<EMSUser> getAdminUsers() throws Exception {
-        ArrayList<EMSUser> users = (ArrayList<EMSUser>) _database.getCachedUsers().values();
-        users.stream().filter(u -> !u.isAdmin()).forEach(users::remove); // removes non-admins
+        ArrayList<EMSUser> users = new ArrayList<>();
+        _database.getCachedUsers().values().stream()
+                .filter(EMSUser::isAdmin)
+                .forEach(users::add);
         return users;
     }
 
@@ -150,7 +152,8 @@ public class EMSController implements Constants {
      * @return the list of records
      */
     public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
-        return (ArrayList<EmergencyRecord>) _database.getCachedRecords().values();
+        return _database.getCachedRecords().values().stream()
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
