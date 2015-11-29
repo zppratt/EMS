@@ -14,8 +14,7 @@ import javafx.scene.web.WebView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.IOException;
 import java.util.InputMismatchException;
 
@@ -178,7 +177,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 sidebar.removeAll();
 
                 // Proceed to next window
-                displayRecords();
+                displayRecords(null);
             }
         });
 
@@ -355,6 +354,24 @@ public class EMSInterface implements EMSInterfaceConstants {
         if(controller instanceof EMSAdminController){
             adminActions();
         }
+
+        sidebarList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    EmergencyRecord record = sidebarList.getSelectedValue();
+                    if (record != null) {
+                        // Clear the window
+                        mainframe.removeAll();
+                        footer.removeAll();
+                        sidebar.removeAll();
+
+                        displayRecords(record);
+                    }
+                }
+            }
+        });
+
     }
 
     /**
@@ -758,7 +775,7 @@ public class EMSInterface implements EMSInterfaceConstants {
     /**
      * Show the screen to view the emergency records
      */
-    private void displayRecords() {
+    private void displayRecords(EmergencyRecord initialRecord) {
         // Change the title
         frameTitle.setText("Summary");
 
@@ -784,6 +801,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton generateReport = new JButton("Generate Stats");
 
         JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
+        if (initialRecord != null) {
+            sidebarList.setSelectedValue(initialRecord, true);
+        }
         JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
 
         // Set properties of the fields
