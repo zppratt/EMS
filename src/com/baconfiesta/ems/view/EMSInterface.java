@@ -643,8 +643,8 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Open the web browser
         PlatformImpl.startup(() -> {
-            webEngine1.load(tempFile.getRoute().getMainRoute().getPath());
-            webEngine2.load(tempFile.getRoute().getAlternateRoute().getPath());
+            webEngine1.load("file://" + tempFile.getRoute().getMainRoute().getAbsolutePath());
+            webEngine2.load("file://" + tempFile.getRoute().getAlternateRoute().getAbsolutePath());
         });
 
         // Fill in the route directions

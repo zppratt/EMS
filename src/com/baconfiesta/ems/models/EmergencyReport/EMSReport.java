@@ -68,7 +68,7 @@ public class EMSReport {
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCaller().getFirstName());
 
-        /* Caller lastname */
+        /* Caller last name */
         row = sheet1.getRow(4);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCaller().getLastName());

@@ -39,8 +39,8 @@ public class Route implements Serializable {
      * @param completeAddressTo the complete address of the end point of the route
      * */
     public Route(String completeAddressFrom, String completeAddressTo) {
-        this.emergencyLocationAddress = completeAddressFrom;
-        this.emergencyResponderAddress = completeAddressTo;
+        this.emergencyLocationAddress = completeAddressTo;
+        this.emergencyResponderAddress = completeAddressFrom;
 
         this.calculateRoute();
         this.calculateDirections(true);
@@ -150,6 +150,7 @@ public class Route implements Serializable {
      * TODO: Handle the fact that the answer query can be empty
      * TODO: if cannot retrieve data, what happens?
      * TODO: set timer for each retrieval, if no answer after a given time, returns error or "Network Unavailable"
+     * TODO: modify to use only location
      * */
 
         String searchQuery = "Police Department"; // We always look for a police department
@@ -190,10 +191,6 @@ public class Route implements Serializable {
         try {
             PlacesSearchResponse results = PlacesApi.textSearchQuery(context, searchQuery).await();
 
-            /* Some print to make sure it will work*/
-            System.out.println("Responder's name: " + results.results[0].name);
-            System.out.println("Responder's address: " + results.results[0].formattedAddress);
-            System.out.println("Responder's Place Id: " + results.results[0].placeId);
             String placeId = results.results[0].placeId;
 
             /* Querying details about the first place found in the list of the previous query */
