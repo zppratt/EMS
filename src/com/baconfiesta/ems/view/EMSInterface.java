@@ -586,6 +586,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 }else{
                     throw new InputMismatchException();
                 }
+                controller.determineNearestResponder(tempFile);
                 controller.calculateRoute(tempFile);
             } catch (InputMismatchException mismatch){
                 JOptionPane.showMessageDialog(frame, "Every field must be filled.");
@@ -642,11 +643,13 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Open the web browser
         PlatformImpl.startup(() -> {
-            webEngine1.load("http://www.google.com");
-            webEngine2.load("http://www.google.com");
+            webEngine1.load(tempFile.getRoute().getMainRoute().getPath());
+            webEngine2.load(tempFile.getRoute().getAlternateRoute().getPath());
         });
 
         // Fill in the route directions
+        route1Text.setText(tempFile.getRoute().getMainRouteDirections());
+        route1Text.setText(tempFile.getRoute().getAlternateRouteDirections());
 
 
         // Set the summary

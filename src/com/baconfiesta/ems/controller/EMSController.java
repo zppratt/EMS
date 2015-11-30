@@ -4,6 +4,7 @@ import com.baconfiesta.ems.Constants;
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.baconfiesta.ems.models.EmergencyRecord.Route;
 
 import java.io.*;
 import java.time.Instant;
@@ -74,18 +75,11 @@ public class EMSController implements Constants {
     }
 
     /**
-     * Creates a new emergency record
-     */
-    public void createNewEmergency(EmergencyRecord record) {
-
-    }
-
-    /**
      * Finds the nearest emergency responder
      * @param record the emergency record containing the address of the emergency
      */
-    private void determineNearestResponder(EmergencyRecord record) {
-
+    public void determineNearestResponder(EmergencyRecord record) {
+        record.setResponder(Route.determineNearestResponder(record));
     }
 
     /**
@@ -93,7 +87,8 @@ public class EMSController implements Constants {
      * @param record the emergency record containing the address of the emergency
      */
     public void calculateRoute(EmergencyRecord record) {
-
+        record.setRoute(new Route(record.getLocation().getAddress() + ", " + record.getLocation().getCity() + ", " + record.getLocation().getState(),
+                record.getResponder().getAddress() + ", " + record.getResponder().getCity() + "' " + record.getResponder().getState()));
     }
 
     /**

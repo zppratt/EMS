@@ -241,11 +241,11 @@ public class Route implements Serializable {
         /* Creating the URL for request */
         htmlRequest = "https://maps.googleapis.com/maps/api/js?key="+key+"&callback=initMap";
         /* Main route is the fastest, used with the previous URL */
-        this.mainRoute = createHTMLRoute(htmlRequest, "mainRoute.html", false, false);
+        this.mainRoute = createHTMLRoute(htmlRequest, "./temp/mainRoute.html", false, false);
 
         /* Adding restrictions to route */
         /* Second route is longer */
-        this.alternateRoute = createHTMLRoute(htmlRequest, "alternateRoute.html", true, true);
+        this.alternateRoute = createHTMLRoute(htmlRequest, "./temp/alternateRoute.html", true, true);
     }
 
 
@@ -321,7 +321,7 @@ public class Route implements Serializable {
 
         /* Opening file from template */
         try {
-            htmlTemplateFile = new File("templates/Maps.html");
+            htmlTemplateFile = new File("./templates/Maps.html");
         } catch (NullPointerException e) {
             e.printStackTrace();
             return null;
