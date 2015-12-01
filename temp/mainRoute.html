@@ -1,0 +1,63 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Map</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<style>
+		
+		html, body, #map {
+			height: 100%;
+			width: 100%;
+			overflow-x: hidden;
+			overflow-y: hidden;
+		}
+
+	</style>
+	
+</head>
+
+<body>
+	
+	<div id="map"></div>
+	<script type="text/javascript">
+			function initMap() {
+
+		  var map = new google.maps.Map(document.getElementById('map'), {
+			scrollwheel: false,
+			zoom: 7
+		  });
+
+		  var directionsDisplay = new google.maps.DirectionsRenderer({
+			map: map
+		  });
+
+		  // Set destination, origin and travel mode.
+		  var request = {
+			destination: "210 South Cedar Street, Auburn, Auburn' Indiana",
+			origin: "4795 Daisy St, Auburn, Indiana",
+			travelMode: google.maps.TravelMode.DRIVING,
+			avoidHighways: false,
+			avoidTolls: false,
+		  };
+		  
+			// Pass the directions request to the directions service.
+		  var directionsService = new google.maps.DirectionsService();
+		  directionsService.route(request, function(response, status) {
+			if (status == google.maps.DirectionsStatus.OK) {
+			  // Display the route on the map.
+			  directionsDisplay.setDirections(response);
+			}
+		  });
+		}
+	</script>
+	
+	<script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGahGEIyPxhPea9LC7IJraiRyakjR9KzA&callback=initMap">
+    </script>
+    
+</body>
+
+</html>
