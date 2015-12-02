@@ -121,10 +121,10 @@ public class EMSController implements Constants {
         ArrayList<EmergencyRecord> records = getRecords();
         EmergencyRecord[] rangeRecords = new EmergencyRecord[0];
 
-        for(EmergencyRecord record : records) {
+        records.forEach(record -> {
             if(record.getMetadata().getTimeCreated().isAfter(beginningDate) && record.getMetadata().getTimeCreated().isBefore(endingDate))
                 Arrays.asList(rangeRecords).add(record);
-        }
+        });
 
         EMSReport.generateStatsReport(rangeRecords, exportFilename);
     }
