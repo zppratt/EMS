@@ -5,6 +5,7 @@ import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import com.baconfiesta.ems.models.EmergencyRecord.Route;
+import com.baconfiesta.ems.models.EmergencyReport.EMSReport;
 
 import java.io.*;
 import java.time.Instant;
@@ -80,6 +81,16 @@ public class EMSController implements Constants {
      */
     public void determineNearestResponder(EmergencyRecord record) {
         record.setResponder(Route.determineNearestResponder(record));
+    }
+
+    /**
+     * \brief selects emergency records corresponding to the time range and returns a xls stat reports
+     * @param from starting date of data range
+     * @param to ending date of data range
+     * @param filename file name and path of the file to generate
+     */
+    public void generateReport(Instant from, Instant to, String filename) {
+       // EMSReport.generateStatsReport(array, filename)
     }
 
     /**
