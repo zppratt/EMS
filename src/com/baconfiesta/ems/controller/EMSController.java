@@ -8,6 +8,7 @@ import com.baconfiesta.ems.models.EmergencyRecord.Route;
 import com.baconfiesta.ems.models.EmergencyReport.EMSReport;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -83,15 +84,6 @@ public class EMSController implements Constants {
         record.setResponder(Route.determineNearestResponder(record));
     }
 
-    /**
-     * \brief selects emergency records corresponding to the time range and returns a xls stat reports
-     * @param from starting date of data range
-     * @param to ending date of data range
-     * @param filename file name and path of the file to generate
-     */
-    public void generateReport(Instant from, Instant to, String filename) {
-       // EMSReport.generateStatsReport(array, filename)
-    }
 
     /**
      * Calculated the route from the responder to the emergency
@@ -123,10 +115,18 @@ public class EMSController implements Constants {
      * Generates a report containing various statistics about emergencies
      * @param beginningDate the start date of the report
      * @param endingDate the end date of the report
-     * @param exportFile the file to save the report into
+     * @param exportFilename the file to save the report into
      */
-    public void generateReport(Date beginningDate, Date endingDate, File exportFile) {
+    public void generateReport(Instant beginningDate, Instant endingDate, String exportFilename) throws IOException, ClassNotFoundException{
+        ArrayList<EmergencyRecord> records = getRecords();
+        EmergencyRecord[] rangeRecords = new EmergencyRecord[0];
 
+        for(EmergencyRecord record : records) {
+            if(record.getMetadata().getTimeCreated().isAfter(beginningDate) && record.getMetadata().getTimeCreated().isBefore(endingDate))
+                Arrays.asList(rangeRecords).add(record);
+        }
+
+        EMSReport.generateStatsReport(rangeRecords, exportFilename);
     }
 
     /**

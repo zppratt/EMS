@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.time.Instant;
 
 
 /**
@@ -76,7 +77,10 @@ public class EMSReport {
         Row row;
         org.apache.poi.ss.usermodel.Cell cell;
 
-        /* TODO: add ID of emergency time */
+       /* Emergency Case ID */
+        row = sheet1.getRow(0);
+        cell = row.getCell(1);
+        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toEpochMilli());
 
         /* Caller first name */
         row = sheet1.getRow(3);
@@ -113,18 +117,15 @@ public class EMSReport {
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCategory().toString()); // NEEDS TO BE TRANSFORMED IN STRING
 
-        /* TODO: add response time */
         /* Emergency Response Time */
         row = sheet1.getRow(10);
         cell = row.getCell(2);
-        //cell.setCellValue(emergencyRecord); // DON'T KNOW WHERE THE RESPONSE TIME IS LOCATED
-
+        cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
 
         /* Responder Phone Number */
         row = sheet1.getRow(12);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getPhoneNumber());
-
 
         /* Responder Address */
         row = sheet1.getRow(13);
@@ -195,15 +196,16 @@ public class EMSReport {
     /**
      * \brief Generates a detailed report and statistics for several emergency records
      * @param emergencyRecords the array of emergency records to generate a report for
-     * @param filename the name of the file (and its path) where we want to store the report */
-    public static File generateStatsReport(EmergencyRecord[] emergencyRecords, String filename) {
+     * @param filename the name of the file (and its path) where we want to store the report
+     * */
+    public static void generateStatsReport(EmergencyRecord[] emergencyRecords, String filename) {
 
         int emergencyRecordsLength = emergencyRecords.length;
         int i;
 
         if(emergencyRecordsLength > 2000) {
             System.err.println("Number of records too large (" + emergencyRecordsLength + "): record generation aborted");
-            return null;
+            return;
         }
 
         /* copying file from template */
@@ -211,7 +213,7 @@ public class EMSReport {
             FileUtils.copyFile(new File(statsTemplateFilename), new File(filename));
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
         /* Create new input stream from file */
@@ -220,7 +222,7 @@ public class EMSReport {
             input = new FileInputStream(filename);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
         /* Open excel file from input stream */
@@ -229,7 +231,7 @@ public class EMSReport {
             excelFile = new POIFSFileSystem(input);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
          /* Create workbook */
@@ -238,7 +240,7 @@ public class EMSReport {
             wb = new HSSFWorkbook(excelFile);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
         /* MODIFICATION STARTS HERE */
@@ -252,7 +254,9 @@ public class EMSReport {
         for(i=0; i<emergencyRecordsLength; i++) {
             row = sheet1.getRow(i+1);
 
-            /* TODO: add id of emergency case */
+            /* Emergency ID */
+            cell = row.getCell(0);
+            cell.setCellValue(emergencyRecords[i].getMetadata().getTimeCreated().toEpochMilli());
 
             /* Creation Time */
             cell = row.getCell(1);
@@ -286,10 +290,9 @@ public class EMSReport {
             cell = row.getCell(8);
             cell.setCellValue(emergencyRecords[i].getCategory().toString());
 
-            /* TODO: add response time */
             /* Emergency Response Time */
             cell = row.getCell(9);
-           // cell.setCellValue(emergencyRecords[i].getMetadata());
+           cell.setCellValue(emergencyRecords[i].getRoute().getRouteDuration());
 
             /* Responder's Address */
             cell = row.getCell(10);
@@ -314,8 +317,22 @@ public class EMSReport {
             /* Number of Modifications */
             cell = row.getCell(15);
             cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
-
         }
+
+        /* Writing starting date period */
+        sheet1 = wb.getSheet("Summary Report");
+        row = sheet1.getRow(0);
+        cell = row.getCell(1);
+
+        if(emergencyRecordsLength > 0)
+            cell.setCellValue(emergencyRecords[0].getMetadata().toString());
+        else
+            cell.setCellValue("No Emergency Record to Display");
+
+        /* Starting ending date period */
+        cell = row.getCell(3);
+        if(emergencyRecordsLength > 0)
+            cell.setCellValue(emergencyRecords[emergencyRecordsLength-1].getMetadata().toString());
 
          /* MODIFICATION ENDS HERE */
 
@@ -325,7 +342,7 @@ public class EMSReport {
             out = new FileOutputStream(filename);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
          /* Write the workbook in the output stream  */
@@ -342,8 +359,6 @@ public class EMSReport {
         } catch(Exception e) {
             e.printStackTrace();
         }
-
-        return new File(filename);
     }
 
 }

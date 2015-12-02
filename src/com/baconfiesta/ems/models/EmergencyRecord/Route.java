@@ -135,6 +135,27 @@ public class Route implements Serializable {
         return alternateRouteSelected?"Alternate Route":"Main Route";
     }
 
+
+    /**
+     * \brief return the duration of the route chosen
+     * @return the duration of the route chosen. If alternate route has been selected, the duration returned is its route duration.
+     * Otherwise, the main route duration is returned
+     */
+    public int getRouteDuration() {
+        if(!alternateRouteSelected)
+            return Integer.parseInt(mainRouteDuration);
+        else
+            return Integer.parseInt(alternateRouteDirections);
+    }
+
+    /**
+     * \brief sets the route chosen
+     * @param alternateRouteSelected if true, the alternate route has been selected. Otherwise, the main has been selected.
+     * */
+    public void setAlternateRouteSelected(Boolean alternateRouteSelected) {
+        this.alternateRouteSelected = alternateRouteSelected;
+    }
+
     /**
      * \brief Determines the nearest emergency responder according to the type of the emergency
      *
@@ -343,17 +364,6 @@ public class Route implements Serializable {
         return directionFile;
     }
 
-
-    /**
-     * \brief Retrieve the static route (as an image file) according to the selected route: if alternateRouteSelected is set to false, the route retrieved is
-     * the main one, otherwise retrieves the alternate route
-     * @param alternateRouteSelected if set to true, retrieves alternate route static map, retrieves main route maps otherwise
-     */
-    public void retrieveStaticMap(Boolean alternateRouteSelected) {
-        this.alternateRouteSelected = alternateRouteSelected;
-
-
-    }
 
 
     /**
