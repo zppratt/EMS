@@ -16,10 +16,23 @@ import java.io.FileOutputStream;
  * A report generator class in the system to create different kind of reports
  * */
 public class EMSReport {
-    private final String recordTemplateFilename = "template_Record.xls";
-    private final String globalTemplateFilename = "template_Stats.xls";
 
-    public File generateRecordReport(EmergencyRecord emergencyRecord, String filename) {
+    /**
+     * The name and path of the template for a record report generation
+     * */
+    private static final String recordTemplateFilename = "template_record.xls";
+
+    /**
+     * The name and path of the template for a stats report generation
+     * */
+    private static final String statsTemplateFilename = "template_stats.xls";
+
+
+    /**
+     * \brief Generates a detailed report for a unique emergency record
+     * @param emergencyRecord the emergency record to generate a report for
+     * @param filename the name of the file (and its path) where we want to store the report */
+    public static File generateRecordReport(EmergencyRecord emergencyRecord, String filename) {
 
         /* copying file from template */
         try {
@@ -63,6 +76,8 @@ public class EMSReport {
         Row row;
         org.apache.poi.ss.usermodel.Cell cell;
 
+        /* TODO: add ID of emergency time */
+
         /* Caller first name */
         row = sheet1.getRow(3);
         cell = row.getCell(2);
@@ -98,6 +113,7 @@ public class EMSReport {
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCategory().toString()); // NEEDS TO BE TRANSFORMED IN STRING
 
+        /* TODO: add response time */
         /* Emergency Response Time */
         row = sheet1.getRow(10);
         cell = row.getCell(2);
@@ -171,11 +187,163 @@ public class EMSReport {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return null;
+
+        return new File(filename);
     }
 
-    public File generateGlobalReport(EmergencyRecord[] emergencyRecords) {
-        return null;
+
+    /**
+     * \brief Generates a detailed report and statistics for several emergency records
+     * @param emergencyRecords the array of emergency records to generate a report for
+     * @param filename the name of the file (and its path) where we want to store the report */
+    public static File generateStatsReport(EmergencyRecord[] emergencyRecords, String filename) {
+
+        int emergencyRecordsLength = emergencyRecords.length;
+        int i;
+
+        if(emergencyRecordsLength > 2000) {
+            System.err.println("Number of records too large (" + emergencyRecordsLength + "): record generation aborted");
+            return null;
+        }
+
+        /* copying file from template */
+        try {
+            FileUtils.copyFile(new File(statsTemplateFilename), new File(filename));
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        /* Create new input stream from file */
+        FileInputStream input;
+        try {
+            input = new FileInputStream(filename);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        /* Open excel file from input stream */
+        POIFSFileSystem excelFile;
+        try {
+            excelFile = new POIFSFileSystem(input);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+         /* Create workbook */
+        HSSFWorkbook wb;
+        try {
+            wb = new HSSFWorkbook(excelFile);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        /* MODIFICATION STARTS HERE */
+        /* Get the sheet */
+        Sheet sheet1 = wb.getSheet("Details");
+
+        Row row;
+        org.apache.poi.ss.usermodel.Cell cell;
+
+        /* For each emergency record, entering information in the excel file */
+        for(i=0; i<emergencyRecordsLength; i++) {
+            row = sheet1.getRow(i+1);
+
+            /* TODO: add id of emergency case */
+
+            /* Creation Time */
+            cell = row.getCell(1);
+            cell.setCellValue(emergencyRecords[i].getMetadata().getTimeCreated().toString());
+
+            /* Caller's first name */
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecords[i].getCaller().getFirstName());
+
+            /* Caller's last name */
+            cell = row.getCell(3);
+            cell.setCellValue(emergencyRecords[i].getCaller().getLastName());
+
+            /* Caller's Phone Number */
+            cell = row.getCell(4);
+            cell.setCellValue(emergencyRecords[i].getCaller().getPhone());
+
+            /* Emergency Address */
+            cell = row.getCell(5);
+            cell.setCellValue(emergencyRecords[i].getLocation().getAddress());
+
+            /* Emergency City */
+            cell = row.getCell(6);
+            cell.setCellValue(emergencyRecords[i].getLocation().getCity());
+
+            /* Emergency State */
+            cell = row.getCell(7);
+            cell.setCellValue(emergencyRecords[i].getLocation().getState());
+
+            /* Emergency Category */
+            cell = row.getCell(8);
+            cell.setCellValue(emergencyRecords[i].getCategory().toString());
+
+            /* TODO: add response time */
+            /* Emergency Response Time */
+            cell = row.getCell(9);
+           // cell.setCellValue(emergencyRecords[i].getMetadata());
+
+            /* Responder's Address */
+            cell = row.getCell(10);
+            cell.setCellValue(emergencyRecords[i].getResponder().getAddress());
+
+            /* Responder's City */
+            cell = row.getCell(11);
+            cell.setCellValue(emergencyRecords[i].getResponder().getCity());
+
+            /* Responder's State */
+            cell = row.getCell(12);
+            cell.setCellValue(emergencyRecords[i].getResponder().getState());
+
+            /* Responder's Phone Number */
+            cell = row.getCell(13);
+            cell.setCellValue(emergencyRecords[i].getResponder().getPhoneNumber());
+
+            /* Route Chosen */
+            cell = row.getCell(14);
+            cell.setCellValue(emergencyRecords[i].getRoute().getAlternateRouteSelectedString());
+
+            /* Number of Modifications */
+            cell = row.getCell(15);
+            cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
+
+        }
+
+         /* MODIFICATION ENDS HERE */
+
+         /* Create an output stream */
+        FileOutputStream out;
+        try {
+            out = new FileOutputStream(filename);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+         /* Write the workbook in the output stream  */
+        try {
+            wb.write(out);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        /* Closing input and output */
+        try {
+            input.close();
+            out.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return new File(filename);
     }
 
 }
