@@ -681,7 +681,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             sidebar.removeAll();
 
             // Proceed to the next window
-            viewEmergencyRecords();
+            summaryView();
         });
 
         route2.addActionListener(event -> {
@@ -693,16 +693,16 @@ public class EMSInterface implements EMSInterfaceConstants {
             sidebar.removeAll();
 
             // Proceed to the next window
-            viewEmergencyRecords();
+            summaryView();
         });
     }
 
     /**
      * Show a summary of the emergency record to finalize it or cancel
      */
-    private void viewEmergencyRecords() {
+    private void summaryView() {
         // Change the title
-        frameTitle.setText("View Emergency Records");
+        frameTitle.setText("Summary");
 
         // Set previous frame
         previous = "route";
