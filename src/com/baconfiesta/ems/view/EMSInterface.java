@@ -6,6 +6,7 @@ import com.baconfiesta.ems.controller.EMSController;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.*;
 import com.sun.javafx.application.PlatformImpl;
+import com.toedter.calendar.JCalendar;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -18,7 +19,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.time.Instant;
 import java.util.InputMismatchException;
 
 /**
@@ -52,6 +56,9 @@ public class EMSInterface implements EMSInterfaceConstants {
 
     private JFXPanel route1Panel;
     private JFXPanel route2Panel;
+
+    private Instant[] reportDateRange;
+    private File reportFile;
 
     /*
     * Holds "user" if previous window was user options
@@ -180,7 +187,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 sidebar.removeAll();
 
                 // Proceed to next window
-                displayRecords(null);
+                viewEmergencyRecords(null);
             }
         });
 
@@ -369,7 +376,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                         footer.removeAll();
                         sidebar.removeAll();
 
-                        displayRecords(record);
+                        viewEmergencyRecords(record);
                     }
                 }
             }
@@ -781,9 +788,9 @@ public class EMSInterface implements EMSInterfaceConstants {
     /**
      * Show the screen to view the emergency records
      */
-    private void displayRecords(EmergencyRecord initialRecord) {
+    private void viewEmergencyRecords(EmergencyRecord initialRecord) {
         // Change the title
-        frameTitle.setText("Summary");
+        frameTitle.setText("View Emergency Records");
 
         // Set previous frame
         previous = "user";
@@ -801,16 +808,17 @@ public class EMSInterface implements EMSInterfaceConstants {
         JScrollPane summaryScroll = new JScrollPane(summaryText);
         JScrollPane routeScroll = new JScrollPane(routePane);
 
-        JPanel left = new JPanel();
-        JPanel right = new JPanel();
+        JPanel leftMainPanel = new JPanel();
+        JPanel rightMainPanel = new JPanel();
 
-        JButton generateReport = new JButton("Generate Stats");
+        JButton generateReportSingleButton = new JButton("Generate Single Record Stats");
+        JButton generateReportRangeButton = new JButton("Generate Stats for a Range");
 
         JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
         if (initialRecord != null) {
             sidebarList.setSelectedValue(initialRecord, true);
         }
-        JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
+        JScrollPane sidebarListScrollPane = new JScrollPane(sidebarList);
 
         // Set properties of the fields
         routePane.setEditable(false);
@@ -819,8 +827,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         summaryText.setLineWrap(true);
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
-        left.setLayout(new GridLayout(2,1));
-        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
+        leftMainPanel.setLayout(new GridLayout(2,1));
+        rightMainPanel.setLayout(new BoxLayout(rightMainPanel, BoxLayout.Y_AXIS));
 
         // Open the web pages
         //
@@ -831,24 +839,84 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(1, 2));
-        mainframe.add(left);
-        mainframe.add(right);
+        mainframe.add(leftMainPanel);
+        mainframe.add(rightMainPanel);
 
-        left.add(route1Panel);
-        left.add(routeScroll);
+        leftMainPanel.add(route1Panel);
+        leftMainPanel.add(routeScroll);
 
-        right.add(summaryTitle);
-        right.add(summaryScroll);
+        rightMainPanel.add(summaryTitle);
+        rightMainPanel.add(summaryScroll);
 
-        sidebar.add(sidebarListScroll);
+        sidebar.add(sidebarListScrollPane);
 
-        footer.add(generateReport);
+        footer.add(generateReportSingleButton);
+        footer.add(generateReportRangeButton);
 
         // Refresh the window
         frame.revalidate();
         frame.repaint();
 
         // Should a record be selected, update the screen
+        sidebarList.addListSelectionListener(e -> {
+
+        });
+
+        generateReportSingleButton.addActionListener(e -> {
+        });
+
+        generateReportRangeButton.addActionListener(e -> {
+            try {
+                showDateRangeChooser();
+            } catch (Exception e1) {
+                JOptionPane.showConfirmDialog(frame, BURP + "For some reason I couldn't generate the report." + ASK);
+                e1.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Allows user to choose a range to generate a report
+     */
+    void showDateRangeChooser() throws Exception {
+        mainframe.removeAll();
+        sidebar.removeAll();
+        footer.removeAll();
+        mainframe.setLayout(new GridLayout(2, 2));
+        JCalendar fromDatePicker = new JCalendar();
+        JCalendar toDatePicker = new JCalendar();
+        mainframe.add(fromDatePicker);
+        mainframe.add(toDatePicker);
+        JButton submitDates = new JButton("Submit");
+        footer.add(submitDates);
+        // Refresh the window
+        frame.revalidate();
+        frame.repaint();
+        submitDates.addActionListener(e -> {
+            mainframe.removeAll();
+            sidebar.removeAll();
+            footer.removeAll();
+            reportDateRange = new Instant[]{
+                    fromDatePicker.getDate().toInstant(),
+                    toDatePicker.getDate().toInstant()
+            };
+            try {
+                showReportFileChooser();
+            } catch (IOException | ClassNotFoundException e1) {
+                JOptionPane.showConfirmDialog(frame, BURP + "For some reason I couldn't generate the report." + ASK);
+                e1.printStackTrace();
+            }
+        });
+    }
+
+    void showReportFileChooser() throws IOException, ClassNotFoundException {
+        JFileChooser fileChooser = new JFileChooser();
+        int accepted = fileChooser.showDialog(frame, "Save");
+        if (accepted == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            Files.deleteIfExists(file.toPath());
+            controller.generateReport(reportDateRange[0], reportDateRange[1], file.getAbsolutePath());
+        }
     }
 
     /**
@@ -998,7 +1066,6 @@ public class EMSInterface implements EMSInterfaceConstants {
             frame.repaint();
         });
 
-
         users.addActionListener(event -> {
             // Populate the list with users
             try {
@@ -1088,9 +1155,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                         lastnameText.getText(),
                         usernameText.getText(),
                         String.valueOf(passwordField.getPassword()));
-            } catch (IOException e1) {
-                System.out.println("User not added.");
-            } catch (ClassNotFoundException e1) {
+            } catch (IOException | ClassNotFoundException e1) {
                 System.out.println("User not added.");
             }
             System.out.println();
