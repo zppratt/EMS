@@ -129,7 +129,7 @@ public class EMSController implements Constants {
         });
         EmergencyRecord[] rangeRecords = new EmergencyRecord[0];
         // Turns records into an array
-        rangeRecords = recordsInRange.toArray(new EmergencyRecord[0]);
+        rangeRecords = recordsInRange.toArray(new EmergencyRecord[recordsInRange.size()]);
 
         for (EmergencyRecord rangeRecord : rangeRecords) {
             System.err.println(rangeRecord);
