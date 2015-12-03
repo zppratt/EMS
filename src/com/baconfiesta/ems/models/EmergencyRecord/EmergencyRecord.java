@@ -142,23 +142,25 @@ public class EmergencyRecord implements Serializable{
         String paragraph = "";
 
         paragraph += "Emergency Time: " + getMetadata().toString() + "\n";
-        paragraph += "Category: " + category.name() + "\n";
+        paragraph += "Category: " + getCategory().name() + "\n";
+        paragraph += "Dispatcher: " + getMetadata().getCreatedBy().getUsername() + "\n";;
 
         paragraph += "\nCaller Information:\n";
-        paragraph += "Name: " + caller.getFirstName() + " " + caller.getLastName() + "\n";
-        paragraph += "Phone: " + caller.getPhone() + "\n";
-        paragraph += "Address: " + location.getAddress() + "\n";
-        paragraph += "City: " + location.getCity() + "\n";
-        paragraph += "State: " + location.getState() + "\n";
+        paragraph += "Name: " + getCaller().getFirstName() + " " + caller.getLastName() + "\n";
+        paragraph += "Phone: " + getCaller().getPhone() + "\n";
+        paragraph += "Address: " + getLocation().getAddress() + "\n";
+        paragraph += "City: " + getLocation().getCity() + "\n";
+        paragraph += "State: " + getLocation().getState() + "\n";
 
-        paragraph += "\nDescription\n";
+        paragraph += "\nDescription:\n";
         paragraph += description + "\n";
 
         paragraph += "\nResponder Information:\n";
-        paragraph += "Phone: " + responder.getPhoneNumber() + "\n";
-        paragraph += "Address: " + responder.getAddress() + "\n";
-        paragraph += "State: " + responder.getState() + "\n";
-        paragraph += "City: " + responder.getCity() + "\n";
+        paragraph += "Phone: " + getResponder().getPhoneNumber() + "\n";
+        paragraph += "Address: " + getResponder().getAddress() + "\n";
+        paragraph += "State: " + getResponder().getState() + "\n";
+        paragraph += "City: " + getResponder().getCity() + "\n";
+
 
         return paragraph;
 

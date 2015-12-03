@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * A user of the EMS system, such as a Dispatcher or System Administrator
@@ -135,5 +136,22 @@ public class EMSUser implements Serializable {
 //                ( this.lastname.equals("") ? "<blank>" : this.lastname ),
 //                ( this.firstname.equals("") ? "<blank>" : this.firstname ));
         return ( this.username.equals("") ? "<blank>" : this.username ) + "\n";
+    }
+
+    /**
+     * Returns a summery of the user info in paragraph form
+     */
+    public String getParagraphForm(){
+        String paragraph = "Username: " + getUsername() + "\n" +
+                "First Name: " + getFirstname() + "\n" +
+                "Last Name: " + getLastname() + "\n" +
+                "Number of Records: " + getRecords().values().size() + "\n" +
+                "List of Records:\n ";
+        Iterator it = getRecords().entrySet().iterator();
+        while(it.hasNext()){
+            paragraph += ((EmergencyRecord) it.next()) + "\n";
+        }
+
+        return paragraph;
     }
 }

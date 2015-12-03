@@ -235,6 +235,8 @@ public class EMSInterface implements EMSInterfaceConstants {
                     enterInfo();
                 } else if (previous.equals("route")) {
                     routeSelection();
+                } else if (previous.equals("view")) {
+                    viewEmergencyRecords(null);
                 }
             }
         });
@@ -457,6 +459,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         descriptionTitle.setAlignmentX(JFrame.LEFT_ALIGNMENT);
         descriptionText.setLineWrap(true);
 
+
         firstnameText.setMaximumSize(new Dimension(200, firstnameText.getPreferredSize().height));
         lastnameText.setMaximumSize(new Dimension(200, lastnameText.getPreferredSize().height));
         phoneText.setMaximumSize(new Dimension(200, phoneText.getPreferredSize().height));
@@ -644,6 +647,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Set properties of the fields
         route1Text.setEditable(false);
         route2Text.setEditable(false);
+        route1Text.setLineWrap(true);
+        route2Text.setLineWrap(true);
+
         summaryText.setEditable(false);
         summaryText.setLineWrap(true);
 
@@ -651,13 +657,13 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Open the web browser
         PlatformImpl.startup(() -> {
-            webEngine1.load("file://" + tempFile.getRoute().getMainRoute().getAbsolutePath());
-            webEngine2.load("file://" + tempFile.getRoute().getAlternateRoute().getAbsolutePath());
+            webEngine1.load("file:\\" + tempFile.getRoute().getMainRoute().getAbsolutePath());
+            webEngine2.load("file:\\" + tempFile.getRoute().getAlternateRoute().getAbsolutePath());
         });
 
         // Fill in the route directions
         route1Text.setText(tempFile.getRoute().getMainRouteDirections());
-        route1Text.setText(tempFile.getRoute().getAlternateRouteDirections());
+        route2Text.setText(tempFile.getRoute().getAlternateRouteDirections());
 
 
         // Set the summary
@@ -682,6 +688,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         route1.addActionListener(event -> {
             // Update the emergency object
+            tempFile.getRoute().setAlternateRouteSelected(false);
 
             // Clear the window
             mainframe.removeAll();
@@ -694,6 +701,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         route2.addActionListener(event -> {
             // Update the emergency object
+            tempFile.getRoute().setAlternateRouteSelected(true);
 
             // Clear the window
             mainframe.removeAll();
@@ -723,45 +731,46 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         JTextArea summaryText = new JTextArea("", 18, 20);
 
-        JEditorPane routePane = new JEditorPane();
+        JTextArea routeText = new JTextArea("", 18, 20);
 
         JScrollPane summaryScroll = new JScrollPane(summaryText);
-        JScrollPane routeScroll = new JScrollPane(routePane);
+        JScrollPane routeScroll = new JScrollPane(routeText);
 
-        JButton closecase = new JButton("Close Case");
+        JButton closeCase = new JButton("Close Case");
 
         // Set properties of the fields
-        routePane.setEditable(false);
+        routeText.setEditable(false);
         summaryText.setEditable(false);
 
+        routeText.setLineWrap(true);
         summaryText.setLineWrap(true);
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
-
-        // Open the web pages
-        //
-        // GET THE URL TO SHOW ROUTE
-        //
-        // Open the web browser
-        PlatformImpl.startup(() -> webEngine1.load("http://www.google.com"));
 
         // Set the summary
         summaryText.setText(tempFile.getParagraphForm());
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(2, 1));
-        mainframe.add(route1Panel);
+
+        if(tempFile.getRoute().getAlternateRouteSelectedString().equals("Main Route")) {
+            mainframe.add(route1Panel);
+            routeText.setText(tempFile.getRoute().getMainRouteDirections());
+        } else {
+            mainframe.add(route2Panel);
+            routeText.setText(tempFile.getRoute().getAlternateRouteDirections());
+        }
         mainframe.add(routeScroll);
 
         sidebar.add(summaryTitle);
         sidebar.add(summaryScroll);
 
-        footer.add(closecase);
+        footer.add(closeCase);
 
         // Refresh the window
         frame.revalidate();
         frame.repaint();
 
-        closecase.addActionListener(event -> {
+        closeCase.addActionListener(event -> {
             // Confirm finalize
             if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to finalize the record\n This can not be undone.", null, JOptionPane.YES_NO_OPTION) == 0) {
 
@@ -801,53 +810,58 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Declare local variables
         JLabel summaryTitle = new JLabel("Case Review");
+        JLabel routeTitle = new JLabel("Route Taken");
 
         JTextArea summaryText = new JTextArea("", 18, 20);
-
-        JEditorPane routePane = new JEditorPane();
+        JTextArea routeText = new JTextArea("", 18, 20);
 
         JScrollPane summaryScroll = new JScrollPane(summaryText);
-        JScrollPane routeScroll = new JScrollPane(routePane);
+        JScrollPane routeScroll = new JScrollPane(routeText);
 
-        JPanel leftMainPanel = new JPanel();
-        JPanel rightMainPanel = new JPanel();
+        JPanel left = new JPanel();
+        JPanel right = new JPanel();
 
         JButton generateReportSingleButton = new JButton("Generate Single Record Stats");
         JButton generateReportRangeButton = new JButton("Generate Stats for a Range");
 
-        JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
-        if (initialRecord != null) {
-            sidebarList.setSelectedValue(initialRecord, true);
-        }
-        JScrollPane sidebarListScrollPane = new JScrollPane(sidebarList);
-
-        // Set properties of the fields
-        routePane.setEditable(false);
+        // Set properties of the variables
+        routeText.setEditable(false);
         summaryText.setEditable(false);
 
         summaryText.setLineWrap(true);
+        routeText.setLineWrap(true);
+
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
+        routeTitle.setFont(new Font(routeTitle.getFont().getName(), Font.BOLD, 14));
 
-        leftMainPanel.setLayout(new GridLayout(2,1));
-        rightMainPanel.setLayout(new BoxLayout(rightMainPanel, BoxLayout.Y_AXIS));
+        left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+        right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
 
-        // Open the web pages
-        //
-        // GET THE URL TO SHOW ROUTE
-        //
-        // Open the web browser
-        PlatformImpl.startup(() -> webEngine1.load("http://www.google.com/maps"));
+        // Populate the variables
+        JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
+        if (initialRecord != null) {
+            sidebarList.setSelectedValue(initialRecord, true);
+            summaryText.setText(initialRecord.getParagraphForm());
+
+            // Want only the selected route shown
+            if (initialRecord.getRoute() != null && initialRecord.getRoute().getAlternateRouteSelectedString().equals("Main Route")){
+                routeText.setText(initialRecord.getRoute().getMainRouteDirections());
+            } else if (initialRecord.getRoute() != null) {
+                routeText.setText(initialRecord.getRoute().getAlternateRouteDirections());
+            }
+        }
+        JScrollPane sidebarListScrollPane = new JScrollPane(sidebarList);
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(1, 2));
-        mainframe.add(leftMainPanel);
-        mainframe.add(rightMainPanel);
+        mainframe.add(left);
+        mainframe.add(right);
 
-        leftMainPanel.add(route1Panel);
-        leftMainPanel.add(routeScroll);
+        left.add(routeTitle);
+        left.add(routeScroll);
 
-        rightMainPanel.add(summaryTitle);
-        rightMainPanel.add(summaryScroll);
+        right.add(summaryTitle);
+        right.add(summaryScroll);
 
         sidebar.add(sidebarListScrollPane);
 
@@ -860,7 +874,14 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Should a record be selected, update the screen
         sidebarList.addListSelectionListener(e -> {
+            mainframe.removeAll();
+            sidebar.removeAll();
+            footer.removeAll();
 
+            viewEmergencyRecords(sidebarList.getSelectedValue());
+
+            frame.repaint();
+            frame.revalidate();
         });
 
         generateReportSingleButton.addActionListener(e -> {
@@ -880,6 +901,15 @@ public class EMSInterface implements EMSInterfaceConstants {
      * Allows user to choose a range to generate a report
      */
     void showDateRangeChooser() throws Exception {
+        // Change the title
+        frameTitle.setText("Select Date Range");
+
+        // Set previous frame
+        previous = "view";
+
+        // Enable back button
+        back.setEnabled(true);
+
         mainframe.removeAll();
         sidebar.removeAll();
         footer.removeAll();
@@ -1068,12 +1098,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
             // Populate the panel with the data
             if (user != null) {
-                userActivityText.setText(
-                        "Username: " + user.getUsername() + "\n" +
-                        "First Name: " + user.getFirstname() + "\n" +
-                        "Last Name: " + user.getLastname() + "\n" +
-                        "Records: " + user.getRecords().values().size() + "\n"
-                );
+                userActivityText.setText(user.getParagraphForm());
             }
             frame.revalidate();
             frame.repaint();
