@@ -14,6 +14,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -910,13 +911,25 @@ public class EMSInterface implements EMSInterfaceConstants {
     }
 
     void showReportFileChooser() throws IOException, ClassNotFoundException {
+        String suffix = ".xls";
         JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("xls files",suffix);
+        fileChooser.setFileFilter(filter);
         int accepted = fileChooser.showDialog(frame, "Save");
         if (accepted == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            Files.deleteIfExists(file.toPath());
-            controller.generateReport(reportDateRange[0], reportDateRange[1], file.getAbsolutePath());
+            if (file != null) {
+                if(!fileChooser.getSelectedFile().getAbsolutePath().endsWith(suffix)){
+                    file = new File(fileChooser.getSelectedFile() + suffix);
+                }
+                Files.deleteIfExists(file.toPath());
+                controller.generateReport(reportDateRange[0], reportDateRange[1], file.getAbsolutePath());
+            }
         }
+        // Refresh the window
+        frame.revalidate();
+        frame.repaint();
+        viewEmergencyRecords(null);
     }
 
     /**

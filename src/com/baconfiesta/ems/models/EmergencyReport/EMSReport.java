@@ -10,7 +10,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.time.Instant;
 
 
 /**
@@ -21,12 +20,12 @@ public class EMSReport {
     /**
      * The name and path of the template for a record report generation
      * */
-    private static final String recordTemplateFilename = "template_record.xls";
+    private static final String recordTemplateFilename = "templates/template_record.xls";
 
     /**
      * The name and path of the template for a stats report generation
      * */
-    private static final String statsTemplateFilename = "template_stats.xls";
+    private static final String statsTemplateFilename = "templates/template_stats.xls";
 
 
     /**
