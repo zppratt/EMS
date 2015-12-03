@@ -8,9 +8,10 @@ import com.baconfiesta.ems.models.EmergencyRecord.Route;
 import com.baconfiesta.ems.models.EmergencyReport.EMSReport;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -119,12 +120,20 @@ public class EMSController implements Constants {
      */
     public void generateReport(Instant beginningDate, Instant endingDate, String exportFilename) throws IOException, ClassNotFoundException{
         ArrayList<EmergencyRecord> records = getRecords();
-        EmergencyRecord[] rangeRecords = new EmergencyRecord[0];
-
+        ArrayList<EmergencyRecord> recordsInRange = new ArrayList<>();
+        // Gather records in range
         records.forEach(record -> {
-            if(record.getMetadata().getTimeCreated().isAfter(beginningDate) && record.getMetadata().getTimeCreated().isBefore(endingDate))
-                Arrays.asList(rangeRecords).add(record);
+            if(record.getMetadata().getTimeCreated().isAfter(beginningDate) && record.getMetadata().getTimeCreated().isBefore(endingDate)) {
+                recordsInRange.add(record);
+            }
         });
+        EmergencyRecord[] rangeRecords = new EmergencyRecord[0];
+        // Turns records into an array
+        rangeRecords = recordsInRange.toArray(new EmergencyRecord[0]);
+
+        for (EmergencyRecord rangeRecord : rangeRecords) {
+            System.err.println(rangeRecord);
+        }
 
         EMSReport.generateStatsReport(rangeRecords, exportFilename);
     }

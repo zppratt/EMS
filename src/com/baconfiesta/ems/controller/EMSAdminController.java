@@ -79,7 +79,7 @@ public class EMSAdminController extends EMSController {
      */
     public void generateTestData() throws IOException, ClassNotFoundException {
         Random r = new Random(Instant.now().toEpochMilli());
-        long endTime = Timestamp.valueOf("2015-01-01 00:00:00").getTime();
+        long endTime = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
         System.out.println("Generating Users:");
         for (int i = 0; i < 15; i++) {
             String firstName = firstNames[abs(r.nextInt() % (firstNames.length - 1))];
