@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
 
 /**
@@ -1230,6 +1232,12 @@ public class EMSInterface implements EMSInterfaceConstants {
         back.setEnabled(true);
 
         // Create label, textField, and radioButton local variables
+        JRadioButton newestRecords = new JRadioButton("Recent Records");
+        JRadioButton allRecords = new JRadioButton("All Records");
+
+        ButtonGroup recordListType = new ButtonGroup();
+
+        JLabel listTitle = new JLabel("Select Record Filter");
         JLabel callerTitle = new JLabel("Caller Information");
         JLabel descriptionTitle = new JLabel("Description of the Emergency");
         JLabel categorizeTitle = new JLabel("Categorize Emergency");
@@ -1277,7 +1285,12 @@ public class EMSInterface implements EMSInterfaceConstants {
         categories.add(hoax);
         categories.add(crash);
 
+        recordListType.add(newestRecords);
+        recordListType.add(allRecords);
+
         // Set properties of the fields
+        newestRecords.setSelected(true);
+
         callerTitle.setFont(new Font(callerTitle.getFont().getName(), Font.BOLD, 14));
         descriptionTitle.setFont(new Font(descriptionTitle.getFont().getName(), Font.BOLD, 14));
         categorizeTitle.setFont(new Font(categorizeTitle.getFont().getName(), Font.BOLD, 14));
@@ -1371,6 +1384,11 @@ public class EMSInterface implements EMSInterfaceConstants {
         right.add(new JLabel("  "));
         right.add(descriptionScroll);
 
+        // Add components to the sidebar
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+        sidebar.add(listTitle);
+        sidebar.add(newestRecords);
+        sidebar.add(allRecords);
         sidebar.add(sidebarListScroll);
 
         // Add components to footer
@@ -1424,6 +1442,31 @@ public class EMSInterface implements EMSInterfaceConstants {
                 record = recordBuilder.getNewEmergencyRecord(controller.getCurrentUser());
 
             }
+        });
+
+        newestRecords.addActionListener(event -> {
+            // Populate the list with users
+            try {
+                sidebarList.setListData(controller.getRecentRecords());
+                sidebarList.setSelectedIndex(0);
+            } catch (IOException | ClassNotFoundException e1) {
+
+            }
+            frame.revalidate();
+            frame.repaint();
+        });
+
+        allRecords.addActionListener(event -> {
+            // Populate the list with admins
+            try {
+                ArrayList<EmergencyRecord> records = controller.getRecords();
+                sidebarList.setListData(records.toArray(new EmergencyRecord[records.size()]));
+                sidebarList.setSelectedIndex(0);
+            } catch (IOException | ClassNotFoundException e1) {
+
+            }
+            frame.revalidate();
+            frame.repaint();
         });
 
         // Refresh the window

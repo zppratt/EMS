@@ -167,12 +167,17 @@ public class EMSController implements Constants {
      * @return the list of records
      */
     public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
-        return _database.getCachedRecords().values().stream()
-                .collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<EmergencyRecord> list = new ArrayList<>();
+
+        _database.getCachedRecords().entrySet().stream()
+                .sorted(Map.Entry.<Instant, EmergencyRecord>comparingByKey().reversed())
+                .forEach(r -> list.add(r.getValue()));
+
+        return list;
     }
 
     /**
-     * Retrieves a sorted list of the last ten records
+     * Retrieves a sorted list of the last twenty records
      * @return the descending list of records
      * @throws IOException can be caught from getCachedRecords
      * @throws ClassNotFoundException can be caught from getCachedRecords
@@ -183,10 +188,10 @@ public class EMSController implements Constants {
 
         _database.getCachedRecords().entrySet().stream()
                 .sorted(Map.Entry.<Instant, EmergencyRecord>comparingByKey().reversed())
-                .limit(10)
+                .limit(20)
                 .forEach(r -> list.add(r.getValue()));
 
-        return list.toArray(new EmergencyRecord[10]);
+        return list.toArray(new EmergencyRecord[20]);
     }
 
     /**
