@@ -119,7 +119,7 @@ public class EMSReport {
         /* Emergency Response Time */
         row = sheet1.getRow(10);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
+       // cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
 
         /* Responder Phone Number */
         row = sheet1.getRow(12);
@@ -144,7 +144,7 @@ public class EMSReport {
         /* Route Chosen */
         row = sheet1.getRow(17);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getRoute().getAlternateRouteSelectedString());
+        //cell.setCellValue(emergencyRecord.getRoute().getAlternateRouteSelectedString());
 
         /* Emergency Case Created By */
         row = sheet1.getRow(19);
@@ -154,7 +154,7 @@ public class EMSReport {
          /* Emergency Case Time Created */
         row = sheet1.getRow(20);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toString()); // NEEDS TO BE TRANSFORMED TO STRING
+        cell.setCellValue(emergencyRecord.getMetadata().toString());
 
          /* Emergency Case Number of Modifications */
         row = sheet1.getRow(21);
@@ -249,6 +249,7 @@ public class EMSReport {
         Row row;
         org.apache.poi.ss.usermodel.Cell cell;
 
+
         /* For each emergency record, entering information in the excel file */
         for(i=0; i<emergencyRecordsLength; i++) {
             row = sheet1.getRow(i+1);
@@ -259,7 +260,7 @@ public class EMSReport {
 
             /* Creation Time */
             cell = row.getCell(1);
-            cell.setCellValue(emergencyRecords[i].getMetadata().getTimeCreated().toString());
+            cell.setCellValue(emergencyRecords[i].getMetadata().toString());
 
             /* Caller's first name */
             cell = row.getCell(2);
@@ -291,7 +292,7 @@ public class EMSReport {
 
             /* Emergency Response Time */
             cell = row.getCell(9);
-           cell.setCellValue(emergencyRecords[i].getRoute().getRouteDuration());
+            //cell.setCellValue(emergencyRecords[i].getRoute().getRouteDuration());
 
             /* Responder's Address */
             cell = row.getCell(10);
@@ -311,11 +312,11 @@ public class EMSReport {
 
             /* Route Chosen */
             cell = row.getCell(14);
-            cell.setCellValue(emergencyRecords[i].getRoute().getAlternateRouteSelectedString());
+            //cell.setCellValue(emergencyRecords[i].getRoute().getAlternateRouteSelectedString());
 
             /* Number of Modifications */
             cell = row.getCell(15);
-            cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
+            //cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
         }
 
         /* Writing starting date period */
@@ -328,7 +329,7 @@ public class EMSReport {
         else
             cell.setCellValue("No Emergency Record to Display");
 
-        /* Starting ending date period */
+        /* Writing ending date period */
         cell = row.getCell(3);
         if(emergencyRecordsLength > 0)
             cell.setCellValue(emergencyRecords[emergencyRecordsLength-1].getMetadata().toString());

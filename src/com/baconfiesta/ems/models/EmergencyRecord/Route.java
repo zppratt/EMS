@@ -41,6 +41,7 @@ public class Route implements Serializable {
     public Route(String completeAddressFrom, String completeAddressTo) {
         this.emergencyLocationAddress = completeAddressTo;
         this.emergencyResponderAddress = completeAddressFrom;
+        this.alternateRouteSelected = false;
 
         this.calculateRoute();
         this.calculateDirections(true);
@@ -141,11 +142,11 @@ public class Route implements Serializable {
      * @return the duration of the route chosen. If alternate route has been selected, the duration returned is its route duration.
      * Otherwise, the main route duration is returned
      */
-    public int getRouteDuration() {
+    public String getRouteDuration() {
         if(!alternateRouteSelected)
-            return Integer.parseInt(mainRouteDuration);
+            return mainRouteDuration;
         else
-            return Integer.parseInt(alternateRouteDirections);
+            return alternateRouteDirections;
     }
 
     /**
