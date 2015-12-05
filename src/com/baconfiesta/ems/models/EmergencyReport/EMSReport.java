@@ -319,24 +319,24 @@ public class EMSReport {
             //cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
         }
 
-        /* Writing starting date period */
+        /* Writing starting and ending date period */
         sheet1 = wb.getSheet("Summary Report");
         row = sheet1.getRow(0);
         cell = row.getCell(1);
 
-        if(emergencyRecordsLength > 0)
+        if(emergencyRecordsLength > 0) {
+            cell.setCellValue(emergencyRecords[emergencyRecordsLength-1].getMetadata().toString());
+            cell = row.getCell(27);
             cell.setCellValue(emergencyRecords[0].getMetadata().toString());
+        }
         else
             cell.setCellValue("No Emergency Record to Display");
 
-        /* Writing ending date period */
-        cell = row.getCell(3);
-        if(emergencyRecordsLength > 0)
-            cell.setCellValue(emergencyRecords[emergencyRecordsLength-1].getMetadata().toString());
 
          /* MODIFICATION ENDS HERE */
 
          /* Create an output stream */
+
         FileOutputStream out;
         try {
             out = new FileOutputStream(filename);

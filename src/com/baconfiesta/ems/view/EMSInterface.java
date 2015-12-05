@@ -326,6 +326,14 @@ public class EMSInterface implements EMSInterfaceConstants {
                 userActions();
             } else {
                 // If a normal user then use userActions()
+                try {
+                    controller = new EMSController(user, null);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e){
+                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                    return;
+                }
                 userActions();
             }
         });
@@ -1277,7 +1285,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         back.setEnabled(true);
 
         // Change the title
-        frameTitle.setText("Enter Emergency Info");
+        frameTitle.setText("Manage Records");
 
         // Set previous frame
         previous = "user";
@@ -1571,6 +1579,13 @@ public class EMSInterface implements EMSInterfaceConstants {
             fileChooser.showSaveDialog(frame);
 
             // Save database to the file
+            try {
+                controller.backupData(fileChooser.getSelectedFile());
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+            } catch (ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+            }
         });
 
         restoreData.addActionListener(event -> {
@@ -1579,6 +1594,15 @@ public class EMSInterface implements EMSInterfaceConstants {
             fileChooser.showOpenDialog(frame);
 
             // Load database from file
+            try {
+                controller.restoreData(fileChooser.getSelectedFile());
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
+            } catch (ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
+            } catch (InterruptedException e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
+            }
 
         });
 

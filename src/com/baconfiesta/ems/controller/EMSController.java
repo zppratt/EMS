@@ -4,6 +4,7 @@ import com.baconfiesta.ems.Constants;
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
+import com.baconfiesta.ems.models.EmergencyRecord.Responder;
 import com.baconfiesta.ems.models.EmergencyRecord.Route;
 import com.baconfiesta.ems.models.EmergencyReport.EMSReport;
 
@@ -78,10 +79,13 @@ public class EMSController implements Constants {
 
     /**
      * Finds the nearest emergency responder
-     * @param record the emergency record containing the address of the emergency
+     * @param mainRecord the main record that will contain the main route
+     * @param alternativeRecord the alternative record that will contain the alternate route
      */
-    public void determineNearestResponder(EmergencyRecord record) {
-        record.setResponder(Route.determineNearestResponder(record));
+    public void determineNearestResponders(EmergencyRecord mainRecord, EmergencyRecord alternativeRecord) {
+        Responder responders[] = Route.determineNearestResponder(mainRecord);
+        mainRecord.setResponder(responders[0]);
+        alternativeRecord.setResponder(responders[1]);
     }
 
 
