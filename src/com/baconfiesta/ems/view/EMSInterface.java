@@ -608,7 +608,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 }else{
                     throw new InputMismatchException();
                 }
-                controller.determineNearestResponder(tempFile);
+                controller.determineNearestResponders(tempFile);
                 controller.calculateRoute(tempFile);
             } catch (InputMismatchException mismatch){
                 JOptionPane.showMessageDialog(frame, "Every field must be filled.");
@@ -1542,7 +1542,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                         stateText.getText(),
                         cityText.getText()
                 );
-                controller.determineNearestResponder(record); // sets the responder
+                controller.determineNearestResponders(record); // sets the responder
                 record.setRoute(new Route(
                         record.getResponder().getAddress(),
                         location.getAddress()
@@ -1581,9 +1581,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             // Save database to the file
             try {
                 controller.backupData(fileChooser.getSelectedFile());
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
             }
         });
@@ -1596,11 +1594,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             // Load database from file
             try {
                 controller.restoreData(fileChooser.getSelectedFile());
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
-            } catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
-            } catch (InterruptedException e) {
+            } catch (IOException | ClassNotFoundException | InterruptedException e) {
                 JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
             }
 
