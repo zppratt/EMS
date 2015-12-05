@@ -22,14 +22,10 @@ public class Route implements Serializable {
 
     private String emergencyResponderAddress;
     private String emergencyLocationAddress;
-    private File mainRoute;
-    private File alternateRoute;
-    private String mainRouteDirections;
-    private String alternateRouteDirections;
-    private String mainRouteDistance;
-    private String alternateRouteDistance;
-    private String mainRouteDuration;
-    private String alternateRouteDuration;
+    private File route;
+    private String routeDirections;
+    private String routeDistance;
+    private String routeDuration;
     private Boolean alternateRouteSelected;
 
 
@@ -44,8 +40,7 @@ public class Route implements Serializable {
         this.alternateRouteSelected = false;
 
         this.calculateRoute();
-        this.calculateDirections(true);
-        this.calculateDirections(false);
+        this.calculateDirections();
     }
 
     /**
@@ -65,88 +60,42 @@ public class Route implements Serializable {
     }
 
     /**
-     * \brief Retrieve the HTML file containing the main route
+     * \brief Retrieve the HTML file containing the route
      * @return the HTML file containing the main route
      * */
-    public File getMainRoute() {
-        return mainRoute;
-    }
-
-    /**
-     * \brief Retrieve the HTML file containing the alternate route
-     * @return the HTML file containing the alternate route
-     * */
-    public File getAlternateRoute() {
-        return alternateRoute;
+    public File getRoute() {
+        return route;
     }
 
     /**
      * \brief Retrieve the directions of the main route
      * @return a String containing the directions of the main route
      * */
-    public String getMainRouteDirections() {
-        return mainRouteDirections;
+    public String getMainDirections() {
+        return routeDirections;
     }
 
-    /**
-     * \brief Retrieve the directions of the alternate route
-     * @return a String containing the directions of the alternate route
-     * */
-    public String getAlternateRouteDirections() {
-        return alternateRouteDirections;
-    }
 
     /**
      * \brief Retrieve the distance of the main route
      * @return a String containing the distance of the main route
      * */
-    public String getMainRouteDistance() {
-        return mainRouteDistance;
+    public String getRouteDistance() {
+        return routeDistance;
     }
 
-    /**
-     * \brief Retrieve the distance of the alternate route
-     * @return a String containing the distance of the alternate route
-     * */
-    public String getAlternateRouteDistance() {
-        return alternateRouteDistance;
-    }
 
     /**
      * \brief Retrieve the duration of the main route
      * @return a String containing the duration of the main route
      * */
-    public String getMainRouteDuration() {
-        return mainRouteDuration;
-    }
-
-    /**
-     * \brief Retrieve the duration of the alternate route
-     * @return a string containing the duration of the alternate route
-     * */
-    public String getAlternateRouteDuration() {
-        return alternateRouteDuration;
-    }
-
-    /**
-     * \brief Retrieve a string corresponding to which route has been selected
-     * @return a string corresponding to which route has been selected (alternate or main)
-     * */
-    public String getAlternateRouteSelectedString() {
-        return alternateRouteSelected?"Alternate Route":"Main Route";
-    }
-
-
-    /**
-     * \brief return the duration of the route chosen
-     * @return the duration of the route chosen. If alternate route has been selected, the duration returned is its route duration.
-     * Otherwise, the main route duration is returned
-     */
     public String getRouteDuration() {
-        if(!alternateRouteSelected)
-            return mainRouteDuration;
-        else
-            return alternateRouteDirections;
+        return routeDuration;
+    }
+
+
+    public String getRouteSelectedString() {
+        return(alternateRouteSelected?"Alternate Route":"Main Route");
     }
 
     /**
@@ -166,13 +115,13 @@ public class Route implements Serializable {
      *               queries information about this place, and formats information according to a Responder. Creates a new Responder and returns it.
      * @return       an emergency Responder
      */
-    public static Responder determineNearestResponder(EmergencyRecord record) {
+    public static Responder[] determineNearestResponder(EmergencyRecord record) {
 
-         /*
+        /*
      * TODO: Handle the fact that the answer query can be empty
      * TODO: if cannot retrieve data, what happens?
      * TODO: set timer for each retrieval, if no answer after a given time, returns error or "Network Unavailable"
-     * TODO: modify to use only location
+     * TODO: set so that we look for hospital and fire department
      * */
 
         String searchQuery = "Police Department"; // We always look for a police department
@@ -204,33 +153,56 @@ public class Route implements Serializable {
         }
 
         /* Fields required to create a new responder */
-        String responderPhone = "";
-        String responderAddress = "";
-        String responderState = "";
-        String responderCity = "";
+        String firstResponderPhone = "";
+        String firstResponderAddress = "";
+        String firstResponderState = "";
+        String firstResponderCity = "";
+
+        String secondResponderPhone = "";
+        String secondResponderAddress = "";
+        String secondResponderState = "";
+        String secondResponderCity = "";
 
         /* Querying places according to the type of the emergency */
         try {
             PlacesSearchResponse results = PlacesApi.textSearchQuery(context, searchQuery).await();
 
-            String placeId = results.results[0].placeId;
+            String firstPlaceId = results.results[0].placeId;
+            String secondPlaceId = results.results[1].placeId;
 
             /* Querying details about the first place found in the list of the previous query */
             try {
-                PlaceDetails detailsQuery = PlacesApi.placeDetails(context, placeId).await();
-                responderPhone = detailsQuery.formattedPhoneNumber;
-                responderAddress = detailsQuery.vicinity;
+                PlaceDetails firstDetailsQuery = PlacesApi.placeDetails(context, firstPlaceId).await();
+                firstResponderPhone = firstDetailsQuery.formattedPhoneNumber;
+                firstResponderAddress = firstDetailsQuery.vicinity;
 
-                for(int i = 0; i<detailsQuery.addressComponents.length; i++) {
+                PlaceDetails secondDetailsQuery = PlacesApi.placeDetails(context, secondPlaceId).await();
+                secondResponderPhone = secondDetailsQuery.formattedPhoneNumber;
+                secondResponderAddress = secondDetailsQuery.vicinity;
 
-                    if(Arrays.asList(detailsQuery.addressComponents[i].types)
+
+                for(int i = 0; i<firstDetailsQuery.addressComponents.length; i++) {
+
+                    if(Arrays.asList(firstDetailsQuery.addressComponents[i].types)
                             .contains(AddressComponentType.LOCALITY)) {
-                        responderCity = detailsQuery.addressComponents[i].longName;
-                    } else if(Arrays.asList(detailsQuery.addressComponents[i].types)
+                        firstResponderCity = firstDetailsQuery.addressComponents[i].longName;
+                    } else if(Arrays.asList(firstDetailsQuery.addressComponents[i].types)
                             .contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
-                        responderState = detailsQuery.addressComponents[i].longName;
+                        firstResponderState = firstDetailsQuery.addressComponents[i].longName;
                     }
                 }
+
+                for(int i = 0; i<secondDetailsQuery.addressComponents.length; i++) {
+
+                    if(Arrays.asList(secondDetailsQuery.addressComponents[i].types)
+                            .contains(AddressComponentType.LOCALITY)) {
+                        secondResponderCity = secondDetailsQuery.addressComponents[i].longName;
+                    } else if(Arrays.asList(secondDetailsQuery.addressComponents[i].types)
+                            .contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
+                        secondResponderState = secondDetailsQuery.addressComponents[i].longName;
+                    }
+                }
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -240,12 +212,15 @@ public class Route implements Serializable {
             e.printStackTrace();
         }
 
-        /* Creating a new Responder and returning it */
-        return new Responder(responderPhone, responderAddress, responderState, responderCity);
+        /* Creating new Responders and returning an array of them */
+        Responder firstResponder = new Responder(firstResponderPhone, firstResponderAddress, firstResponderState, firstResponderCity);
+        Responder secondResponder = new Responder(secondResponderPhone, secondResponderAddress, secondResponderState, secondResponderCity);
+
+        return new Responder[] {firstResponder, secondResponder};
     }
 
     /**
-     * \brief Calculates 1 main route and 1 alternative route from the Responder to the emergency address
+     * \brief Calculates the shortest route from the Responder to the emergency address
      *
      */
     private void calculateRoute() {
@@ -259,19 +234,16 @@ public class Route implements Serializable {
 
         /* Creating the URL for request */
         htmlRequest = "https://maps.googleapis.com/maps/api/js?key="+key+"&callback=initMap";
-        /* Main route is the fastest, used with the previous URL */
-        this.mainRoute = createHTMLRoute(htmlRequest, "./temp/mainRoute.html", false, false);
+        /* Route is the fastest, used with the previous URL */
+        this.route = createHTMLRoute(htmlRequest, "./temp/mainRoute.html");
 
-        /* Adding restrictions to route */
-        /* Second route is longer */
-        this.alternateRoute = createHTMLRoute(htmlRequest, "./temp/alternateRoute.html", true, true);
     }
 
 
     /**
-     * \brief Retrieves the directions information between emergencyResponderAddress and emergencyLocationAddress, depending on the main or alternate route
-     * @param alternateRoute defines if the direction calculated concerns the main route or the alternate one */
-    private void calculateDirections(Boolean alternateRoute) {
+     * \brief Retrieves the directions information between emergencyResponderAddress and emergencyLocationAddress
+      */
+    private void calculateDirections() {
 
         String key;
         GeoApiContext context = new GeoApiContext();
@@ -293,10 +265,6 @@ public class Route implements Serializable {
         myRequest.destination(this.emergencyLocationAddress);
         myRequest.mode(TravelMode.DRIVING);
 
-        /* Avoiding tolls and highways if we want to calculate the directions of the alternate route */
-        if(alternateRoute)
-            myRequest.avoid(DirectionsApi.RouteRestriction.HIGHWAYS, DirectionsApi.RouteRestriction.TOLLS);
-
         /* Requesting directions information using request previously set */
         try {
             results = myRequest.await();
@@ -314,15 +282,10 @@ public class Route implements Serializable {
         directionsString = directionsString.replace("</div>", "");
         directionsString = directionsString.replace("<div style=\"font-size:0.9em\">", ", ");
 
-        if(alternateRoute) {    // If alternate route defined, assign values to alternate route values
-            alternateRouteDirections = directionsString;
-            alternateRouteDistance = distance;
-            alternateRouteDuration = duration;
-        } else {                // Assign to main route otherwise
-            mainRouteDirections = directionsString;
-            mainRouteDistance = distance;
-            mainRouteDuration = duration;
-        }
+        // Assign to the route
+        routeDirections = directionsString;
+        routeDistance = distance;
+        routeDuration = duration;
 
     }
 
@@ -331,11 +294,9 @@ public class Route implements Serializable {
      * \brief Creates an HTML file containing the components required to display the map retrieved by the request in HTMHRequest. Saves it in "filename"
      *  @param HTMLRequest the URL of the request to include in the HTML file
      *  @param filename the name of the file to create
-     *  @param avoidHighways if set to true, searches for routes avoiding highways if possible
-     *  @param avoidTolls if set to true, searches for routes avoiding tolls if possible
      *  @return a File object containing the HTML file created using the request
      */
-    private File createHTMLRoute(String HTMLRequest, String filename, Boolean avoidHighways, Boolean avoidTolls) {
+    private File createHTMLRoute(String HTMLRequest, String filename) {
         File htmlTemplateFile = null;
 
         /* Opening file from template */
@@ -353,8 +314,8 @@ public class Route implements Serializable {
             htmlString = htmlString.replace("$source", HTMLRequest);
             htmlString = htmlString.replace("$origin", this.emergencyLocationAddress);
             htmlString = htmlString.replace("$destination", this.emergencyResponderAddress);
-            htmlString = htmlString.replace("$avoidHighways", avoidHighways?"true":"false");
-            htmlString = htmlString.replace("$avoidTolls", avoidTolls?"true":"false");
+            htmlString = htmlString.replace("$avoidHighways", "false");
+            htmlString = htmlString.replace("$avoidTolls", "false");
             directionFile = new File("./"+filename);
             FileUtils.writeStringToFile(directionFile, htmlString);
 
