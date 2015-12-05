@@ -96,8 +96,8 @@ public class EMSControllerTest implements TestConstants{
     public void testCreateNewEmergency() throws Exception {
         System.out.println("testCreateNewEmergency");
 
-        controller.determineNearestResponder(testRecord);
-        controller.calculateRoute(testRecord);
+        controller.determineNearestResponders(testRecord, testRecord);
+        controller.calculateRoute(testRecord, false);
         assertTrue(controller.getRecords().stream()
                 .anyMatch(r -> r.getMetadata().getTimeCreated().equals(testRecord.getMetadata().getTimeCreated()))
         );

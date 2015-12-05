@@ -71,7 +71,8 @@ public class EMSInterface implements EMSInterfaceConstants {
     */
     private String previous;
 
-    private EmergencyRecord tempFile;
+    private EmergencyRecord mainEmergencyRecordTempFile;
+    private EmergencyRecord alternateEmergencyRecordTempFile;
     private EmergencyRecord[] recentRecords;
 
     /**
@@ -232,7 +233,8 @@ public class EMSInterface implements EMSInterfaceConstants {
                 // Find the next window
                 if (previous.equals("user")) {
                     back.setEnabled(false);
-                    tempFile = null;
+                    mainEmergencyRecordTempFile = null;
+                    alternateEmergencyRecordTempFile = null;
                     userActions();
                 } else if (previous.equals("info")) {
                     enterInfo();
@@ -563,23 +565,23 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(selectRoute);
 
         // Check if there was a temp record to repopulate
-        if(tempFile != null){
-            firstnameText.setText(tempFile.getCaller().getFirstName());
-            lastnameText.setText(tempFile.getCaller().getLastName());
-            phoneText.setText(tempFile.getCaller().getPhone());
-            addressText.setText(tempFile.getLocation().getAddress());
-            stateText.setText(tempFile.getLocation().getState());
-            cityText.setText(tempFile.getLocation().getCity());
-            descriptionText.setText(tempFile.getDescription());
-            if(tempFile.getCategory().equals(Category.FIRE)){
+        if(mainEmergencyRecordTempFile != null){
+            firstnameText.setText(mainEmergencyRecordTempFile.getCaller().getFirstName());
+            lastnameText.setText(mainEmergencyRecordTempFile.getCaller().getLastName());
+            phoneText.setText(mainEmergencyRecordTempFile.getCaller().getPhone());
+            addressText.setText(mainEmergencyRecordTempFile.getLocation().getAddress());
+            stateText.setText(mainEmergencyRecordTempFile.getLocation().getState());
+            cityText.setText(mainEmergencyRecordTempFile.getLocation().getCity());
+            descriptionText.setText(mainEmergencyRecordTempFile.getDescription());
+            if(mainEmergencyRecordTempFile.getCategory().equals(Category.FIRE)){
                 fire.setSelected(true);
-            }else if(tempFile.getCategory().equals(Category.CRIME)){
+            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.CRIME)){
                 crime.setSelected(true);
-            }else if(tempFile.getCategory().equals(Category.MEDICAL)){
+            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.MEDICAL)){
                 medical.setSelected(true);
-            }else if(tempFile.getCategory().equals(Category.HOAX)){
+            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.HOAX)){
                 hoax.setSelected(true);
-            }else if(tempFile.getCategory().equals(Category.CRIME)){
+            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.CRIME)){
                 crime.setSelected(true);
             }
         }
@@ -590,26 +592,36 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         selectRoute.addActionListener(event -> {
             // Create the temp record
-            tempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(controller.getCurrentUser());
+            mainEmergencyRecordTempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(controller.getCurrentUser());
+            alternateEmergencyRecordTempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(controller.getCurrentUser());
             try{
-                tempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
-                tempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
-                tempFile.setDescription(descriptionText.getText());
+                mainEmergencyRecordTempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
+                alternateEmergencyRecordTempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
+                mainEmergencyRecordTempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
+                alternateEmergencyRecordTempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
+                mainEmergencyRecordTempFile.setDescription(descriptionText.getText());
+                alternateEmergencyRecordTempFile.setDescription(descriptionText.getText());
                 if(fire.isSelected()){
-                    tempFile.setCategory(Category.FIRE);
+                    mainEmergencyRecordTempFile.setCategory(Category.FIRE);
+                    alternateEmergencyRecordTempFile.setCategory(Category.FIRE);
                 }else if(crime.isSelected()){
-                    tempFile.setCategory(Category.CRIME);
+                    mainEmergencyRecordTempFile.setCategory(Category.CRIME);
+                    alternateEmergencyRecordTempFile.setCategory(Category.CRIME);
                 }else if(medical.isSelected()){
-                    tempFile.setCategory(Category.MEDICAL);
+                    mainEmergencyRecordTempFile.setCategory(Category.MEDICAL);
+                    alternateEmergencyRecordTempFile.setCategory(Category.MEDICAL);
                 }else if(hoax.isSelected()){
-                    tempFile.setCategory(Category.HOAX);
+                    mainEmergencyRecordTempFile.setCategory(Category.HOAX);
+                    alternateEmergencyRecordTempFile.setCategory(Category.HOAX);
                 }else if(crash.isSelected()){
-                    tempFile.setCategory(Category.CRIME);
+                    mainEmergencyRecordTempFile.setCategory(Category.CRIME);
+                    alternateEmergencyRecordTempFile.setCategory(Category.CRIME);
                 }else{
                     throw new InputMismatchException();
                 }
-                controller.determineNearestResponder(tempFile);
-                controller.calculateRoute(tempFile);
+                controller.determineNearestResponders(mainEmergencyRecordTempFile, alternateEmergencyRecordTempFile);
+                controller.calculateRoute(mainEmergencyRecordTempFile, false);
+                controller.calculateRoute(alternateEmergencyRecordTempFile, true);
             } catch (InputMismatchException mismatch){
                 JOptionPane.showMessageDialog(frame, "Every field must be filled.");
                 return;
@@ -668,17 +680,18 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Open the web browser
         PlatformImpl.startup(() -> {
-            webEngine1.load("file:\\" + tempFile.getRoute().getMainRoute().getAbsolutePath());
-            webEngine2.load("file:\\" + tempFile.getRoute().getAlternateRoute().getAbsolutePath());
+            webEngine1.load("file:\\" + mainEmergencyRecordTempFile.getRoute().getRoute().getAbsolutePath());
+            webEngine2.load("file:\\" + alternateEmergencyRecordTempFile.getRoute().getRoute().getAbsolutePath());
         });
 
         // Fill in the route directions
-        route1Text.setText(tempFile.getRoute().getMainRouteDirections());
-        route2Text.setText(tempFile.getRoute().getAlternateRouteDirections());
+        route1Text.setText(mainEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route2Text.setText(alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
 
 
         // Set the summary
-        summaryText.setText(tempFile.getParagraphForm());
+        summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm());
+        summaryText.setText(alternateEmergencyRecordTempFile.getParagraphForm());
 
         // Add to the frame
         mainframe.setLayout(new GridLayout(2, 2));
@@ -699,7 +712,8 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         route1.addActionListener(event -> {
             // Update the emergency object
-            tempFile.getRoute().setAlternateRouteSelected(false);
+            mainEmergencyRecordTempFile.getRoute().setAlternateRouteSelected(false);
+            alternateEmergencyRecordTempFile.getRoute().setAlternateRouteSelected(false);
 
             // Clear the window
             mainframe.removeAll();
@@ -712,7 +726,8 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         route2.addActionListener(event -> {
             // Update the emergency object
-            tempFile.getRoute().setAlternateRouteSelected(true);
+            mainEmergencyRecordTempFile.getRoute().setAlternateRouteSelected(true);
+            alternateEmergencyRecordTempFile.getRoute().setAlternateRouteSelected(true);
 
             // Clear the window
             mainframe.removeAll();
@@ -758,17 +773,18 @@ public class EMSInterface implements EMSInterfaceConstants {
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
         // Set the summary
-        summaryText.setText(tempFile.getParagraphForm());
+        summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm());
+        summaryText.setText(alternateEmergencyRecordTempFile.getParagraphForm());
 
         // Add components to the screen
         mainframe.setLayout(new GridLayout(2, 1));
 
-        if(tempFile.getRoute().getAlternateRouteSelectedString().equals("Main Route")) {
+        if(mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected() == false) {
             mainframe.add(route1Panel);
-            routeText.setText(tempFile.getRoute().getMainRouteDirections());
+            routeText.setText(mainEmergencyRecordTempFile.getRoute().getRouteDirections());
         } else {
             mainframe.add(route2Panel);
-            routeText.setText(tempFile.getRoute().getAlternateRouteDirections());
+            routeText.setText(alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
         }
         mainframe.add(routeScroll);
 
@@ -787,13 +803,17 @@ public class EMSInterface implements EMSInterfaceConstants {
 
                 // Save the emergency object
                 try {
-                    controller.finalizeRecord(tempFile);
+                    if(mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected() == false)
+                        controller.finalizeRecord(mainEmergencyRecordTempFile);
+                    else
+                        controller.finalizeRecord(alternateEmergencyRecordTempFile);
                 } catch (Exception exception) {
                     JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
                     return;
                 }
                 // Reset the record
-                tempFile = null;
+                mainEmergencyRecordTempFile = null;
+                alternateEmergencyRecordTempFile = null;
 
                 // Clear the window
                 mainframe.removeAll();
@@ -855,10 +875,10 @@ public class EMSInterface implements EMSInterfaceConstants {
             summaryText.setText(initialRecord.getParagraphForm());
 
             // Want only the selected route shown
-            if (initialRecord.getRoute() != null && initialRecord.getRoute().getAlternateRouteSelectedString().equals("Main Route")){
-                routeText.setText(initialRecord.getRoute().getMainRouteDirections());
+            if (initialRecord.getRoute() != null && initialRecord.getRoute().getAlternateRouteSelected() == false){
+                routeText.setText(initialRecord.getRoute().getRouteDirections());
             } else if (initialRecord.getRoute() != null) {
-                routeText.setText(initialRecord.getRoute().getAlternateRouteDirections());
+                routeText.setText(initialRecord.getRoute().getRouteDirections());
             }
         }
         JScrollPane sidebarListScrollPane = new JScrollPane(sidebarList);
@@ -1542,10 +1562,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                         stateText.getText(),
                         cityText.getText()
                 );
-                controller.determineNearestResponder(record); // sets the responder
                 record.setRoute(new Route(
                         record.getResponder().getAddress(),
-                        location.getAddress()
+                        location.getAddress(),
+                        record.getRoute().getAlternateRouteSelected()
                 ));
                 record.setDescription(descriptionText.getText());
                 try {
