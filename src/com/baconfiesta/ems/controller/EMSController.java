@@ -12,7 +12,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * The main controller for the EMS system
@@ -112,13 +111,15 @@ public class EMSController implements Constants {
         return _database.getCachedRecords().get(time);
     }
 
+
+
     /**
      * Generates a report containing various statistics about emergencies
      * @param beginningDate the start date of the report
      * @param endingDate the end date of the report
-     * @param exportFilename the file to save the report into
+     * @param filename the file to save the report into
      */
-    public void generateReport(Instant beginningDate, Instant endingDate, String exportFilename) throws IOException, ClassNotFoundException{
+    public void generateReport(Instant beginningDate, Instant endingDate, String filename) throws IOException, ClassNotFoundException{
         ArrayList<EmergencyRecord> records = getRecords();
         ArrayList<EmergencyRecord> recordsInRange = new ArrayList<>();
         // Gather records in range
@@ -135,7 +136,18 @@ public class EMSController implements Constants {
             System.err.println(rangeRecord);
         }
 
-        EMSReport.generateStatsReport(rangeRecords, exportFilename);
+        EMSReport.generateStatsReport(rangeRecords, filename);
+    }
+
+    /**
+     * Generates a report for a single record
+     * @param record the record to generate a report for
+     * @param fileName the filename to save the report to
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void generateReport(EmergencyRecord record, String fileName) throws IOException, ClassNotFoundException {
+        EMSReport.generateRecordReport(record, fileName);
     }
 
     /**

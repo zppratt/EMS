@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
 
 /**
@@ -887,13 +886,23 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         generateReportSingleButton.addActionListener(e -> {
+            EmergencyRecord record = sidebarList.getSelectedValue();
+            if (record != null) {
+                try {
+                    saveReportFile(record);
+                } catch (IOException | ClassNotFoundException | NullPointerException e1) {
+                    JOptionPane.showMessageDialog(
+                            frame, BURP + "For some reason I couldn't generate the report." + ASK);
+                }
+            }
         });
 
         generateReportRangeButton.addActionListener(e -> {
             try {
                 showDateRangeChooser();
             } catch (Exception e1) {
-                JOptionPane.showConfirmDialog(frame, BURP + "For some reason I couldn't generate the report." + ASK);
+                JOptionPane.showMessageDialog(
+                        frame, BURP + "For some reason I couldn't generate the report." + ASK);
                 e1.printStackTrace();
             }
         });
@@ -934,15 +943,15 @@ public class EMSInterface implements EMSInterfaceConstants {
                     toDatePicker.getDate().toInstant()
             };
             try {
-                showReportFileChooser();
+                saveReportFile();
             } catch (IOException | ClassNotFoundException e1) {
-                JOptionPane.showConfirmDialog(frame, BURP + "For some reason I couldn't generate the report." + ASK);
+                JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't generate the report." + ASK);
                 e1.printStackTrace();
             }
         });
     }
 
-    void showReportFileChooser() throws IOException, ClassNotFoundException {
+    void saveReportFile() throws IOException, ClassNotFoundException {
         String suffix = ".xls";
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("xls files",suffix);
@@ -958,6 +967,37 @@ public class EMSInterface implements EMSInterfaceConstants {
                 controller.generateReport(reportDateRange[0], reportDateRange[1], file.getAbsolutePath());
             }
         }
+        // Refresh the window
+        frame.revalidate();
+        frame.repaint();
+        viewEmergencyRecords(null);
+    }
+
+    void saveReportFile(EmergencyRecord record)
+            throws NullPointerException, IOException, ClassNotFoundException {
+        if (record != null) {
+            String suffix = ".xls";
+            JFileChooser fileChooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("xls files", suffix);
+            fileChooser.setFileFilter(filter);
+            int accepted = fileChooser.showDialog(frame, "Save");
+            if (accepted == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                if (file != null) {
+                    if (!fileChooser.getSelectedFile().getAbsolutePath().endsWith(suffix)) {
+                        file = new File(fileChooser.getSelectedFile() + suffix);
+                    }
+                    Files.deleteIfExists(file.toPath());
+                    controller.generateReport(record, file.getAbsolutePath());
+                }
+            }
+            viewEmergencyRecords(null);
+        } else {
+            throw new NullPointerException();
+        }
+        mainframe.removeAll();
+        sidebar.removeAll();
+        footer.removeAll();
         // Refresh the window
         frame.revalidate();
         frame.repaint();
