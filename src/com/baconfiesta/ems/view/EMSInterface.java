@@ -951,6 +951,11 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
     }
 
+    /**
+     * Show the dialog to save the report to a file for a range of dates
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     void saveReportFile() throws IOException, ClassNotFoundException {
         String suffix = ".xls";
         JFileChooser fileChooser = new JFileChooser();
@@ -973,6 +978,13 @@ public class EMSInterface implements EMSInterfaceConstants {
         viewEmergencyRecords(null);
     }
 
+    /**
+     * Show the dialog to save a report for a single emergency record
+     * @param record the emergency record to save
+     * @throws NullPointerException
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     void saveReportFile(EmergencyRecord record)
             throws NullPointerException, IOException, ClassNotFoundException {
         if (record != null) {
