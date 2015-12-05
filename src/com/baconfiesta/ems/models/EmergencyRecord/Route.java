@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -33,13 +34,14 @@ public class Route implements Serializable {
      * \brief Constructor for a Route object: constructs and determines routes (main and alternate) and calculates directions
      * @param completeAddressFrom the complete address of the end point beginning of the route
      * @param completeAddressTo the complete address of the end point of the route
+     * @param alternateRoute a boolean telling if the route calculated is the main or the alternate one
      * */
-    public Route(String completeAddressFrom, String completeAddressTo) {
+    public Route(String completeAddressFrom, String completeAddressTo, Boolean alternateRoute) {
         this.emergencyLocationAddress = completeAddressTo;
         this.emergencyResponderAddress = completeAddressFrom;
         this.alternateRouteSelected = false;
 
-        this.calculateRoute();
+        this.calculateRoute(alternateRoute);
         this.calculateDirections();
     }
 
@@ -71,7 +73,7 @@ public class Route implements Serializable {
      * \brief Retrieve the directions of the main route
      * @return a String containing the directions of the main route
      * */
-    public String getMainDirections() {
+    public String getRouteDirections() {
         return routeDirections;
     }
 
@@ -94,6 +96,17 @@ public class Route implements Serializable {
     }
 
 
+    /**
+     * get the route selected as a boolean
+     * @return a boolean set to true if the alternate route has been selected, false if main route was selected
+     */
+    public Boolean getAlternateRouteSelected() {
+        return alternateRouteSelected;
+    }
+    /**
+     * gets the route selected as a string
+     * @return a string containing the route selected (main or alternate)
+     */
     public String getRouteSelectedString() {
         return(alternateRouteSelected?"Alternate Route":"Main Route");
     }
@@ -115,7 +128,7 @@ public class Route implements Serializable {
      *               queries information about this place, and formats information according to a Responder. Creates a new Responder and returns it.
      * @return       an emergency Responder
      */
-    public static Responder[] determineNearestResponder(EmergencyRecord record) {
+    public static Responder[] determineNearestResponders(EmergencyRecord record) {
 
         /*
      * TODO: Handle the fact that the answer query can be empty
@@ -124,11 +137,13 @@ public class Route implements Serializable {
      * TODO: set so that we look for hospital and fire department
      * */
 
-        String searchQuery = "Police Department"; // We always look for a police department
+        String firstSearchQuery = "Police Department";
+        String secondSearchQuery = Route.determineRespondersType(record.getCategory());
 
         /* Getting location of emergency in order to format the query string */
         Location emergencyLocation = record.getLocation();
-        searchQuery += " near " + emergencyLocation.getAddress() + ", " + emergencyLocation.getCity() + ", " + emergencyLocation.getState();
+        firstSearchQuery += " near " + emergencyLocation.getAddress() + ", " + emergencyLocation.getCity() + ", " + emergencyLocation.getState();
+        secondSearchQuery += " near " + emergencyLocation.getAddress() + ", " + emergencyLocation.getCity() + ", " + emergencyLocation.getState();
 
         /* Creating a context for the places API query using our team key */
         GeoApiContext context = new GeoApiContext();
@@ -165,10 +180,11 @@ public class Route implements Serializable {
 
         /* Querying places according to the type of the emergency */
         try {
-            PlacesSearchResponse results = PlacesApi.textSearchQuery(context, searchQuery).await();
+            PlacesSearchResponse firstResults = PlacesApi.textSearchQuery(context, firstSearchQuery).await();
+            PlacesSearchResponse secondResults = PlacesApi.textSearchQuery(context, secondSearchQuery).await();
 
-            String firstPlaceId = results.results[0].placeId;
-            String secondPlaceId = results.results[1].placeId;
+            String firstPlaceId = firstResults.results[0].placeId;
+            String secondPlaceId = secondResults.results[0].placeId;
 
             /* Querying details about the first place found in the list of the previous query */
             try {
@@ -220,10 +236,33 @@ public class Route implements Serializable {
     }
 
     /**
+     *  Returns a string containing the query to run for a responder, according to its type
+     * @param emergencyCategory the category of the emergency
+     * @return the search query to query for the type of responder
+     */
+    private static String determineRespondersType(Category emergencyCategory) {
+        switch(emergencyCategory) {
+            case CAR_CRASH:
+                return "Hospital";
+            case HOAX:
+                return "Police Department";
+            case FIRE:
+                return "Fire Department";
+            case MEDICAL:
+                return "Hospital";
+            case CRIME:
+                return "Hospital";
+            default:
+                return "Police Department";
+
+        }
+    }
+
+    /**
      * \brief Calculates the shortest route from the Responder to the emergency address
      *
      */
-    private void calculateRoute() {
+    private void calculateRoute(Boolean alternateRoute) {
         String key;
         String htmlRequest;
 
@@ -235,7 +274,10 @@ public class Route implements Serializable {
         /* Creating the URL for request */
         htmlRequest = "https://maps.googleapis.com/maps/api/js?key="+key+"&callback=initMap";
         /* Route is the fastest, used with the previous URL */
-        this.route = createHTMLRoute(htmlRequest, "./temp/mainRoute.html");
+        if(!alternateRoute)
+            this.route = createHTMLRoute(htmlRequest, "./temp/mainRoute.html");
+        else
+            this.route = createHTMLRoute(htmlRequest, "./temp/alternateRoute.html");
 
     }
 

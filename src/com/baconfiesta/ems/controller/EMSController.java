@@ -83,7 +83,7 @@ public class EMSController implements Constants {
      * @param alternativeRecord the alternative record that will contain the alternate route
      */
     public void determineNearestResponders(EmergencyRecord mainRecord, EmergencyRecord alternativeRecord) {
-        Responder responders[] = Route.determineNearestResponder(mainRecord);
+        Responder responders[] = Route.determineNearestResponders(mainRecord);
         mainRecord.setResponder(responders[0]);
         alternativeRecord.setResponder(responders[1]);
     }
@@ -93,9 +93,9 @@ public class EMSController implements Constants {
      * Calculated the route from the responder to the emergency
      * @param record the emergency record containing the address of the emergency
      */
-    public void calculateRoute(EmergencyRecord record) {
+    public void calculateRoute(EmergencyRecord record, Boolean alternateRoute) {
         record.setRoute(new Route(record.getResponder().getAddress() + ", " + record.getResponder().getCity() + "' " + record.getResponder().getState(),
-                record.getLocation().getAddress() + ", " + record.getLocation().getCity() + ", " + record.getLocation().getState()));
+                record.getLocation().getAddress() + ", " + record.getLocation().getCity() + ", " + record.getLocation().getState(), alternateRoute));
     }
 
     /**
