@@ -100,6 +100,10 @@ public class EmergencyRecordBuilder implements Serializable {
         return new EmergencyRecordBuilder();
     }
 
+    public EmergencyRecord getNewEmergencyRecord() {
+        return getNewEmergencyRecord(null);
+    }
+
     public EmergencyRecord getNewEmergencyRecord(EMSUser user) {
         return new EmergencyRecord(metadata, caller, location, category, responder, route, description, user); // with all the parameters
     }

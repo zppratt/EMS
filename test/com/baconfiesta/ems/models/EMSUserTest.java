@@ -11,6 +11,7 @@ import org.powermock.reflect.Whitebox;
 import java.time.Instant;
 import java.util.HashMap;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.IsNot.not;
@@ -81,5 +82,45 @@ public class EMSUserTest {
 
         // Test success
         assertTrue(adminUser.isAdmin());
+    }
+
+    @Test
+    public void testGetFirstname() throws Exception {
+        System.out.println("getFirstName");
+
+        assertEquals("Frodo", regularUser.getFirstname());
+    }
+
+    @Test
+    public void testGetLastname() throws Exception {
+        System.out.println("getLastName");
+
+        assertEquals("Baggins", regularUser.getLastname());
+    }
+
+    @Test
+    public void testGetUsername() throws Exception {
+        System.out.println("getUsername");
+
+        assertEquals("fbaggins", regularUser.getFirstname());
+    }
+
+    @Test
+    public void testSetAdmin() throws Exception {
+        System.out.println("setAdmin");
+
+        regularUser.setAdmin(true);
+        assertTrue(regularUser.isAdmin());
+    }
+
+    @Test
+    public void testAddRecord() throws Exception {
+        System.out.println("addRecord");
+
+        EmergencyRecord testRecord = EmergencyRecordBuilder.newBuilder()
+                .withTime(Instant.EPOCH)
+                .getNewEmergencyRecord(new EMSUser("","","","",true));
+        regularUser.addRecord(testRecord);
+        assertTrue(regularUser.getRecords().containsValue(testRecord));
     }
 }
