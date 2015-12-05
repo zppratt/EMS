@@ -155,12 +155,6 @@ public class EmergencyRecord implements Serializable{
         paragraph += "\nDescription:\n";
         paragraph += description + "\n";
 
-        paragraph += "\nResponder Information:\n";
-        paragraph += "Phone: " + getResponder().getPhoneNumber() + "\n";
-        paragraph += "Address: " + getResponder().getAddress() + "\n";
-        paragraph += "State: " + getResponder().getState() + "\n";
-        paragraph += "City: " + getResponder().getCity() + "\n";
-
 
         return paragraph;
 
@@ -224,7 +218,7 @@ public class EmergencyRecord implements Serializable{
     }
 
     public String toString() {
-        return String.format("%s\n : %s\n", getMetadata(), getMetadata().getCreatedBy());
+        return String.format("%s : %s", getMetadata(), getMetadata().getCreatedBy());
     }
 
 }

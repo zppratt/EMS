@@ -690,8 +690,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
 
         // Set the summary
-        summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm());
-        summaryText.setText(alternateEmergencyRecordTempFile.getParagraphForm());
+        summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm() + "\nMain Route" + mainEmergencyRecordTempFile.getResponder().getParagraphForm() + "\nAlternate Route" + alternateEmergencyRecordTempFile.getResponder().getParagraphForm());
 
         // Add to the frame
         mainframe.setLayout(new GridLayout(2, 2));

@@ -74,4 +74,20 @@ public class Responder implements Serializable {
         return city;
     }
 
+    /**
+     * Returns the responder in paragraph form
+     * @return the responder in paragraph form
+     */
+    public String getParagraphForm(){
+        String paragraph = "";
+
+        paragraph += "\nResponder Information:\n";
+        paragraph += "Phone: " + getPhoneNumber() + "\n";
+        paragraph += "Address: " + getAddress() + "\n";
+        paragraph += "State: " + getState() + "\n";
+        paragraph += "City: " + getCity() + "\n";
+
+        return paragraph;
+    }
+
 }

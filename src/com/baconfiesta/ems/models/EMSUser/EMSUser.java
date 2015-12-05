@@ -149,11 +149,12 @@ public class EMSUser implements Serializable {
                 "First Name: " + getFirstname() + "\n" +
                 "Last Name: " + getLastname() + "\n" +
                 "Number of Records: " + getRecords().values().size() + "\n" +
-                "List of Records:\n ";
-        Iterator it = getRecords().entrySet().iterator();
-        while(it.hasNext()){
-            paragraph += ((EmergencyRecord) it.next()) + "\n";
+                "List of Records:\n";
+
+        for (EmergencyRecord emergencyRecord : getRecords().values()) {
+            paragraph += emergencyRecord + "\n";
         }
+        
         return paragraph;
     }
 
