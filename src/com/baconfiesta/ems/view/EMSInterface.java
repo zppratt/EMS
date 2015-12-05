@@ -49,6 +49,8 @@ public class EMSInterface implements EMSInterfaceConstants {
     private JButton manageUsers;
     private JButton manageRecords;
 
+    private ArrayList<JComponent> frameComponents;
+
     private WebView browser1;
     private WebEngine webEngine1;
     private Group root1;
@@ -1451,49 +1453,35 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Populate the field with the record info
         sidebarList.addListSelectionListener(e ->{
-
-            EmergencyRecordBuilder recordBuilder = EmergencyRecordBuilder.newBuilder();
-
             EmergencyRecord record = sidebarList.getSelectedValue();
             if (record != null) {
                 Caller caller = record.getCaller();
-                recordBuilder.withCaller(caller);
                 firstnameText.setText(caller.getFirstName());
                 lastnameText.setText(caller.getLastName());
                 phoneText.setText(caller.getPhone());
                 Location location = record.getLocation();
-                recordBuilder.withLocation(location);
                 addressText.setText(location.getAddress());
                 stateText.setText(location.getState());
                 cityText.setText(location.getCity());
-
                 switch (record.getCategory()) {
                     case FIRE:
                         fire.setSelected(true);
-                        recordBuilder.withCategory(Category.FIRE);
                     case CRIME:
                         crime.setSelected(true);
-                        recordBuilder.withCategory(Category.CRIME);
                     case MEDICAL:
                         medical.setSelected(true);
-                        recordBuilder.withCategory(Category.MEDICAL);
                     case HOAX:
                         hoax.setSelected(true);
-                        recordBuilder.withCategory(Category.HOAX);
                     case CAR_CRASH:
                         crash.setSelected(true);
-                        recordBuilder.withCategory(Category.CAR_CRASH);
                     default:
                         categories.setSelected(null, true);
                 }
-
                 String description = record.getDescription();
                 descriptionText.setText(description);
-                recordBuilder.withDescription(description);
-
-                record = recordBuilder.getNewEmergencyRecord(controller.getCurrentUser());
-
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
         newestRecords.addActionListener(event -> {
@@ -1502,7 +1490,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 sidebarList.setListData(controller.getRecentRecords());
                 sidebarList.setSelectedIndex(0);
             } catch (IOException | ClassNotFoundException e1) {
-
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble getting the users, actually." + ASK);
             }
             frame.revalidate();
             frame.repaint();
@@ -1515,58 +1503,54 @@ public class EMSInterface implements EMSInterfaceConstants {
                 sidebarList.setListData(records.toArray(new EmergencyRecord[records.size()]));
                 sidebarList.setSelectedIndex(0);
             } catch (IOException | ClassNotFoundException e1) {
-
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble getting the users, actually." + ASK);
             }
             frame.revalidate();
             frame.repaint();
         });
 
-        // Refresh the window
-        frame.revalidate();
-        frame.repaint();
-
         saveRecord.addActionListener(event -> {
             // Save the changes
-            EmergencyRecordBuilder recordBuilder = EmergencyRecordBuilder.newBuilder();
             EmergencyRecord record = sidebarList.getSelectedValue();
             if (record != null) {
-                recordBuilder.withCaller(new Caller(
+                record.setCaller(new Caller(
                         firstnameText.getText(),
                         lastnameText.getText(),
                         phoneText.getText()
                 ));
-                recordBuilder.withLocation(new Location(
+                if (fire.isSelected()) {
+                    record.setCategory(Category.FIRE);
+                } else if (fire.isSelected()) {
+                    record.setCategory(Category.CRIME);
+                } else if (fire.isSelected()) {
+                    record.setCategory(Category.MEDICAL);
+                } else if (fire.isSelected()) {
+                    record.setCategory(Category.HOAX);
+                } else if (fire.isSelected()) {
+                    record.setCategory(Category.CAR_CRASH);
+                }
+                Location location = new Location(
                         addressText.getText(),
                         stateText.getText(),
                         cityText.getText()
+                );
+                controller.determineNearestResponder(record); // sets the responder
+                record.setRoute(new Route(
+                        record.getResponder().getAddress(),
+                        location.getAddress()
                 ));
-                recordBuilder.withMetadata(record.getMetadata());
-                switch (record.getCategory()) {
-                    case FIRE:
-                        recordBuilder.withCategory(Category.FIRE);
-                    case CRIME:
-                        recordBuilder.withCategory(Category.CRIME);
-                    case MEDICAL:
-                        recordBuilder.withCategory(Category.MEDICAL);
-                    case HOAX:
-                        recordBuilder.withCategory(Category.HOAX);
-                    case CAR_CRASH:
-                        recordBuilder.withCategory(Category.CAR_CRASH);
-                    default:
-                        categories.setSelected(null, true);
+                record.setDescription(descriptionText.getText());
+                try {
+                    System.out.println("Finalizing record for " + record.getCaller().getFirstName());
+                    controller.finalizeRecord(record);
+                } catch (IOException | ClassNotFoundException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Had trouble saving the record, actually." + ASK);
                 }
-                recordBuilder.withDescription(descriptionText.getText());
-                record = recordBuilder.getNewEmergencyRecord(controller.getCurrentUser());
-
-                if (record != null) {
-                    try {
-                        System.out.println(record.getCaller().getFirstName());
-                        controller.finalizeRecord(record);
-                    } catch (IOException | ClassNotFoundException e) {
-                        JOptionPane.showMessageDialog(frame, BURP + "Had trouble saving the record, actually." + ASK);
-                    }
-                }
+            } else {
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble saving the record, actually." + ASK);
             }
+            frame.revalidate();
+            frame.repaint();
         });
 
         deleteRecord.addActionListener(event -> {
@@ -1597,6 +1581,10 @@ public class EMSInterface implements EMSInterfaceConstants {
             // Load database from file
 
         });
-    }
 
+        // Refresh the window
+        frame.revalidate();
+        frame.repaint();
+
+    }
 }
