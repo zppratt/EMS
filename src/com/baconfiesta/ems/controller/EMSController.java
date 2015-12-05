@@ -99,6 +99,7 @@ public class EMSController implements Constants {
      * @param record the record to finalize
      */
     public void finalizeRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
+        currentUser.addRecord(record);
         _database.addEmergencyRecord(record);
     }
 

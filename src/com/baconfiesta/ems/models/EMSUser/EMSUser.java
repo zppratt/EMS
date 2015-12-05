@@ -107,7 +107,10 @@ public class EMSUser implements Serializable {
      * @return the records
      */
     public HashMap<Instant, EmergencyRecord> getRecords() {
-        return ( this.records == null ? new HashMap<Instant, EmergencyRecord>() : records );
+        if (this.records == null) {
+            records = new HashMap<>();
+        }
+        return records;
     }
 
     /**
@@ -151,7 +154,10 @@ public class EMSUser implements Serializable {
         while(it.hasNext()){
             paragraph += ((EmergencyRecord) it.next()) + "\n";
         }
-
         return paragraph;
+    }
+
+    public void addRecord(EmergencyRecord record) {
+        getRecords().put(record.getMetadata().getTimeCreated(), record);
     }
 }

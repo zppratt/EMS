@@ -16,27 +16,19 @@ public class GenerateTestData {
 
     @Test
     public void testGenerateData() throws IOException, ClassNotFoundException, InterruptedException {
-
         backupAndDeleteDatabase();
-
         ac = new EMSAdminController(new EMSUser("","","","",true),new EMSDatabase());
         ac.generateTestData();
     }
 
     private void backupAndDeleteDatabase() throws IOException {
-
         Path db = Paths.get("db/database.db");
         Path bk = Paths.get("db/database.db.bak");
-
         Files.deleteIfExists(bk);
         Files.copy(db, bk);
-
         System.err.println("db/database.db was backed up.");
-
         boolean result = Files.deleteIfExists(db);
-
         System.err.println( "db/database.db" + ( result ? " was deleted." : " was not deleted." ) );
-
     }
 
 }

@@ -92,15 +92,15 @@ public class EMSAdminController extends EMSController {
             System.out.println(usr + ":" + (usr.isAdmin() ? "admin" : "not admin"));
         }
         System.out.println("Generating Records:");
-        for (int i = 0; i < 100; i++) {
-            EmergencyRecord er = EmergencyRecordBuilder.newBuilder()
+        for (int i = 0; i < 25; i++) {
+            EmergencyRecordBuilder builder = EmergencyRecordBuilder.newBuilder()
                     .withCaller(new Caller(
                             firstNames[abs(r.nextInt() % (firstNames.length - 1))],
                             lastNames[abs(r.nextInt() % (lastNames.length - 1))],
                             "999-999-9999"
                     ))
                     .withLocation(new Location(
-                            "4000 Parnell Ave",
+                            "1000 E Coliseum Blvd",
                             "Fort Wayne", "Indiana"
                     ))
                     .withResponder(new Responder(
@@ -113,12 +113,19 @@ public class EMSAdminController extends EMSController {
                             "Some really bad stuff is happening." +
                             "Some really bad stuff is happening."
                     )
-                    .withCategory(Category.HOAX)
-                    .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))))
+                    .withCategory(randomCategory())
+                    .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))));
+            EmergencyRecord record = builder
                     .getNewEmergencyRecord(getUsers().get((int)(Math.random() * (getUsers().size()-1))));
-            finalizeRecord(er);
-            System.out.println(er);
+            calculateRoute(record);
+            finalizeRecord(record);
+            System.out.println(record);
         }
+    }
+
+    private Category randomCategory() {
+        int pick = new Random().nextInt(Category.values().length);
+        return Category.values()[pick];
     }
 
 }
