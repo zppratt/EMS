@@ -100,12 +100,12 @@ public class EMSAdminController extends EMSController {
                             "999-999-9999"
                     ))
                     .withLocation(new Location(
-                            "1000 E Coliseum Blvd",
+                            randomStreet(),
                             "Fort Wayne", "Indiana"
                     ))
                     .withResponder(new Responder(
                             "999-999-9999",
-                            "2101 E Coliseum Blvd",
+                            randomStreet(),
                             "Fort Wayne", "Indiana"
                     ))
                     .withDescription(
@@ -123,9 +123,22 @@ public class EMSAdminController extends EMSController {
         }
     }
 
-    private Category randomCategory() {
+    Category randomCategory() {
         int pick = new Random().nextInt(Category.values().length);
         return Category.values()[pick];
+    }
+
+    String randomStreet() {
+        String[] streets = {
+                "Rudisill",
+                "Taylor,",
+                "Clinton",
+                "Broadway",
+                "Jefferson",
+                "Aboite Center"
+        };
+        int pick = new Random().nextInt(streets.length);
+        return streets[pick];
     }
 
 }
