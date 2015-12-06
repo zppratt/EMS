@@ -94,7 +94,7 @@ public class EMSAdminController extends EMSController {
             System.out.println(usr + ":" + (usr.isAdmin() ? "admin" : "not admin"));
         }
         System.out.println("Generating Records:");
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 5; i++) {
             EmergencyRecordBuilder builder = EmergencyRecordBuilder.newBuilder()
                     .withCaller(new Caller(
                             firstNames[abs(r.nextInt() % (firstNames.length - 1))],
@@ -103,7 +103,7 @@ public class EMSAdminController extends EMSController {
                     ))
                     .withLocation(new Location(
                             randomStreet(),
-                            "Fort Wayne", "Indiana"
+                            "Indiana", "Fort Wayne"
                     ))
                     .withResponder(new Responder(
                             "999-999-9999",
@@ -136,12 +136,12 @@ public class EMSAdminController extends EMSController {
 
     String randomStreet() {
         String[] streets = {
-                "Rudisill",
-                "Taylor,",
-                "Clinton",
-                "Broadway",
-                "Jefferson",
-                "Aboite Center"
+                "9030 ima Rd",
+                "3014 N Clinton St",
+                "3927 E State Blvd",
+                "3208 Coliseum Blvd",
+                "4230 W Jefferson Blvd",
+                "11321 Aboite Center Rd"
         };
         int pick = new Random().nextInt(streets.length);
         return streets[pick];

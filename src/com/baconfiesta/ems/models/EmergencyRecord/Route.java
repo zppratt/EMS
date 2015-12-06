@@ -312,13 +312,13 @@ public class Route implements Serializable {
         try {
             results = myRequest.await();
             if(results.length <= 0 || results[0].legs.length <= 0)
-                throw new ObjectNotFoundException("No results available for this directions request");
+                throw new ObjectNotFoundException("No results available for this direction request");
 
             for(int i = 0; i<results[0].legs[0].steps.length; i++)
              directionsString += "\n" + results[0].legs[0].steps[i].htmlInstructions + ", " + results[0].legs[0].steps[i].distance;
 
         } catch(ObjectNotFoundException e) {
-            throw new ObjectNotFoundException("No results available for this directions request");
+            throw new ObjectNotFoundException("No results available for this direction request");
         } catch(Exception e) {
             throw new ObjectNotFoundException("No network available at the moment");
         }
@@ -360,8 +360,8 @@ public class Route implements Serializable {
         try {
             String htmlString = FileUtils.readFileToString(htmlTemplateFile);
             htmlString = htmlString.replace("$source", HTMLRequest);
-            htmlString = htmlString.replace("$origin", this.emergencyLocationAddress);
-            htmlString = htmlString.replace("$destination", this.emergencyResponderAddress);
+            htmlString = htmlString.replace("$origin", this.emergencyResponderAddress);
+            htmlString = htmlString.replace("$destination", this.emergencyLocationAddress);
             htmlString = htmlString.replace("$avoidHighways", "false");
             htmlString = htmlString.replace("$avoidTolls", "false");
             directionFile = new File("./"+filename);

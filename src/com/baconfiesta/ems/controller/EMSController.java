@@ -95,7 +95,7 @@ public class EMSController implements Constants {
      * @param record the emergency record containing the address of the emergency
      */
     public void calculateRoute(EmergencyRecord record, Boolean alternateRoute) throws ObjectNotFoundException{
-        record.setRoute(new Route(record.getResponder().getAddress() + ", " + record.getResponder().getCity() + "' " + record.getResponder().getState(),
+        record.setRoute(new Route(record.getResponder().getAddress() + ", " + record.getResponder().getCity() + ", " + record.getResponder().getState(),
                 record.getLocation().getAddress() + ", " + record.getLocation().getCity() + ", " + record.getLocation().getState(), alternateRoute));
     }
 
