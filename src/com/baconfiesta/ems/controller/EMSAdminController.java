@@ -3,7 +3,9 @@ package com.baconfiesta.ems.controller;
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.*;
+import javassist.tools.rmi.ObjectNotFoundException;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -106,7 +108,7 @@ public class EMSAdminController extends EMSController {
                     .withResponder(new Responder(
                             "999-999-9999",
                             randomStreet(),
-                            "Fort Wayne", "Indiana"
+                            "Indiana", "Fort Wayne"
                     ))
                     .withDescription(
                             "Some really bad stuff is happening." +
@@ -117,7 +119,11 @@ public class EMSAdminController extends EMSController {
                     .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))));
             EmergencyRecord record = builder
                     .getNewEmergencyRecord(getUsers().get((int)(Math.random() * (getUsers().size()-1))));
-            calculateRoute(record, false);
+            try {
+                calculateRoute(record, false);
+            } catch(ObjectNotFoundException e) {
+                e.printStackTrace();
+            }
             finalizeRecord(record);
             System.out.println(record);
         }

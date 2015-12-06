@@ -7,6 +7,7 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import com.baconfiesta.ems.models.EmergencyRecord.Responder;
 import com.baconfiesta.ems.models.EmergencyRecord.Route;
 import com.baconfiesta.ems.models.EmergencyReport.EMSReport;
+import javassist.tools.rmi.ObjectNotFoundException;
 
 import java.io.*;
 import java.time.Instant;
@@ -82,7 +83,7 @@ public class EMSController implements Constants {
      * @param mainRecord the main record that will contain the main route
      * @param alternativeRecord the alternative record that will contain the alternate route
      */
-    public void determineNearestResponders(EmergencyRecord mainRecord, EmergencyRecord alternativeRecord) {
+    public void determineNearestResponders(EmergencyRecord mainRecord, EmergencyRecord alternativeRecord) throws ObjectNotFoundException{
         Responder responders[] = Route.determineNearestResponders(mainRecord);
         mainRecord.setResponder(responders[0]);
         alternativeRecord.setResponder(responders[1]);
@@ -93,7 +94,7 @@ public class EMSController implements Constants {
      * Calculated the route from the responder to the emergency
      * @param record the emergency record containing the address of the emergency
      */
-    public void calculateRoute(EmergencyRecord record, Boolean alternateRoute) {
+    public void calculateRoute(EmergencyRecord record, Boolean alternateRoute) throws ObjectNotFoundException{
         record.setRoute(new Route(record.getResponder().getAddress() + ", " + record.getResponder().getCity() + "' " + record.getResponder().getState(),
                 record.getLocation().getAddress() + ", " + record.getLocation().getCity() + ", " + record.getLocation().getState(), alternateRoute));
     }
@@ -152,6 +153,7 @@ public class EMSController implements Constants {
      * @throws ClassNotFoundException
      */
     public void generateReport(EmergencyRecord record, String fileName) throws IOException, ClassNotFoundException {
+        System.out.println(record.getResponder().getCity());
         EMSReport.generateRecordReport(record, fileName);
     }
 
