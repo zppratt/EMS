@@ -1593,26 +1593,28 @@ public class EMSInterface implements EMSInterfaceConstants {
         backupData.addActionListener(event -> {
             // Open the file
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.showSaveDialog(frame);
-
-            // Save database to the file
-            try {
-                controller.backupData(fileChooser.getSelectedFile());
-            } catch (IOException | ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+            int response = fileChooser.showSaveDialog(frame);
+            if (response == JFileChooser.APPROVE_OPTION) {
+                // Save database to the file
+                try {
+                    controller.backupData(fileChooser.getSelectedFile());
+                } catch (IOException | ClassNotFoundException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+                }
             }
         });
 
         restoreData.addActionListener(event -> {
             // Open the file
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.showOpenDialog(frame);
-
-            // Load database from file
-            try {
-                controller.restoreData(fileChooser.getSelectedFile());
-            } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+            int response = fileChooser.showOpenDialog(frame);
+            if (response == JFileChooser.APPROVE_OPTION) {
+                // Load database from file
+                try {
+                    controller.restoreData(fileChooser.getSelectedFile());
+                } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+                }
             }
         });
         refreshWindow();
