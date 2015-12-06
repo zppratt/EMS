@@ -117,7 +117,7 @@ public class EMSAdminController extends EMSController {
                     .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))));
             EmergencyRecord record = builder
                     .getNewEmergencyRecord(getUsers().get((int)(Math.random() * (getUsers().size()-1))));
-            calculateRoute(record);
+            calculateRoute(record, false);
             finalizeRecord(record);
             System.out.println(record);
         }

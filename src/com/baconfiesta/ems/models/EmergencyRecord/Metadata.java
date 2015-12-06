@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 
 
@@ -27,7 +27,7 @@ public class Metadata implements Serializable {
     /**
      * The modifications done to the emergency record by time, user
      */
-    private HashMap<Instant, EMSUser> modifications;
+    private ArrayList<Instant> modifications;
 
     /**
      * The category of the emergency
@@ -56,22 +56,33 @@ public class Metadata implements Serializable {
         return createdBy;
     }
 
-    /**
-     * Retrieves the user who modifies a record at an instant in time
-     * @param instant the time the record was modified
-     * @return the user who modified the record
-     */
-    public EMSUser getModifiedByTime(Instant instant) {
-        return this.getModifications().get(instant);
-    }
+    // TODO Remove
+//    /**
+//     * Retrieves the user who modifies a record at an instant in time
+//     * @param instant the time the record was modified
+//     * @return the user who modified the record
+//     */
+//    public EMSUser getModifiedByTime(Instant instant) {
+//
+//        this.getModifications().forEach(x -> {
+//            if (x == instant) return x;
+//        });
+//        return this.getModifications().get(instant);
+//    }
 
     /**
      * Retrieves the modifications to the record
      * @return the list of modifications by time, user
      */
-    public HashMap<Instant, EMSUser> getModifications() {
-        /* Should we return a copy or itself? */
+    public ArrayList<Instant> getModifications() {
+        if (modifications == null) {
+            modifications = new ArrayList<>();
+        }
         return modifications;
+    }
+
+    void setModifications(ArrayList<Instant> modifications) {
+        this.modifications = modifications;
     }
 
     /**

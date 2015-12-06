@@ -1568,8 +1568,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                         record.getRoute().getAlternateRouteSelected()
                 ));
                 record.setDescription(descriptionText.getText());
+                record.modify();
                 try {
                     System.out.println("Finalizing record for " + record.getCaller().getFirstName());
+                    record.modify();
                     controller.finalizeRecord(record);
                 } catch (IOException | ClassNotFoundException e) {
                     JOptionPane.showMessageDialog(frame, BURP + "Had trouble saving the record, actually." + ASK);

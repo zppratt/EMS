@@ -3,6 +3,7 @@ package com.baconfiesta.ems.models.EmergencyRecord;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 /**
  * An emergency record in the system
@@ -213,6 +214,18 @@ public class EmergencyRecord implements Serializable{
      */
     protected void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+//
+//    public void mod ify(ArrayList<Instant> modifications) {
+//        modifications.add(Instant.now());
+//        getMetadata().setModifications(modifications);
+//    }
+
+    /**
+     * Adds a modification to the metadata
+     */
+    public void modify() {
+        getMetadata().getModifications().add(Instant.now());
     }
 
     /**

@@ -1,17 +1,22 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Test;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.junit.Assert.assertThat;
+
+/**
+ * Since this is pretty much a POJO, we only test method(s) out of the ordinary or as necessary.
+ */
 public class EmergencyRecordTest {
 
-    @Before
-    public void setUp() throws Exception {
+    EmergencyRecord record = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
 
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
+    @Test
+    public void testModify() throws Exception {
+        int oldSize = record.getMetadata().getModifications().size();
+        record.modify();
+        assertThat(record.getMetadata().getModifications().size(), is(greaterThan(oldSize)));
     }
 }
