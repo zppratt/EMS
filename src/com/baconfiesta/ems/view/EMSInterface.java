@@ -6,15 +6,12 @@ import com.baconfiesta.ems.controller.EMSController;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.*;
 import com.sun.javafx.application.PlatformImpl;
-import com.sun.javafx.binding.ObjectConstant;
-import com.sun.javafx.runtime.SystemProperties;
 import com.toedter.calendar.JCalendar;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javassist.tools.rmi.ObjectNotFoundException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -923,7 +920,6 @@ public class EMSInterface implements EMSInterfaceConstants {
                 try {
                     saveReportFile(record);
                 } catch (IOException | ClassNotFoundException | NullPointerException e1) {
-                    e1.printStackTrace();
                     JOptionPane.showMessageDialog(
                             frame, BURP + "For some reason I couldn't generate the report." + ASK);
                 }
@@ -1496,15 +1492,21 @@ public class EMSInterface implements EMSInterfaceConstants {
                 cityText.setText(location.getCity());
                 switch (record.getCategory()) {
                     case FIRE:
+                        // categories.setSelected(fire.getModel(), true);
                         fire.setSelected(true);
+                        break;
                     case CRIME:
                         crime.setSelected(true);
+                        break;
                     case MEDICAL:
                         medical.setSelected(true);
+                        break;
                     case HOAX:
                         hoax.setSelected(true);
+                        break;
                     case CAR_CRASH:
                         crash.setSelected(true);
+                        break;
                     default:
                         categories.setSelected(null, true);
                 }
@@ -1551,13 +1553,13 @@ public class EMSInterface implements EMSInterfaceConstants {
                 ));
                 if (fire.isSelected()) {
                     record.setCategory(Category.FIRE);
-                } else if (fire.isSelected()) {
+                } else if (crime.isSelected()) {
                     record.setCategory(Category.CRIME);
-                } else if (fire.isSelected()) {
+                } else if (medical.isSelected()) {
                     record.setCategory(Category.MEDICAL);
-                } else if (fire.isSelected()) {
+                } else if (hoax.isSelected()) {
                     record.setCategory(Category.HOAX);
-                } else if (fire.isSelected()) {
+                } else if (crash.isSelected()) {
                     record.setCategory(Category.CAR_CRASH);
                 }
                 Location location = new Location(
@@ -1611,9 +1613,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             // Save database to the file
             try {
                 controller.backupData(fileChooser.getSelectedFile());
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
             }
         });
@@ -1626,12 +1626,8 @@ public class EMSInterface implements EMSInterfaceConstants {
             // Load database from file
             try {
                 controller.restoreData(fileChooser.getSelectedFile());
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
-            } catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
-            } catch (InterruptedException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
+            } catch (IOException | ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
             }
 
         });
