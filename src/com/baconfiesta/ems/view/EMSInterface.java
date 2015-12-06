@@ -12,6 +12,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javassist.tools.rmi.ObjectNotFoundException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -1626,7 +1627,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             // Load database from file
             try {
                 controller.restoreData(fileChooser.getSelectedFile());
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException | InterruptedException e) {
                 JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
             }
 
