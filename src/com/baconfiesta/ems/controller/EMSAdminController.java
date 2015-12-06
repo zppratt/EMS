@@ -3,7 +3,9 @@ package com.baconfiesta.ems.controller;
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.*;
+import javassist.tools.rmi.ObjectNotFoundException;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -92,7 +94,7 @@ public class EMSAdminController extends EMSController {
             System.out.println(usr + ":" + (usr.isAdmin() ? "admin" : "not admin"));
         }
         System.out.println("Generating Records:");
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 5; i++) {
             EmergencyRecordBuilder builder = EmergencyRecordBuilder.newBuilder()
                     .withCaller(new Caller(
                             firstNames[abs(r.nextInt() % (firstNames.length - 1))],
@@ -101,12 +103,12 @@ public class EMSAdminController extends EMSController {
                     ))
                     .withLocation(new Location(
                             randomStreet(),
-                            "Fort Wayne", "Indiana"
+                            "Indiana", "Fort Wayne"
                     ))
                     .withResponder(new Responder(
                             "999-999-9999",
                             randomStreet(),
-                            "Fort Wayne", "Indiana"
+                            "Indiana", "Fort Wayne"
                     ))
                     .withDescription(
                             "Some really bad stuff is happening." +
@@ -117,7 +119,11 @@ public class EMSAdminController extends EMSController {
                     .withTime(Instant.ofEpochMilli((long) ((Math.random() * endTime))));
             EmergencyRecord record = builder
                     .getNewEmergencyRecord(getUsers().get((int)(Math.random() * (getUsers().size()-1))));
-            calculateRoute(record, false);
+            try {
+                calculateRoute(record, false);
+            } catch(ObjectNotFoundException e) {
+                e.printStackTrace();
+            }
             finalizeRecord(record);
             System.out.println(record);
         }
@@ -130,12 +136,12 @@ public class EMSAdminController extends EMSController {
 
     String randomStreet() {
         String[] streets = {
-                "Rudisill",
-                "Taylor,",
-                "Clinton",
-                "Broadway",
-                "Jefferson",
-                "Aboite Center"
+                "9030 ima Rd",
+                "3014 N Clinton St",
+                "3927 E State Blvd",
+                "3208 Coliseum Blvd",
+                "4230 W Jefferson Blvd",
+                "11321 Aboite Center Rd"
         };
         int pick = new Random().nextInt(streets.length);
         return streets[pick];

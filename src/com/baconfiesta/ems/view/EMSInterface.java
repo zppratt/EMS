@@ -12,6 +12,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javassist.tools.rmi.ObjectNotFoundException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -1551,12 +1552,16 @@ public class EMSInterface implements EMSInterfaceConstants {
                         stateText.getText(),
                         cityText.getText()
                 );
-                record.setRoute(new Route(
-                        record.getResponder().getAddress(),
-                        location.getAddress(),
-                        record.getRoute().getAlternateRouteSelected()
-                ));
-
+                try {
+                    record.setRoute(new Route(
+                            record.getResponder().getAddress(),
+                            location.getAddress(),
+                            record.getRoute().getAlternateRouteSelected()
+                    ));
+                } catch(ObjectNotFoundException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "The server is unavailable at the moment. Could not fetch route.\n" +
+                            "Check your internet connection and try again later\n" + ASK);
+                }
                 record.setDescription(descriptionText.getText());
                 record.modify();
                 try {
@@ -1607,7 +1612,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             try {
                 controller.restoreData(fileChooser.getSelectedFile());
             } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble restoring the database." + ASK);
+                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
             }
         });
         refreshWindow();

@@ -4,7 +4,10 @@ import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
+import com.google.maps.internal.ExceptionResult;
 import com.google.maps.model.*;
+import javassist.tools.rmi.ObjectNotFoundException;
+import jdk.nashorn.internal.runtime.ECMAException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -36,13 +39,13 @@ public class Route implements Serializable {
      * @param completeAddressTo the complete address of the end point of the route
      * @param alternateRoute a boolean telling if the route calculated is the main or the alternate one
      * */
-    public Route(String completeAddressFrom, String completeAddressTo, Boolean alternateRoute) {
+    public Route(String completeAddressFrom, String completeAddressTo, Boolean alternateRoute) throws ObjectNotFoundException {
         this.emergencyLocationAddress = completeAddressTo;
         this.emergencyResponderAddress = completeAddressFrom;
         this.alternateRouteSelected = false;
 
         this.calculateRoute(alternateRoute);
-        this.calculateDirections();
+            this.calculateDirections();
     }
 
     /**
@@ -128,14 +131,7 @@ public class Route implements Serializable {
      *               queries information about this place, and formats information according to a Responder. Creates a new Responder and returns it.
      * @return       an emergency Responder
      */
-    public static Responder[] determineNearestResponders(EmergencyRecord record) {
-
-        /*
-     * TODO: Handle the fact that the answer query can be empty
-     * TODO: if cannot retrieve data, what happens?
-     * TODO: set timer for each retrieval, if no answer after a given time, returns error or "Network Unavailable"
-     * TODO: set so that we look for hospital and fire department
-     * */
+    public static Responder[] determineNearestResponders(EmergencyRecord record) throws ObjectNotFoundException {
 
         String firstSearchQuery = "Police Department";
         String secondSearchQuery = Route.determineRespondersType(record.getCategory());
@@ -183,6 +179,8 @@ public class Route implements Serializable {
             PlacesSearchResponse firstResults = PlacesApi.textSearchQuery(context, firstSearchQuery).await();
             PlacesSearchResponse secondResults = PlacesApi.textSearchQuery(context, secondSearchQuery).await();
 
+            if(firstResults.results.length <= 0 || secondResults.results.length <= 0)
+                throw new ObjectNotFoundException("No results available for this place request");
             String firstPlaceId = firstResults.results[0].placeId;
             String secondPlaceId = secondResults.results[0].placeId;
 
@@ -224,8 +222,11 @@ public class Route implements Serializable {
                 e.printStackTrace();
             }
 
-        } catch (Exception e) {
+        } catch (ObjectNotFoundException e) {
             e.printStackTrace();
+            throw new ObjectNotFoundException("No results available for this place request");
+        } catch(Exception e) {
+            throw new ObjectNotFoundException("Server unreachable at the moment");
         }
 
         /* Creating new Responders and returning an array of them */
@@ -285,7 +286,7 @@ public class Route implements Serializable {
     /**
      * \brief Retrieves the directions information between emergencyResponderAddress and emergencyLocationAddress
       */
-    private void calculateDirections() {
+    private void calculateDirections() throws ObjectNotFoundException {
 
         String key;
         GeoApiContext context = new GeoApiContext();
@@ -310,11 +311,16 @@ public class Route implements Serializable {
         /* Requesting directions information using request previously set */
         try {
             results = myRequest.await();
-            for(int i = 0; i<results[0].legs[0].steps.length; i++)
-                directionsString += "\n" + results[0].legs[0].steps[i].htmlInstructions + ", " + results[0].legs[0].steps[i].distance;
+            if(results.length <= 0 || results[0].legs.length <= 0)
+                throw new ObjectNotFoundException("No results available for this direction request");
 
+            for(int i = 0; i<results[0].legs[0].steps.length; i++)
+             directionsString += "\n" + results[0].legs[0].steps[i].htmlInstructions + ", " + results[0].legs[0].steps[i].distance;
+
+        } catch(ObjectNotFoundException e) {
+            throw new ObjectNotFoundException("No results available for this direction request");
         } catch(Exception e) {
-            e.printStackTrace();
+            throw new ObjectNotFoundException("No network available at the moment");
         }
 
         /* Formatting directions */
@@ -339,7 +345,7 @@ public class Route implements Serializable {
      *  @return a File object containing the HTML file created using the request
      */
     private File createHTMLRoute(String HTMLRequest, String filename) {
-        File htmlTemplateFile = null;
+        File htmlTemplateFile;
 
         /* Opening file from template */
         try {
@@ -354,8 +360,8 @@ public class Route implements Serializable {
         try {
             String htmlString = FileUtils.readFileToString(htmlTemplateFile);
             htmlString = htmlString.replace("$source", HTMLRequest);
-            htmlString = htmlString.replace("$origin", this.emergencyLocationAddress);
-            htmlString = htmlString.replace("$destination", this.emergencyResponderAddress);
+            htmlString = htmlString.replace("$origin", this.emergencyResponderAddress);
+            htmlString = htmlString.replace("$destination", this.emergencyLocationAddress);
             htmlString = htmlString.replace("$avoidHighways", "false");
             htmlString = htmlString.replace("$avoidTolls", "false");
             directionFile = new File("./"+filename);

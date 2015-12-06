@@ -119,47 +119,47 @@ public class EMSReport {
         /* Emergency Response Time */
         row = sheet1.getRow(10);
         cell = row.getCell(2);
-       // cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
+       cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
 
         /* Responder Phone Number */
-        row = sheet1.getRow(12);
+        row = sheet1.getRow(13);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getPhoneNumber());
 
         /* Responder Address */
-        row = sheet1.getRow(13);
+        row = sheet1.getRow(14);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getAddress());
 
         /* Responder City */
-        row = sheet1.getRow(14);
+        row = sheet1.getRow(15);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getCity());
 
         /* Responder State */
-        row = sheet1.getRow(15);
+        row = sheet1.getRow(16);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getResponder().getState());
 
         /* Route Chosen */
-        row = sheet1.getRow(17);
+        row = sheet1.getRow(18);
         cell = row.getCell(2);
-        //cell.setCellValue(emergencyRecord.getRoute().getAlternateRouteSelectedString());
+        cell.setCellValue(emergencyRecord.getRoute().getRouteSelectedString());
 
         /* Emergency Case Created By */
-        row = sheet1.getRow(19);
+        row = sheet1.getRow(20);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy().toString()); // NEEDS TO BE TRANSFORMED TO STRING
+        cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy().toString().replace("\n", ""));
 
          /* Emergency Case Time Created */
-        row = sheet1.getRow(20);
+        row = sheet1.getRow(21);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getMetadata().toString());
 
          /* Emergency Case Number of Modifications */
-        row = sheet1.getRow(21);
+        row = sheet1.getRow(22);
         cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
+     //   cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
 
 
         /* MODIFICATION ENDS HERE */
@@ -292,7 +292,7 @@ public class EMSReport {
 
             /* Emergency Response Time */
             cell = row.getCell(9);
-            //cell.setCellValue(emergencyRecords[i].getRoute().getRouteDuration());
+            cell.setCellValue(emergencyRecords[i].getRoute().getRouteDuration());
 
             /* Responder's Address */
             cell = row.getCell(10);
@@ -312,7 +312,7 @@ public class EMSReport {
 
             /* Route Chosen */
             cell = row.getCell(14);
-            //cell.setCellValue(emergencyRecords[i].getRoute().getAlternateRouteSelectedString());
+            cell.setCellValue(emergencyRecords[i].getRoute().getRouteSelectedString());
 
             /* Number of Modifications */
             cell = row.getCell(15);
