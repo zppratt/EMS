@@ -3,10 +3,7 @@ package com.baconfiesta.ems.controller;
 import com.baconfiesta.ems.TestConstants;
 import com.baconfiesta.ems.models.EMSDatabase;
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
-import com.baconfiesta.ems.models.EmergencyRecord.Caller;
-import com.baconfiesta.ems.models.EmergencyRecord.Category;
-import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
-import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecordBuilder;
+import com.baconfiesta.ems.models.EmergencyRecord.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +55,8 @@ public class EMSControllerTest implements TestConstants{
         adminController = new EMSAdminController(user, database);
         adminController.addUser("Bilbo","Baggins","bbaggins","bbaggins");
         testRecord = recordBuilder.withTime(Instant.EPOCH).getNewEmergencyRecord();
+        testRecord.setLocation(new Location("233 S Wacker Dr", "Illinois", "Chicago"));
+        testRecord.setCategory(Category.HOAX);
         user = controller.getAdminUsers().get(0);
         controller.setUser(user);
         controller.finalizeRecord(testRecord);
@@ -98,7 +97,10 @@ public class EMSControllerTest implements TestConstants{
     public void testCreateNewEmergency() throws Exception {
         System.out.println("testCreateNewEmergency");
 
+
         controller.determineNearestResponders(testRecord, testRecord);
+        assertNotNull(testRecord.getResponder());
+
         controller.calculateRoute(testRecord, false);
         assertTrue(controller.getRecords().stream()
                 .anyMatch(r -> r.getMetadata().getTimeCreated().equals(testRecord.getMetadata().getTimeCreated()))
@@ -107,7 +109,22 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testCalculateRoute() throws Exception {
+        System.out.println("testCalculateRoute");
 
+        controller.determineNearestResponders(testRecord, testRecord);
+
+        assertNotNull(testRecord.getRoute().getEmergencyLocationAddress());
+        assertNotNull(testRecord.getRoute().getEmergencyResponderAddress());
+
+        controller.calculateRoute(testRecord, true);
+        testRecord.getRoute().setAlternateRouteSelected(true);
+        assertTrue(testRecord.getRoute().getAlternateRouteSelected());
+        assertNotNull(testRecord.getRoute().getRoute());
+
+        controller.calculateRoute(testRecord, false);
+        testRecord.getRoute().setAlternateRouteSelected(false);
+        assertFalse(testRecord.getRoute().getAlternateRouteSelected());
+        assertNotNull(testRecord.getRoute().getRoute());
     }
 
     @Test
