@@ -1243,6 +1243,15 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         addUser.addActionListener(event -> {
+            String password = String.valueOf(passwordField.getPassword());
+            String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+            if (password.compareTo(confirmPassword) != 0) {
+                passwordField.setText(null);
+                confirmPasswordField.setText(null);
+                JOptionPane.showMessageDialog(frame, "The two password you have entered don't match.");
+                return;
+            }
+
             // Add the user to the database
             try {
                 ((EMSAdminController) controller).addUser(
