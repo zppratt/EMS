@@ -932,11 +932,19 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Enable back button
         back.setEnabled(true);
 
+        // Initilize fields
+        JLabel fromDateTitle = new JLabel("From");
+        JLabel toDateTitle = new JLabel("To");
+        fromDateTitle.setFont(new Font(fromDateTitle.getFont().getName(), Font.BOLD, 14));
+        toDateTitle.setFont(new Font(toDateTitle.getFont().getName(), Font.BOLD, 14));
+
         removeAll();
-        mainframe.setLayout(new GridLayout(2, 2));
+        mainframe.setLayout(new BoxLayout(mainframe,BoxLayout.Y_AXIS));
         JCalendar fromDatePicker = new JCalendar();
         JCalendar toDatePicker = new JCalendar();
+        mainframe.add(fromDateTitle);
         mainframe.add(fromDatePicker);
+        mainframe.add(toDateTitle);
         mainframe.add(toDatePicker);
         JButton submitDates = new JButton("Submit");
         footer.add(submitDates);
