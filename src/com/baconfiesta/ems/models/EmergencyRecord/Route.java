@@ -25,7 +25,8 @@ public class Route implements Serializable {
     private File route;
     private String routeDirections;
     private String routeDistance;
-    private String routeDuration;
+    private String routeDurationString;
+    private long routeDuration;
     private Boolean alternateRouteSelected;
 
 
@@ -91,15 +92,23 @@ public class Route implements Serializable {
      * \brief Retrieve the duration of the main route
      * @return a String containing the duration of the main route
      * */
-    public String getRouteDuration() {
-        return routeDuration;
+    public String getRouteDurationString() {
+        return routeDurationString;
     }
 
+    /**
+     * \brief Retrieve the duration of the main route
+     * @return a String containing the duration of the main route
+     * */
+    public long getRouteDuration() {
+        return routeDuration;
+    }
 
     /**
      * get the route selected as a boolean
      * @return a boolean set to true if the alternate route has been selected, false if main route was selected
      */
+
     public Boolean getAlternateRouteSelected() {
         return alternateRouteSelected;
     }
@@ -279,7 +288,8 @@ public class Route implements Serializable {
         DirectionsRoute[] results;
         String directionsString = "";
         String distance;
-        String duration;
+        String durationString;
+        long duration;
 
         key = retrieveKey("DirectionsKey");
 
@@ -297,6 +307,10 @@ public class Route implements Serializable {
             results = myRequest.await();
             if(results.length <= 0 || results[0].legs.length <= 0)
                 throw new ArrayIndexOutOfBoundsException("No results available for this direction request");
+
+            durationString = results[0].legs[0].duration.humanReadable;
+            duration = results[0].legs[0].duration.inSeconds;
+            distance = results[0].legs[0].distance.humanReadable;
 
             for(int i = 0; i<results[0].legs[0].steps.length; i++)
              directionsString += "\n" + results[0].legs[0].steps[i].htmlInstructions + ", " + results[0].legs[0].steps[i].distance;
@@ -316,9 +330,9 @@ public class Route implements Serializable {
 
         // Assign to the route
         routeDirections = directionsString;
-        //routeDistance = distance;
-        //routeDuration = duration;
-
+        routeDistance = distance;
+        routeDurationString = durationString;
+        routeDuration = duration;
     }
 
 
