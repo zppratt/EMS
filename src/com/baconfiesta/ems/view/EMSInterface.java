@@ -1250,6 +1250,11 @@ public class EMSInterface implements EMSInterfaceConstants {
                         lastnameText.getText(),
                         usernameText.getText(),
                         String.valueOf(passwordField.getPassword()));
+                firstnameText.setText(null);
+                lastnameText.setText(null);
+                usernameText.setText(null);
+                passwordField.setText(null);
+                confirmPasswordField.setText(null);
             } catch (IOException | ClassNotFoundException e1) {
                 JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't add the user." + ASK);
             }
