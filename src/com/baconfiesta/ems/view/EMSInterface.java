@@ -290,8 +290,6 @@ public class EMSInterface implements EMSInterfaceConstants {
             String username = usernameText.getText();
             char[] password = passwordText.getPassword();
 
-            System.out.printf("Attempting to login user: '%s'\n", username); // TODO: remove
-
             // Attempt to login as a user using specified info
             try {
                 Authenticator.init();

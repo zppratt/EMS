@@ -56,20 +56,6 @@ public class Metadata implements Serializable {
         return createdBy;
     }
 
-    // TODO Remove
-//    /**
-//     * Retrieves the user who modifies a record at an instant in time
-//     * @param instant the time the record was modified
-//     * @return the user who modified the record
-//     */
-//    public EMSUser getModifiedByTime(Instant instant) {
-//
-//        this.getModifications().forEach(x -> {
-//            if (x == instant) return x;
-//        });
-//        return this.getModifications().get(instant);
-//    }
-
     /**
      * Retrieves the modifications to the record
      * @return the list of modifications by time, user

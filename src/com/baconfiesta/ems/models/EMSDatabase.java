@@ -352,18 +352,19 @@ public class EMSDatabase {
      * @return the records on success, null on failure
      */
     synchronized Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
-        Map<Instant, EmergencyRecord> records = this.records;
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            records = (HashMap<Instant, EmergencyRecord>) ((Serializable[]) is.readObject())[1];
+            Map<Instant, EmergencyRecord> records =
+                    (HashMap<Instant, EmergencyRecord>) ((Serializable[]) is.readObject())[1];
             // These lines check each element for validity by accessing them
             for (Instant k : records.keySet()) ;
             for (EmergencyRecord v : records.values()) ;
+            return records;
         } catch (Exception e) {
+            return this.records;
         }
-        return records;
     }
 
     /**
@@ -372,18 +373,18 @@ public class EMSDatabase {
      * @return the users on success, null on failure
      */
     synchronized Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
-        Map<String, EMSUser> users = this.users;
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            users = (Map<String, EMSUser>)((Serializable[]) is.readObject())[0];
+            Map<String, EMSUser> users = (Map<String, EMSUser>)((Serializable[]) is.readObject())[0];
             // These lines check each element for validity by accessing them
             for (String k : users.keySet()) ;
             for (EMSUser v : users.values()) ;
+            return users;
         } catch (Exception e) {
+            return this.users;
         }
-        return users;
     }
 
     /**

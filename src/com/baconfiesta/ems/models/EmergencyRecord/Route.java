@@ -4,6 +4,7 @@ import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
+import com.google.maps.errors.ApiError;
 import com.google.maps.model.*;
 import javassist.tools.rmi.ObjectNotFoundException;
 import org.apache.commons.io.FileUtils;
@@ -308,6 +309,7 @@ public class Route implements Serializable {
         /* Requesting directions information using request previously set */
         try {
             results = myRequest.await();
+
             if(results.length <= 0 || results[0].legs.length <= 0)
                 throw new ArrayIndexOutOfBoundsException("No results available for this direction request");
 

@@ -2,9 +2,7 @@
 /class
 /.idea
 /db
-/doc
 maps.private.properties
-doc/
 db/
 dist/
 *.class
