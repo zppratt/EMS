@@ -1268,9 +1268,8 @@ public class EMSInterface implements EMSInterfaceConstants {
                         usernameText.getText(),
                         String.valueOf(passwordField.getPassword()));
             } catch (IOException | ClassNotFoundException e1) {
-                System.out.println("User not added.");
+                JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't add the user." + ASK);
             }
-            System.out.println();
             try {
                 sidebarList.setListData(controller.getUsers().toArray());
             } catch (IOException | ClassNotFoundException e1) {

@@ -7,8 +7,6 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import com.baconfiesta.ems.models.EmergencyRecord.Responder;
 import com.baconfiesta.ems.models.EmergencyRecord.Route;
 import com.baconfiesta.ems.models.EmergencyReport.EMSReport;
-import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 import java.io.*;
@@ -139,11 +137,6 @@ public class EMSController implements Constants {
         EmergencyRecord[] rangeRecords;
         // Turns records into an array
         rangeRecords = recordsInRange.toArray(new EmergencyRecord[recordsInRange.size()]);
-
-        for (EmergencyRecord rangeRecord : rangeRecords) {
-            System.err.println(rangeRecord);
-        }
-
         EMSReport.generateStatsReport(rangeRecords, filename);
     }
 
@@ -155,7 +148,6 @@ public class EMSController implements Constants {
      * @throws ClassNotFoundException
      */
     public void generateReport(EmergencyRecord record, String fileName) throws IOException, ClassNotFoundException {
-        System.out.println(record.getResponder().getCity());
         EMSReport.generateRecordReport(record, fileName);
     }
 

@@ -91,11 +91,10 @@ public class EMSDatabase {
     /**
      * Setup memory space for users and records
      */
-    private void setupCache(HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records) {
+    private void setupCache(HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records) throws IOException, ClassNotFoundException {
         if (users == null) {
             this.users = getDatabaseUsers();
             if (this.users == null) {
-                System.out.println("Creating new user cache...");
                 this.users = new HashMap<>();
                 this.users.put("", new EMSUser("Default","","","", true));
             }
@@ -105,7 +104,6 @@ public class EMSDatabase {
         if (records == null) {
             this.records = getDatabaseRecords();
             if (this.records == null) {
-                System.out.println("Creating new record cache...");
                 this.records = new HashMap<>();
             }
         } else {
@@ -138,11 +136,6 @@ public class EMSDatabase {
      * @throws IOException
      */
     public void closeDatabase() throws IOException, InterruptedException {
-
-//        System.out.println("\ncloseDatabase(): Cache contents in the end were:");
-//        System.out.printf("Users: %s\n", users);
-//        System.out.printf("Records: %s\n\n", records);
-
         users = null;
         records = null;
         isOpen = false;
@@ -199,11 +192,7 @@ public class EMSDatabase {
             array[0] = (Serializable) users;
             array[1] = (Serializable) records;
             oos.writeObject(array);
-//            System.out.println("Writing: " + array + " to the database file.");
             oos.flush();
-
-//            System.out.printf("\nDatabase contents after writeObject(%s):\nUsers: %s\nRecords:%s\n\n",
-//                    array, getDatabaseUsers(), getDatabaseRecords());
         }
     }
 
@@ -276,11 +265,6 @@ public class EMSDatabase {
     public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
         // Return the user if it exists
         if (users.containsKey(username)) {
-
-//            System.err.println("Found username!");
-//            System.out.println("username = " + username);
-//            System.err.println("It's " + users.get(username));
-
             return users.get(username);
         }
         return null;
@@ -367,29 +351,20 @@ public class EMSDatabase {
      *
      * @return the records on success, null on failure
      */
-    synchronized Map<Instant, EmergencyRecord> getDatabaseRecords() {
-//        System.out.println("Try to get records from database...");
-        Map<Instant, EmergencyRecord> tempRecords = records;
+    synchronized Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
+        Map<Instant, EmergencyRecord> records;
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            tempRecords = (HashMap<Instant, EmergencyRecord>) ((Serializable[]) is.readObject())[1];
+            records = (HashMap<Instant, EmergencyRecord>) ((Serializable[]) is.readObject())[1];
             // These lines check each element for validity by accessing them
-            for (Instant k : tempRecords.keySet()) ;
-            for (EmergencyRecord v : tempRecords.values()) ;
-        }  catch (EOFException e) {
-            System.err.println("EOFException");
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found.");
-        } catch (IOException e) {
-            System.err.println("Trouble accessing file.");
-        } catch (ClassCastException e) {
-            System.err.println("No records found in the database. (ClassCastException)");
-        } catch (ClassNotFoundException e) {
-            System.err.println("Could not find class.");
+            for (Instant k : records.keySet()) ;
+            for (EmergencyRecord v : records.values()) ;
+        } catch (Exception e) {
+            records = null;
         }
-        return tempRecords;
+        return records;
     }
 
     /**
@@ -397,29 +372,20 @@ public class EMSDatabase {
      *
      * @return the users on success, null on failure
      */
-    synchronized Map<String, EMSUser> getDatabaseUsers() {
-//        System.out.println("Try to get users from database...");
-        Map<String, EMSUser> databaseUsers = users;
+    synchronized Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
+        Map<String, EMSUser> users;
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
         ) {
-            databaseUsers = (Map<String, EMSUser>)((Serializable[]) is.readObject())[0];
+            users = (Map<String, EMSUser>)((Serializable[]) is.readObject())[0];
             // These lines check each element for validity by accessing them
-            for (String k : databaseUsers.keySet()) ;
-            for (EMSUser v : databaseUsers.values()) ;
-        } catch (EOFException e) {
-            System.err.println("EOFException");
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found.");
-        } catch (IOException e) {
-            System.err.println("Trouble accessing file.");
-        } catch (ClassCastException e) {
-            System.err.println("No users found in database. (ClassCastException)");
-        } catch (ClassNotFoundException e) {
-            System.err.println("Could not find class.");
+            for (String k : users.keySet()) ;
+            for (EMSUser v : users.values()) ;
+        } catch (Exception e) {
+            users = null;
         }
-        return databaseUsers;
+        return users;
     }
 
     /**

@@ -197,14 +197,14 @@ public class EMSReport {
      * @param emergencyRecords the array of emergency records to generate a report for
      * @param filename the name of the file (and its path) where we want to store the report
      * */
-    public static void generateStatsReport(EmergencyRecord[] emergencyRecords, String filename) {
+    public static void generateStatsReport(EmergencyRecord[] emergencyRecords, String filename)
+            throws ArrayIndexOutOfBoundsException {
 
         int emergencyRecordsLength = emergencyRecords.length;
         int i;
 
         if(emergencyRecordsLength > 2000) {
-            System.err.println("Number of records too large (" + emergencyRecordsLength + "): record generation aborted");
-            return;
+            throw new ArrayIndexOutOfBoundsException();
         }
 
         /* copying file from template */

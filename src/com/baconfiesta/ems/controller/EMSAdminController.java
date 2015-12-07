@@ -86,11 +86,11 @@ public class EMSAdminController extends EMSController {
             String firstName = firstNames[abs(r.nextInt() % (firstNames.length - 1))];
             String lastName = lastNames[abs(r.nextInt() % (lastNames.length - 1))];
             String id = firstName.substring(0,1).toLowerCase() + lastName.toLowerCase();
-            EMSUser usr = addUser(firstName, lastName, id, id);
+            EMSUser user = addUser(firstName, lastName, id, id);
             if (Math.random() > .7) {
-                setUserAdmin(usr.getUsername(), true);
+                setUserAdmin(user.getUsername(), true);
             }
-            System.out.println(usr + ":" + (usr.isAdmin() ? "admin" : "not admin"));
+            System.out.println(user + " : " + (user.isAdmin() ? "admin" : "not admin"));
         }
         System.out.println("Generating Records:");
         for (int i = 0; i < 25; i++) {
