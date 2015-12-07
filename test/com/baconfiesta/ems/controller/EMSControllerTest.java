@@ -55,8 +55,6 @@ public class EMSControllerTest implements TestConstants{
         adminController = new EMSAdminController(user, database);
         adminController.addUser("Bilbo","Baggins","bbaggins","bbaggins");
         testRecord = recordBuilder.withTime(Instant.EPOCH).getNewEmergencyRecord();
-        testRecord.setLocation(new Location("233 S Wacker Dr", "Illinois", "Chicago"));
-        testRecord.setCategory(Category.HOAX);
         user = controller.getAdminUsers().get(0);
         controller.setUser(user);
         controller.finalizeRecord(testRecord);
@@ -97,35 +95,11 @@ public class EMSControllerTest implements TestConstants{
     public void testCreateNewEmergency() throws Exception {
         System.out.println("testCreateNewEmergency");
 
-
-        controller.determineNearestResponders(testRecord, testRecord);
-        assertNotNull(testRecord.getResponder());
-
-        controller.calculateRoute(testRecord, false);
         assertTrue(controller.getRecords().stream()
                 .anyMatch(r -> r.getMetadata().getTimeCreated().equals(testRecord.getMetadata().getTimeCreated()))
         );
     }
 
-    @Test
-    public void testCalculateRoute() throws Exception {
-        System.out.println("testCalculateRoute");
-
-        controller.determineNearestResponders(testRecord, testRecord);
-
-        assertNotNull(testRecord.getRoute().getEmergencyLocationAddress());
-        assertNotNull(testRecord.getRoute().getEmergencyResponderAddress());
-
-        controller.calculateRoute(testRecord, true);
-        testRecord.getRoute().setAlternateRouteSelected(true);
-        assertTrue(testRecord.getRoute().getAlternateRouteSelected());
-        assertNotNull(testRecord.getRoute().getRoute());
-
-        controller.calculateRoute(testRecord, false);
-        testRecord.getRoute().setAlternateRouteSelected(false);
-        assertFalse(testRecord.getRoute().getAlternateRouteSelected());
-        assertNotNull(testRecord.getRoute().getRoute());
-    }
 
     @Test
     public void testFinalizeRecord() throws Exception {
