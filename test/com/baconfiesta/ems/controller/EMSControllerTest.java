@@ -196,12 +196,20 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testAuthenticateUser() throws Exception {
+        System.out.println("authenticateUser");
 
+        EMSUser user = EMSController.authenticateUser("bbaggins", "bbaggins".toCharArray());
+        assertNotNull(user);
     }
 
     @Test
     public void testSetUser() throws Exception {
+        System.out.println("setUser");
 
+        EMSUser oldUser = controller.getCurrentUser();
+        EMSUser newUser = new EMSUser("Frodo", "Baggins", "fbaggins", "fbaggins", true);
+        controller.setUser(newUser);
+        assertNotEquals(oldUser, controller.getCurrentUser());
     }
 
     @Test
@@ -210,9 +218,7 @@ public class EMSControllerTest implements TestConstants{
 
         EMSUser admin = adminController.addUser("Admin", "Admin", "admin", "Admin");
         adminController.setUserAdmin("admin", true);
-
         controller.setUser(admin);
-
         assertNotNull(controller.getCurrentUser());
     }
 
@@ -222,7 +228,6 @@ public class EMSControllerTest implements TestConstants{
 
         generateRecords();
         EmergencyRecord[] list = controller.getRecentRecords();
-
         for (EmergencyRecord emergencyRecord : list) {
             System.out.println(emergencyRecord);
             assertTrue(emergencyRecord!=null);
