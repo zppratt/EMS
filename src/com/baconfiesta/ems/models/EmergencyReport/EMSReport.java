@@ -4,8 +4,7 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,7 +73,7 @@ public class EMSReport {
         Sheet sheet1 = wb.getSheet("Details");
 
         Row row;
-        org.apache.poi.ss.usermodel.Cell cell;
+        Cell cell;
 
         try {
        /* Emergency Case ID */
@@ -165,7 +164,6 @@ public class EMSReport {
 
         }
 
-
         /* MODIFICATION ENDS HERE */
 
          /* Create an output stream */
@@ -251,7 +249,7 @@ public class EMSReport {
         Sheet sheet1 = wb.getSheet("Details");
 
         Row row;
-        org.apache.poi.ss.usermodel.Cell cell;
+        Cell cell;
 
 
         /* For each emergency record, entering information in the excel file */
@@ -343,6 +341,9 @@ public class EMSReport {
 
          /* MODIFICATION ENDS HERE */
 
+         /* Refreshing */
+        refreshFormulasSpreadsheet(wb);
+
          /* Create an output stream */
 
         FileOutputStream out;
@@ -367,6 +368,21 @@ public class EMSReport {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void refreshFormulasSpreadsheet(Workbook wb) {
+        FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+        Sheet sheet = wb.getSheet("Details");
+            for (Row r : sheet) {
+                for (Cell c : r) {
+                    if (c.getCellType() == org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA) {
+                        try {
+                            evaluator.evaluateFormulaCell(c);
+                        } catch (Exception e) {
+                        }
+                    }
+                }
+            }
     }
 
 }
