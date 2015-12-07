@@ -672,8 +672,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Fill in the route directions
-        route1Text.setText(mainEmergencyRecordTempFile.getRoute().getRouteDirections());
-        route2Text.setText(alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route1Text.setText("Main Route\nDistance: " + mainEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration"+ mainEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + mainEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route2Text.setText("Alternate Route\nDistance: " + alternateEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration"+ alternateEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
 
 
         // Set the summary
