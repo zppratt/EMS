@@ -10,11 +10,7 @@ import javassist.tools.rmi.ObjectNotFoundException;
 import jdk.nashorn.internal.runtime.ECMAException;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Properties;
@@ -39,13 +35,14 @@ public class Route implements Serializable {
      * @param completeAddressTo the complete address of the end point of the route
      * @param alternateRoute a boolean telling if the route calculated is the main or the alternate one
      * */
-    public Route(String completeAddressFrom, String completeAddressTo, Boolean alternateRoute) throws ObjectNotFoundException {
+    public Route(String completeAddressFrom, String completeAddressTo, Boolean alternateRoute)
+            throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
         this.emergencyLocationAddress = completeAddressTo;
         this.emergencyResponderAddress = completeAddressFrom;
         this.alternateRouteSelected = false;
 
         this.calculateRoute(alternateRoute);
-            this.calculateDirections();
+        this.calculateDirections();
     }
 
     /**
@@ -131,7 +128,7 @@ public class Route implements Serializable {
      *               queries information about this place, and formats information according to a Responder. Creates a new Responder and returns it.
      * @return       an emergency Responder
      */
-    public static Responder[] determineNearestResponders(EmergencyRecord record) throws ObjectNotFoundException {
+    public static Responder[] determineNearestResponders(EmergencyRecord record) throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
 
         String firstSearchQuery = "Police Department";
         String secondSearchQuery = Route.determineRespondersType(record.getCategory());
@@ -147,21 +144,10 @@ public class Route implements Serializable {
         InputStream input = null;
 
         /* Retrieving our Places API key */
-        try {
-            input = new FileInputStream("maps.private.properties");
-            properties.load(input);
-            context.setApiKey(properties.getProperty("PlacesKey")); // Our Places API key
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        input = new FileInputStream("maps.private.properties");
+        properties.load(input);
+        context.setApiKey(properties.getProperty("PlacesKey")); // Our Places API key
+        input.close();
 
         /* Fields required to create a new responder */
         String firstResponderPhone = "";
@@ -180,7 +166,7 @@ public class Route implements Serializable {
             PlacesSearchResponse secondResults = PlacesApi.textSearchQuery(context, secondSearchQuery).await();
 
             if(firstResults.results.length <= 0 || secondResults.results.length <= 0)
-                throw new ObjectNotFoundException("No results available for this place request");
+                throw new ArrayIndexOutOfBoundsException("No results available for this place request");
             String firstPlaceId = firstResults.results[0].placeId;
             String secondPlaceId = secondResults.results[0].placeId;
 
@@ -219,12 +205,11 @@ public class Route implements Serializable {
 
 
             } catch (Exception e) {
-                e.printStackTrace();
-            }
+               throw new ObjectNotFoundException("Server unreachable at the moment");
+           }
 
-        } catch (ObjectNotFoundException e) {
-            e.printStackTrace();
-            throw new ObjectNotFoundException("No results available for this place request");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ArrayIndexOutOfBoundsException("No results available for this place request");
         } catch(Exception e) {
             throw new ObjectNotFoundException("Server unreachable at the moment");
         }
@@ -263,12 +248,13 @@ public class Route implements Serializable {
      * \brief Calculates the shortest route from the Responder to the emergency address
      *
      */
-    private void calculateRoute(Boolean alternateRoute) {
+    private void calculateRoute(Boolean alternateRoute) throws IOException{
         String key;
         String htmlRequest;
 
         /* Retrieving our Javascript API key */
         key = retrieveKey("JavascriptKey");
+
         if(key == null)
             return;
 
@@ -286,18 +272,16 @@ public class Route implements Serializable {
     /**
      * \brief Retrieves the directions information between emergencyResponderAddress and emergencyLocationAddress
       */
-    private void calculateDirections() throws ObjectNotFoundException {
+    private void calculateDirections() throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
 
         String key;
         GeoApiContext context = new GeoApiContext();
         DirectionsRoute[] results;
         String directionsString = "";
-        String distance = "";
-        String duration = "";
+        String distance;
+        String duration;
 
         key = retrieveKey("DirectionsKey");
-        if(key == null)
-            return;
 
         /* Setting key for the request's context */
         context.setApiKey(key);
@@ -312,13 +296,13 @@ public class Route implements Serializable {
         try {
             results = myRequest.await();
             if(results.length <= 0 || results[0].legs.length <= 0)
-                throw new ObjectNotFoundException("No results available for this direction request");
+                throw new ArrayIndexOutOfBoundsException("No results available for this direction request");
 
             for(int i = 0; i<results[0].legs[0].steps.length; i++)
              directionsString += "\n" + results[0].legs[0].steps[i].htmlInstructions + ", " + results[0].legs[0].steps[i].distance;
 
         } catch(ObjectNotFoundException e) {
-            throw new ObjectNotFoundException("No results available for this direction request");
+            throw new ArrayIndexOutOfBoundsException("No results available for this direction request");
         } catch(Exception e) {
             throw new ObjectNotFoundException("No network available at the moment");
         }
@@ -332,8 +316,8 @@ public class Route implements Serializable {
 
         // Assign to the route
         routeDirections = directionsString;
-        routeDistance = distance;
-        routeDuration = duration;
+        //routeDistance = distance;
+        //routeDuration = duration;
 
     }
 
@@ -351,8 +335,7 @@ public class Route implements Serializable {
         try {
             htmlTemplateFile = new File("./templates/Maps.html");
         } catch (NullPointerException e) {
-            e.printStackTrace();
-            return null;
+            throw new NullPointerException("Cannot open the HTML template file");
         }
 
         File directionFile = null;
@@ -368,7 +351,7 @@ public class Route implements Serializable {
             FileUtils.writeStringToFile(directionFile, htmlString);
 
         } catch(Exception e){
-            e.printStackTrace();
+            return null;
         }
 
         return directionFile;
@@ -380,28 +363,12 @@ public class Route implements Serializable {
      * \brief Retrieves a key from the maps.private.properties
      * @param keyToRetrieve the label of the key to retrieve from the file
      * @return a String containing the key retrieved */
-    private String retrieveKey(String keyToRetrieve) {
+    private String retrieveKey(String keyToRetrieve) throws IOException {
         Properties properties = new Properties();
-        InputStream input = null;
-        String key = null;
-
-        /* Retrieving Key */
-        try {
-            input = new FileInputStream("maps.private.properties");
-            properties.load(input);
-            key = properties.getProperty(keyToRetrieve); // Our Embed API key
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        InputStream input = new FileInputStream("maps.private.properties");
+        properties.load(input);
+        String key = properties.getProperty(keyToRetrieve); // Our Embed API key
+        input.close();
         return key;
     }
 

@@ -620,9 +620,15 @@ public class EMSInterface implements EMSInterfaceConstants {
                 }else{
                     throw new InputMismatchException();
                 }
-                controller.determineNearestResponders(mainEmergencyRecordTempFile, alternateEmergencyRecordTempFile);
-                controller.calculateRoute(mainEmergencyRecordTempFile, false);
-                controller.calculateRoute(alternateEmergencyRecordTempFile, true);
+                try {
+                    controller.determineNearestResponders(mainEmergencyRecordTempFile, alternateEmergencyRecordTempFile);
+                    controller.calculateRoute(mainEmergencyRecordTempFile, false);
+                    controller.calculateRoute(alternateEmergencyRecordTempFile, true);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    JOptionPane.showMessageDialog(frame, "The address you have entered does not exist.\n Please enter a correct address.");
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file" + ASK);
+                }
             } catch (InputMismatchException mismatch){
                 JOptionPane.showMessageDialog(frame, "Every field must be filled.");
                 return;
@@ -1577,6 +1583,8 @@ public class EMSInterface implements EMSInterfaceConstants {
                 } catch(ObjectNotFoundException e) {
                     JOptionPane.showMessageDialog(frame, BURP + "The server is unavailable at the moment. Could not fetch route.\n" +
                             "Check your internet connection and try again later\n" + ASK);
+                } catch(IOException e) {
+                    JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file" + ASK);
                 }
                 record.setDescription(descriptionText.getText());
                 record.modify();

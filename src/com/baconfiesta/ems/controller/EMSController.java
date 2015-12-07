@@ -7,6 +7,8 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import com.baconfiesta.ems.models.EmergencyRecord.Responder;
 import com.baconfiesta.ems.models.EmergencyRecord.Route;
 import com.baconfiesta.ems.models.EmergencyReport.EMSReport;
+import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 import java.io.*;
@@ -83,7 +85,8 @@ public class EMSController implements Constants {
      * @param mainRecord the main record that will contain the main route
      * @param alternativeRecord the alternative record that will contain the alternate route
      */
-    public void determineNearestResponders(EmergencyRecord mainRecord, EmergencyRecord alternativeRecord) throws ObjectNotFoundException{
+    public void determineNearestResponders(EmergencyRecord mainRecord, EmergencyRecord alternativeRecord)
+            throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
         Responder responders[] = Route.determineNearestResponders(mainRecord);
         mainRecord.setResponder(responders[0]);
         alternativeRecord.setResponder(responders[1]);
@@ -94,7 +97,8 @@ public class EMSController implements Constants {
      * Calculated the route from the responder to the emergency
      * @param record the emergency record containing the address of the emergency
      */
-    public void calculateRoute(EmergencyRecord record, Boolean alternateRoute) throws ObjectNotFoundException{
+    public void calculateRoute(EmergencyRecord record, Boolean alternateRoute)
+            throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
         record.setRoute(new Route(record.getResponder().getAddress() + ", " + record.getResponder().getCity() + ", " + record.getResponder().getState(),
                 record.getLocation().getAddress() + ", " + record.getLocation().getCity() + ", " + record.getLocation().getState(), alternateRoute));
     }
@@ -134,7 +138,7 @@ public class EMSController implements Constants {
                 recordsInRange.add(record);
             }
         });
-        EmergencyRecord[] rangeRecords = new EmergencyRecord[0];
+        EmergencyRecord[] rangeRecords;
         // Turns records into an array
         rangeRecords = recordsInRange.toArray(new EmergencyRecord[recordsInRange.size()]);
 
@@ -221,6 +225,7 @@ public class EMSController implements Constants {
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
         oos.writeObject(_database.getCachedUsers());
         oos.writeObject(_database.getCachedRecords());
+        oos.close();
     }
 
     /**
