@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Random;
 
 import static java.lang.Math.abs;
@@ -28,10 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({EMSDatabase.class})
@@ -41,7 +39,7 @@ public class EMSControllerTest implements TestConstants{
 
     final File mockFile = mockFilePath.toFile();
 
-    EmergencyRecordBuilder erBuilder = EmergencyRecordBuilder.newBuilder();
+    EmergencyRecordBuilder recordBuilder = EmergencyRecordBuilder.newBuilder();
 
     EmergencyRecord testRecord;
 
@@ -51,16 +49,20 @@ public class EMSControllerTest implements TestConstants{
 
     EMSDatabase database;
 
+    EMSUser user;
+
     @Before
     public void setUp() throws Exception {
         database = new EMSDatabase(mockFile);
-        controller = new EMSController(null, database);
-        adminController = new EMSAdminController(null, database);
-        testRecord = erBuilder.withTime(Instant.EPOCH).getNewEmergencyRecord(new EMSUser("","","","",true));
+        controller = new EMSController(user, database);
+        adminController = new EMSAdminController(user, database);
+        adminController.addUser("Bilbo","Baggins","bbaggins","bbaggins");
+        testRecord = recordBuilder.withTime(Instant.EPOCH).getNewEmergencyRecord();
+        user = controller.getAdminUsers().get(0);
+        controller.setUser(user);
         controller.finalizeRecord(testRecord);
-        controller.setUser(controller.getAdminUsers().get(0));
         // Default user created?
-        assertNotNull(database.lookupUser(""));
+        assertNotNull(database.lookupUser("bbaggins"));
     }
 
     @After
@@ -171,12 +173,25 @@ public class EMSControllerTest implements TestConstants{
 
     @Test
     public void testBackupData() throws Exception {
+        System.out.println("backupData");
 
+        ArrayList<EMSUser> users = controller.getAdminUsers();
+        ArrayList<EmergencyRecord> records = controller.getRecords();
+        controller.backupData(mockFile);
+        controller.restoreData(mockFile);
+        assertEquals(users.size(), controller.getAdminUsers().size());
+        assertEquals(records.size(), controller.getRecords().size());
     }
 
     @Test
     public void testRestoreData() throws Exception {
+        System.out.println("restoreData");
 
+        ArrayList<EMSUser> users = controller.getAdminUsers();
+        ArrayList<EmergencyRecord> records = controller.getRecords();
+        controller.restoreData(mockFile);
+        assertEquals(users.size(), controller.getAdminUsers().size());
+        assertEquals(records.size(), controller.getRecords().size());
     }
 
     @Test

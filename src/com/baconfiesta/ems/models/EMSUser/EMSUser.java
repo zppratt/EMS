@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * A user of the EMS system, such as a Dispatcher or System Administrator
@@ -134,10 +133,6 @@ public class EMSUser implements Serializable {
      * Prints the last, first name and username of a user
      */
     public String toString() {
-//        return  String.format(" '%s - %s - %s'",
-//                (this.username.equals("") ? "<blank>" : this.username),
-//                ( this.lastname.equals("") ? "<blank>" : this.lastname ),
-//                ( this.firstname.equals("") ? "<blank>" : this.firstname ));
         return ( this.username.equals("") ? "<blank>" : this.username ) + "\n";
     }
 

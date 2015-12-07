@@ -5,7 +5,6 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.*;
 import javassist.tools.rmi.ObjectNotFoundException;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -38,7 +37,7 @@ public class EMSAdminController extends EMSController {
      * @return the User on success, null on failure
      */
     public EMSUser addUser(String firstname, String lastname, String username, String password) throws IOException, ClassNotFoundException {
-        return _database.addUser(firstname, lastname, username, password);
+        return database.addUser(firstname, lastname, username, password);
     }
 
     /**
@@ -47,11 +46,11 @@ public class EMSAdminController extends EMSController {
      * @return whether the removal was successful or not
      */
     public boolean removeUser(String username) throws IOException, ClassNotFoundException {
-        return _database.removeUser(username);
+        return database.removeUser(username);
     }
 
     public boolean removeRecord(EmergencyRecord record) throws IOException {
-        return _database.removeRecord(record);
+        return database.removeRecord(record);
     }
 
     /**
@@ -60,11 +59,11 @@ public class EMSAdminController extends EMSController {
      * @return the User if found, otherwise null
      */
     public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
-        return _database.lookupUser(username);
+        return database.lookupUser(username);
     }
 
     public void setUserAdmin(String username, boolean admin) throws IOException {
-        _database.setUserAdmin(username, admin);
+        database.setUserAdmin(username, admin);
     }
 
     /**

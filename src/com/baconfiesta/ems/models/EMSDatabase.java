@@ -4,7 +4,9 @@ import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,30 +84,32 @@ public class EMSDatabase {
         if (isOpen()) {
             return;
         }
-        closeDatabase();
-        System.out.printf("EMSDatabase('%s', '%s')\n\n", file, records);
         setupDatabase(file);
-        setupCache();
+        setupCache(users, records);
     }
 
     /**
      * Setup memory space for users and records
      */
-    private void setupCache() {
+    private void setupCache(HashMap<String, EMSUser> users, HashMap<Instant, EmergencyRecord> records) {
         if (users == null) {
-            users = getDatabaseUsers();
-            if (users == null) {
+            this.users = getDatabaseUsers();
+            if (this.users == null) {
                 System.out.println("Creating new user cache...");
-                users = new HashMap<>();
-                users.put("", new EMSUser("Default","","","", true));
+                this.users = new HashMap<>();
+                this.users.put("", new EMSUser("Default","","","", true));
             }
+        } else {
+            this.users = users;
         }
         if (records == null) {
-            records = getDatabaseRecords();
-            if (records == null) {
+            this.records = getDatabaseRecords();
+            if (this.records == null) {
                 System.out.println("Creating new record cache...");
-                records = new HashMap<>();
+                this.records = new HashMap<>();
             }
+        } else {
+            this.records = records;
         }
     }
 
@@ -235,6 +239,23 @@ public class EMSDatabase {
         writeObject(users);
         return user;
     }
+
+//    /**
+//     * Add a user to the database.
+//     * @param user the user to add
+//     * @param password the user's password
+//     * @return the user
+//     * @throws IOException
+//     * @throws ClassNotFoundException
+//     */
+//    public EMSUser addUser(EMSUser user, String password) throws IOException, ClassNotFoundException {
+//        return addUser(
+//                user.getFirstname(),
+//                user.getLastname(),
+//                user.getUsername(),
+//                password
+//        );
+//    }
 
     /**
      * Makes user admin

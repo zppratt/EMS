@@ -29,7 +29,7 @@ public class EMSController implements Constants {
     /**
      * The file database the system will use
      */
-    static EMSDatabase _database;
+    static EMSDatabase database;
 
     /**
      * Default constructor for a user controller
@@ -41,22 +41,20 @@ public class EMSController implements Constants {
     /**
      * Constructor which allows the specification of a user and database.
      * @param user the user
-     * @param db the database
+     * @param database the database
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public EMSController(EMSUser user, EMSDatabase db) throws IOException, ClassNotFoundException, InterruptedException {
-
+    public EMSController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException, InterruptedException {
         // If database already exists, do not create a new one unless db parameter contains a different one
-        if (db != null) {
-            _database = db;
-        } else if (_database == null) {
-            _database = new EMSDatabase();
+        if (database != null) {
+            EMSController.database = database;
+        } else if (EMSController.database == null) {
+            EMSController.database = new EMSDatabase();
         }
         if (user != null) {
-            this.currentUser = user;
+            setUser(user);
         }
-
     }
 
     /**
@@ -73,8 +71,8 @@ public class EMSController implements Constants {
      * Logs a user out of the system
      */
     public void logOut() throws IOException, InterruptedException {
-        _database.closeDatabase();
-        _database = null;
+        database.closeDatabase();
+        database = null;
         this.currentUser = null;
     }
 
@@ -105,7 +103,7 @@ public class EMSController implements Constants {
      */
     public void finalizeRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
         currentUser.addRecord(record);
-        _database.addEmergencyRecord(record);
+        database.addEmergencyRecord(record);
     }
 
     /**
@@ -114,7 +112,7 @@ public class EMSController implements Constants {
      * @return the emergency record
      */
     public EmergencyRecord accessEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
-        return _database.getCachedRecords().get(time);
+        return database.getCachedRecords().get(time);
     }
 
 
@@ -163,7 +161,7 @@ public class EMSController implements Constants {
      */
     public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
         ArrayList<EMSUser> users = new ArrayList<>();
-        _database.getCachedUsers().values().stream()
+        database.getCachedUsers().values().stream()
                 .filter(u -> !u.isAdmin())
                 .forEach(users::add);
         return users;
@@ -175,7 +173,7 @@ public class EMSController implements Constants {
      */
     public ArrayList<EMSUser> getAdminUsers() throws Exception {
         ArrayList<EMSUser> users = new ArrayList<>();
-        _database.getCachedUsers().values().stream()
+        database.getCachedUsers().values().stream()
                 .filter(EMSUser::isAdmin)
                 .forEach(users::add);
         return users;
@@ -188,7 +186,7 @@ public class EMSController implements Constants {
     public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
         ArrayList<EmergencyRecord> list = new ArrayList<>();
 
-        _database.getCachedRecords().entrySet().stream()
+        database.getCachedRecords().entrySet().stream()
                 .sorted(Map.Entry.<Instant, EmergencyRecord>comparingByKey().reversed())
                 .forEach(r -> list.add(r.getValue()));
 
@@ -205,7 +203,7 @@ public class EMSController implements Constants {
 
         ArrayList<EmergencyRecord> list = new ArrayList<>();
 
-        _database.getCachedRecords().entrySet().stream()
+        database.getCachedRecords().entrySet().stream()
                 .sorted(Map.Entry.<Instant, EmergencyRecord>comparingByKey().reversed())
                 .limit(20)
                 .forEach(r -> list.add(r.getValue()));
@@ -218,9 +216,13 @@ public class EMSController implements Constants {
      * @param file the file to save to
      */
     public void backupData(File file) throws IOException, ClassNotFoundException {
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-        oos.writeObject(_database.getCachedUsers());
-        oos.writeObject(_database.getCachedRecords());
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+            Serializable[] toWrite = {
+                    (Serializable) database.getCachedUsers(),
+                    (Serializable) database.getCachedRecords()
+            };
+            oos.writeObject(toWrite);
+        }
     }
 
     /**
@@ -228,12 +230,12 @@ public class EMSController implements Constants {
      * @param file the file to restore from
      */
     public void restoreData(File file) throws InterruptedException, IOException, ClassNotFoundException {
-        try (
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))
-        ) {
-            _database = new EMSDatabase(null, (HashMap<String, EMSUser>) ois.readObject(), (HashMap<Instant, EmergencyRecord>) ois.readObject());
-        } catch (Exception e) {
-            throw e;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            Serializable[] readObjects = (Serializable[]) ois.readObject();
+            HashMap<String, EMSUser> users = (HashMap<String, EMSUser>) readObjects[0];
+            HashMap<Instant, EmergencyRecord> records = (HashMap<Instant, EmergencyRecord>) readObjects[1];
+            database.closeDatabase();
+            database = new EMSDatabase(null, users, records);
         }
     }
 
@@ -244,7 +246,7 @@ public class EMSController implements Constants {
      */
     protected static EMSUser authenticateUser(String username, char[] password) throws
             NullPointerException, IOException, ClassNotFoundException {
-        EMSUser user = _database.lookupUser(username);
+        EMSUser user = database.lookupUser(username);
         if (user != null ) {
             user = user.checkPassword(password) ? user : null;
         }
@@ -255,8 +257,9 @@ public class EMSController implements Constants {
      * Sets the current user
      * @param user the user
      */
-    void setUser(EMSUser user) {
-        this.currentUser = user;
+    EMSUser setUser(EMSUser user) {
+        currentUser = user;
+        return currentUser;
     }
 
     /**
