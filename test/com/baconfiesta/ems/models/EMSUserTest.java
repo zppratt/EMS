@@ -102,7 +102,7 @@ public class EMSUserTest {
     public void testGetUsername() throws Exception {
         System.out.println("getUsername");
 
-        assertEquals("fbaggins", regularUser.getFirstname());
+        assertEquals("fbaggins", regularUser.getUsername());
     }
 
     @Test

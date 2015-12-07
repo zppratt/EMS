@@ -2,6 +2,7 @@ package com.baconfiesta.ems.controller;
 
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,72 +13,42 @@ public class EMSAdminControllerTest extends EMSControllerTest {
 
     @Test
     public void testAddUser() throws Exception {
-
         System.out.println("addUser");
 
-        assertTrue(controller.getUsers().isEmpty());
-
-        adminController.addUser("Bilbo", "Baggins", "bbaggins", "bbaggins");
-
-        assertThat(controller.getUsers().size(), is(1));
-
+        assertEquals(1, controller.getUsers().size());
+        adminController.addUser("Frodo", "Baggins", "fbaggins", "fbaggins");
+        assertEquals(2, controller.getUsers().size());
     }
 
     @Test
     public void testRemoveUser() throws Exception {
-
         System.out.println("removeUser");
 
-        assertTrue(controller.getUsers().isEmpty());
-
         adminController.addUser("Bilbo", "Baggins", "bbaggins", "bbaggins");
-
-        assertThat(controller.getUsers().size(), is(1));
-
         adminController.removeUser("bbaggins");
-
         assertTrue(controller.getUsers().isEmpty());
-
     }
 
     @Test
     public void testLookupUser() throws Exception {
-
         System.out.println("lookupUser");
 
-        assertTrue(controller.getUsers().isEmpty());
-
         adminController.addUser("Bilbo", "Baggins", "bbaggins", "bbaggins");
-
-        assertThat(controller.getUsers().size(), is(1));
-
         assertNotNull("User was not successfully found in lookup.", adminController.lookupUser("bbaggins"));
-
     }
 
     @Test
     public void testSetUserAdmin() throws Exception {
-
         System.out.println("setUserAdmin");
 
         assertThat(controller.getAdminUsers().size(), is(1)); // Default user
-
         adminController.addUser("Bilbo", "Baggins", "bbaggins", "bbaggins");
-
         adminController.setUserAdmin("bbaggins", true);
-
         assertThat(controller.getAdminUsers().size(), is(2)); // Default user
-
-    }
-
-    @Test
-    public void testViewUserActivity() throws Exception {
-
     }
 
     @Test
     public void testRemoveRecord() throws Exception {
-
         System.out.println("removeRecord");
 
         controller.finalizeRecord(testRecord);
@@ -90,10 +61,5 @@ public class EMSAdminControllerTest extends EMSControllerTest {
                 .anyMatch(p -> p.getMetadata().getTimeCreated().equals(testRecord.getMetadata().getTimeCreated())
                 )
         );
-    }
-
-    @Test
-    public void testGenerateTestData() throws Exception {
-
     }
 }
