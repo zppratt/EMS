@@ -278,7 +278,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 Authenticator.init();
                 user = Authenticator.authenticate(username, password);
                 if (user == null) {
-                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                    JOptionPane.showMessageDialog(frame, "Invalid username or password.");
                     return;
                 }
                 // blank out password for security
@@ -286,10 +286,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                     password[i] = ' ';
                 }
             } catch (NullPointerException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                JOptionPane.showMessageDialog(frame, BURP +  "Something broke." + ASK);
                 return;
             } catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(frame, "Invalid username or password.");
+                JOptionPane.showMessageDialog(frame, "Something broke.");
                 return;
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(frame, BURP + "Trouble reading user directory." + ASK);
