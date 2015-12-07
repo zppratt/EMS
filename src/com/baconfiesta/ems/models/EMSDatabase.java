@@ -352,7 +352,7 @@ public class EMSDatabase {
      * @return the records on success, null on failure
      */
     synchronized Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
-        Map<Instant, EmergencyRecord> records;
+        Map<Instant, EmergencyRecord> records = this.records;
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
@@ -362,7 +362,6 @@ public class EMSDatabase {
             for (Instant k : records.keySet()) ;
             for (EmergencyRecord v : records.values()) ;
         } catch (Exception e) {
-            records = null;
         }
         return records;
     }
@@ -373,7 +372,7 @@ public class EMSDatabase {
      * @return the users on success, null on failure
      */
     synchronized Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
-        Map<String, EMSUser> users;
+        Map<String, EMSUser> users = this.users;
         try (
                 FileInputStream fis = new FileInputStream(database);
                 ObjectInputStream is = new ObjectInputStream(fis)
@@ -383,7 +382,6 @@ public class EMSDatabase {
             for (String k : users.keySet()) ;
             for (EMSUser v : users.values()) ;
         } catch (Exception e) {
-            users = null;
         }
         return users;
     }
