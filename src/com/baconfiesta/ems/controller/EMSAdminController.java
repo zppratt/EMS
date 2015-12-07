@@ -67,15 +67,6 @@ public class EMSAdminController extends EMSController {
     }
 
     /**
-     * View a users activity
-     * @param user the user
-     * @return the activity of the user
-     */
-    public String viewUserActivity(EMSUser user) {
-        return null;
-    }
-
-    /**
      * Creates users and records for manual testing
      */
     public void generateTestData() throws IOException, ClassNotFoundException {
