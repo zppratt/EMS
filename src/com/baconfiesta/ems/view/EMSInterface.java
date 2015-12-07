@@ -623,8 +623,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                     controller.calculateRoute(alternateEmergencyRecordTempFile, true);
                 } catch (ArrayIndexOutOfBoundsException e) {
                     JOptionPane.showMessageDialog(frame, "The address you have entered does not exist.\n Please enter a correct address.");
+                    return;
                 } catch (IOException e) {
-                    JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file" + ASK);
+                    JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file." + ASK);
+                    return;
                 }
             } catch (InputMismatchException mismatch){
                 JOptionPane.showMessageDialog(frame, "Every field must be filled.");
@@ -781,7 +783,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Add components to the screen
         mainframe.setLayout(new GridLayout(2, 1));
 
-        if(mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected() == false) {
+        if(!mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected()) {
             mainframe.add(route1Panel);
             routeText.setText(mainEmergencyRecordTempFile.getRoute().getRouteDirections());
         } else {
@@ -1567,7 +1569,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                     JOptionPane.showMessageDialog(frame, BURP + "The server is unavailable at the moment. Could not fetch route.\n" +
                             "Check your internet connection and try again later\n" + ASK);
                 } catch(IOException e) {
-                    JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file" + ASK);
+                    JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file." + ASK);
                 }
                 record.setDescription(descriptionText.getText());
                 record.modify();

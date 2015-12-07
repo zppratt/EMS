@@ -4,15 +4,12 @@ import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
-import com.google.maps.internal.ExceptionResult;
 import com.google.maps.model.*;
 import javassist.tools.rmi.ObjectNotFoundException;
-import jdk.nashorn.internal.runtime.ECMAException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -140,10 +137,16 @@ public class Route implements Serializable {
     public static Responder[] determineNearestResponders(EmergencyRecord record) throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
 
         String firstSearchQuery = "Police Department";
+
+        if(record.getCategory() == null)
+            throw new ObjectNotFoundException("Category undefined");
         String secondSearchQuery = Route.determineRespondersType(record.getCategory());
 
         /* Getting location of emergency in order to format the query string */
         Location emergencyLocation = record.getLocation();
+        if(emergencyLocation == null)
+            throw new ObjectNotFoundException("Location undefined");
+
         firstSearchQuery += " near " + emergencyLocation.getAddress() + ", " + emergencyLocation.getCity() + ", " + emergencyLocation.getState();
         secondSearchQuery += " near " + emergencyLocation.getAddress() + ", " + emergencyLocation.getCity() + ", " + emergencyLocation.getState();
 
@@ -159,13 +162,13 @@ public class Route implements Serializable {
         input.close();
 
         /* Fields required to create a new responder */
-        String firstResponderPhone = "";
-        String firstResponderAddress = "";
+        String firstResponderPhone;
+        String firstResponderAddress;
         String firstResponderState = "";
         String firstResponderCity = "";
 
-        String secondResponderPhone = "";
-        String secondResponderAddress = "";
+        String secondResponderPhone;
+        String secondResponderAddress;
         String secondResponderState = "";
         String secondResponderCity = "";
 
@@ -257,7 +260,7 @@ public class Route implements Serializable {
      * \brief Calculates the shortest route from the Responder to the emergency address
      *
      */
-    private void calculateRoute(Boolean alternateRoute) throws IOException{
+    private void calculateRoute(Boolean alternateRoute) throws IOException {
         String key;
         String htmlRequest;
 
@@ -342,17 +345,13 @@ public class Route implements Serializable {
      *  @param filename the name of the file to create
      *  @return a File object containing the HTML file created using the request
      */
-    private File createHTMLRoute(String HTMLRequest, String filename) {
+    private File createHTMLRoute(String HTMLRequest, String filename) throws IOException {
         File htmlTemplateFile;
+        File directionFile;
 
         /* Opening file from template */
-        try {
-            htmlTemplateFile = new File("./templates/Maps.html");
-        } catch (NullPointerException e) {
-            throw new NullPointerException("Cannot open the HTML template file");
-        }
+        htmlTemplateFile = new File("./templates/Maps.html");
 
-        File directionFile = null;
 
         try {
             String htmlString = FileUtils.readFileToString(htmlTemplateFile);
@@ -365,7 +364,7 @@ public class Route implements Serializable {
             FileUtils.writeStringToFile(directionFile, htmlString);
 
         } catch(Exception e){
-            return null;
+            throw new IOException("Could not open the HTML file for maps generation ");
         }
 
         return directionFile;
