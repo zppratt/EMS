@@ -153,7 +153,7 @@ public class Route implements Serializable {
         /* Creating a context for the places API query using our team key */
         GeoApiContext context = new GeoApiContext();
         Properties properties = new Properties();
-        InputStream input = null;
+        InputStream input;
 
         /* Retrieving our Places API key */
         input = new FileInputStream("maps.private.properties");

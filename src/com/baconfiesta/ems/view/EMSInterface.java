@@ -17,8 +17,6 @@ import javassist.tools.rmi.ObjectNotFoundException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -50,20 +48,15 @@ public class EMSInterface implements EMSInterfaceConstants {
     private JButton manageUsers;
     private JButton manageRecords;
 
-    private ArrayList<JComponent> frameComponents;
-
     private WebView browser1;
     private WebEngine webEngine1;
-    private Group root1;
     private WebView browser2;
     private WebEngine webEngine2;
-    private Group root2;
 
     private JFXPanel route1Panel;
     private JFXPanel route2Panel;
 
     private Instant[] reportDateRange;
-    private File reportFile;
 
     /*
     * Holds "user" if previous window was user options
@@ -125,7 +118,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Set the login screen
         logIn();
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -135,115 +128,105 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Open the web browser
         PlatformImpl.setImplicitExit(false);
-        PlatformImpl.startup(new Runnable() {
-            @Override
-            public void run() {
-                // First window
-                browser1 = new WebView();
-                webEngine1 = browser1.getEngine();
-                Group root1 = new Group();
-                root1.getChildren().add(browser1);
-                route1Panel.setScene(new Scene(root1));
-                // Second window
-                browser2 = new WebView();
-                webEngine2 = browser2.getEngine();
-                Group root2 = new Group();
-                root2.getChildren().add(browser2);
-                route2Panel.setScene(new Scene(root2));
-            }
+        PlatformImpl.startup(() -> {
+            // First window
+            browser1 = new WebView();
+            webEngine1 = browser1.getEngine();
+            Group root1 = new Group();
+            root1.getChildren().add(browser1);
+            route1Panel.setScene(new Scene(root1));
+            // Second window
+            browser2 = new WebView();
+            webEngine2 = browser2.getEngine();
+            Group root2 = new Group();
+            root2.getChildren().add(browser2);
+            route2Panel.setScene(new Scene(root2));
         });
 
         // Set logout actionListener
-        logout.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Confirm user logout
-                if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == 0) {
-                    // Clear the window
-                    mainframe.removeAll();
-                    footer.removeAll();
-                    sidebar.removeAll();
-                    header.remove(back);
-                    header.remove(logout);
+        logout.addActionListener(e -> {
+            // Confirm user logout
+            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == 0) {
+                // Clear the window
+                mainframe.removeAll();
+                footer.removeAll();
+                sidebar.removeAll();
+                header.remove(back);
+                header.remove(logout);
 
-                    // Go back to login
-                    logIn();
-                }
+                // Go back to login
+                logIn();
             }
         });
 
         // Set createCase actionListener
-        createCase.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+        createCase.addActionListener(e -> {
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
 
-                // Proceed to next window
-                enterInfo();
-            }
+            // Proceed to next window
+            enterInfo();
         });
 
         // Set viewRecords actionListener
-        viewRecords.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+        viewRecords.addActionListener(e -> {
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
 
-                // Proceed to next window
-                viewEmergencyRecords(null);
-            }
+            // Proceed to next window
+            viewEmergencyRecords(null);
         });
 
         // Set manageUsers actionListener
-        manageUsers.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+        manageUsers.addActionListener(e -> {
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
 
-                // Proceed to next window
-                manageUsers();
-            }
+            // Proceed to next window
+            manageUsers();
         });
 
         // Set manageRecords actionListener
-        manageRecords.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+        manageRecords.addActionListener(e -> {
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
 
-                // Proceed to the next window
-                manageRecords();
-            }
+            // Proceed to the next window
+            manageRecords();
         });
 
         // Set back button actionListener
-        back.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
+        back.addActionListener(e -> {
+            // Clear the window
+            mainframe.removeAll();
+            footer.removeAll();
+            sidebar.removeAll();
 
-                // Find the next window
-                if (previous.equals("user")) {
+            // Find the next window
+            switch (previous) {
+                case "user":
                     back.setEnabled(false);
                     mainEmergencyRecordTempFile = null;
                     alternateEmergencyRecordTempFile = null;
                     userActions();
-                } else if (previous.equals("info")) {
+                    break;
+                case "info":
                     enterInfo();
-                } else if (previous.equals("route")) {
+                    break;
+                case "route":
                     routeSelection();
-                } else if (previous.equals("view")) {
+                    break;
+                case "view":
                     viewEmergencyRecords(null);
-                }
+                    break;
             }
         });
     }
@@ -804,7 +787,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
                 // Save the emergency object
                 try {
-                    if(mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected() == false)
+                    if(!mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected())
                         controller.finalizeRecord(mainEmergencyRecordTempFile);
                     else
                         controller.finalizeRecord(alternateEmergencyRecordTempFile);
@@ -876,7 +859,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             summaryText.setText(initialRecord.getParagraphForm());
 
             // Want only the selected route shown
-            if (initialRecord.getRoute() != null && initialRecord.getRoute().getAlternateRouteSelected() == false){
+            if (initialRecord.getRoute() != null && !initialRecord.getRoute().getAlternateRouteSelected()){
                 routeText.setText(initialRecord.getRoute().getRouteDirections());
             } else if (initialRecord.getRoute() != null) {
                 routeText.setText(initialRecord.getRoute().getRouteDirections());
@@ -905,9 +888,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Should a record be selected, update the screen
         sidebarList.addListSelectionListener(e -> {
-            mainframe.removeAll();
-            sidebar.removeAll();
-            footer.removeAll();
+            removeAll();
 
             viewEmergencyRecords(sidebarList.getSelectedValue());
 
@@ -951,9 +932,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Enable back button
         back.setEnabled(true);
 
-        mainframe.removeAll();
-        sidebar.removeAll();
-        footer.removeAll();
+        removeAll();
         mainframe.setLayout(new GridLayout(2, 2));
         JCalendar fromDatePicker = new JCalendar();
         JCalendar toDatePicker = new JCalendar();
@@ -964,9 +943,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Refresh the window
         refreshWindow();
         submitDates.addActionListener(e -> {
-            mainframe.removeAll();
-            sidebar.removeAll();
-            footer.removeAll();
+            removeAll();
             reportDateRange = new Instant[]{
                     fromDatePicker.getDate().toInstant(),
                     toDatePicker.getDate().toInstant()
@@ -1035,9 +1012,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         } else {
             throw new NullPointerException();
         }
-        mainframe.removeAll();
-        sidebar.removeAll();
-        footer.removeAll();
+        removeAll();
         // Refresh the window
         refreshWindow();
         viewEmergencyRecords(null);
@@ -1633,7 +1608,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         frame.repaint();
     }
 
-    void removeAll() {
+    private void removeAll() {
         mainframe.removeAll();
         sidebar.removeAll();
         footer.removeAll();

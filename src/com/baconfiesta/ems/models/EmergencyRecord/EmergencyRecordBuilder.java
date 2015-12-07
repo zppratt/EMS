@@ -41,11 +41,6 @@ public class EmergencyRecordBuilder implements Serializable {
      */
     private String description;
 
-    /**
-     * The route generated from the responder to the emergency
-     */
-    private Route route;
-
     public EmergencyRecordBuilder() {
         metadata = new Metadata();
         caller = new Caller("","","");
@@ -105,7 +100,7 @@ public class EmergencyRecordBuilder implements Serializable {
     }
 
     public EmergencyRecord getNewEmergencyRecord(EMSUser user) {
-        return new EmergencyRecord(metadata, caller, location, category, responder, route, description, user); // with all the parameters
+        return new EmergencyRecord(metadata, caller, location, category, responder, null, description, user); // with all the parameters
     }
 
 }

@@ -44,27 +44,11 @@ public class Caller implements Serializable {
     }
 
     /**
-     * Set the first name of the caller
-     * @param firstName the first name
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
      * Retrieve the last name of the caller
      * @return the last name
      */
     public String getLastName() {
         return lastName;
-    }
-
-    /**
-     * Set the last name of the caller
-     * @param lastName the last name
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     /**

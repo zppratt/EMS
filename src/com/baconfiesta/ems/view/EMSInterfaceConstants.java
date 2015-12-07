@@ -1,7 +1,5 @@
 package com.baconfiesta.ems.view;
 
-import java.util.SimpleTimeZone;
-
 public interface EMSInterfaceConstants {
 
     String BURP = "Burrrrrp. ";

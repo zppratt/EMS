@@ -225,6 +225,7 @@ public class EMSController implements Constants {
      * Restores emergency data from a backup file
      * @param file the file to restore from
      */
+    @SuppressWarnings("unchecked")
     public void restoreData(File file) throws InterruptedException, IOException, ClassNotFoundException {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             Serializable[] readObjects = (Serializable[]) ois.readObject();

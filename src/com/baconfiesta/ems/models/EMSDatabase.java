@@ -168,25 +168,24 @@ public class EMSDatabase {
      */
     public void addEmergencyRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
         records.put(record.getMetadata().getTimeCreated(), record);
-        writeObject(records);
+        writeCacheToDatabase();
     }
 
     public boolean removeRecord(EmergencyRecord record) throws IOException, NullPointerException {
         records.remove(record.getMetadata().getTimeCreated());
-        writeObject(records);
+        writeCacheToDatabase();
         return true;
     }
 
     /**
      * Writes an object out to the database file
      *
-     * @param object the object to write out
      * @throws IOException
      */
-    private void writeObject(Object object) throws IOException {
+    private void writeCacheToDatabase() throws IOException {
         try (
                 FileOutputStream fos = new FileOutputStream(database, false);
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                ObjectOutputStream oos = new ObjectOutputStream(fos)
         ) {
             Serializable[] array = new Serializable[2];
             array[0] = (Serializable) users;
@@ -225,7 +224,7 @@ public class EMSDatabase {
         EMSUser user = new EMSUser(firstname, lastname, username, password, false);
         // Add it to the database
         users.put(user.getUsername(), user);
-        writeObject(users);
+        writeCacheToDatabase();
         return user;
     }
 
@@ -251,7 +250,7 @@ public class EMSDatabase {
      */
     public void setUserAdmin(String username, boolean admin) throws IOException {
         users.get(username).setAdmin(admin);
-        writeObject(users);
+        writeCacheToDatabase();
     }
 
     /**
@@ -296,7 +295,7 @@ public class EMSDatabase {
         // Remove a user from the list
         if (this.getCachedUsers().containsKey(username)) {
             this.getCachedUsers().remove(username);
-            writeObject(users);
+            writeCacheToDatabase();
             return true;
         }
         return false;
@@ -325,32 +324,11 @@ public class EMSDatabase {
     }
 
     /**
-     * Retrieve the list of emergency records in the database
-     *
-     * @return the list of records
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    void setCachedRecords(Map<Instant, EmergencyRecord> records) throws IOException, ClassNotFoundException {
-        this.records = records;
-    }
-
-    /**
-     * Retrieve the list of users in the database
-     *
-     * @return the list of user
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-   void setCachedUsers(Map<String, EMSUser> users) throws IOException, ClassNotFoundException {
-       this.users = users;
-    }
-
-    /**
      * Attempt to retrieve records from database
      *
      * @return the records on success, null on failure
      */
+    @SuppressWarnings({"unchecked", "unused", "StatementWithEmptyBody"})
     synchronized Map<Instant, EmergencyRecord> getDatabaseRecords() throws IOException, ClassNotFoundException {
         try (
                 FileInputStream fis = new FileInputStream(database);
@@ -372,6 +350,7 @@ public class EMSDatabase {
      *
      * @return the users on success, null on failure
      */
+    @SuppressWarnings({"unchecked", "unused", "StatementWithEmptyBody"})
     synchronized Map<String, EMSUser> getDatabaseUsers() throws IOException, ClassNotFoundException {
         try (
                 FileInputStream fis = new FileInputStream(database);

@@ -144,7 +144,7 @@ public class EmergencyRecord implements Serializable{
 
         paragraph += "Emergency Time: " + getMetadata().toString() + "\n";
         paragraph += "Category: " + getCategory().name() + "\n";
-        paragraph += "Dispatcher: " + getMetadata().getCreatedBy().getUsername() + "\n";;
+        paragraph += "Dispatcher: " + getMetadata().getCreatedBy().getUsername() + "\n";
 
         paragraph += "\nCaller Information:\n";
         paragraph += "Name: " + getCaller().getFirstName() + " " + caller.getLastName() + "\n";

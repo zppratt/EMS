@@ -15,7 +15,7 @@ public class EMS {
      * @param args not used
      */
     public static void main(String[] args) {
-        EMSInterface face = new EMSInterface();
+        new EMSInterface();
     }
 
 }

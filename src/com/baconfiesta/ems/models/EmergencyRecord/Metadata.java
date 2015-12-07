@@ -30,11 +30,6 @@ public class Metadata implements Serializable {
     private ArrayList<Instant> modifications;
 
     /**
-     * The category of the emergency
-     */
-    private Category emergencyCategory;
-
-    /**
      * Constructor to specify a time
      */
     protected Metadata(Instant time) {
@@ -67,32 +62,12 @@ public class Metadata implements Serializable {
         return modifications;
     }
 
-    void setModifications(ArrayList<Instant> modifications) {
-        this.modifications = modifications;
-    }
-
     /**
      * Retrieves the time the record was created
      * @return the creation time
      */
     public Instant getTimeCreated() {
         return timeCreated;
-    }
-
-    /**
-     * Receives the category of the emergency
-     * @return the category
-     */
-    public Category getEmergencyCategory() {
-        return emergencyCategory;
-    }
-
-    /**
-     * Sets the category of the emergency
-     * @param emergencyCategory the category
-     */
-    public void setEmergencyCategory(Category emergencyCategory) {
-        this.emergencyCategory = emergencyCategory;
     }
 
     public String toString() {
