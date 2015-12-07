@@ -282,8 +282,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         mainframe.add(loginButton);
 
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
 
         loginButton.addActionListener(event -> {
 
@@ -375,8 +374,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(viewRecords);
 
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
 
         if(controller instanceof EMSAdminController){
             adminActions();
@@ -588,8 +586,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         }
 
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
 
         selectRoute.addActionListener(event -> {
             // Create the temp record
@@ -713,8 +710,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(route2);
 
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
 
         route1.addActionListener(event -> {
             // Update the emergency object
@@ -800,8 +796,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(closeCase);
 
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
 
         closeCase.addActionListener(event -> {
             // Confirm finalize
@@ -906,8 +901,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(generateReportRangeButton);
 
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
 
         // Should a record be selected, update the screen
         sidebarList.addListSelectionListener(e -> {
@@ -968,8 +962,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton submitDates = new JButton("Submit");
         footer.add(submitDates);
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
         submitDates.addActionListener(e -> {
             mainframe.removeAll();
             sidebar.removeAll();
@@ -1009,8 +1002,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             }
         }
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
         viewEmergencyRecords(null);
     }
 
@@ -1047,8 +1039,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         sidebar.removeAll();
         footer.removeAll();
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
         viewEmergencyRecords(null);
     }
 
@@ -1179,8 +1170,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(deleteUser);
 
         // Refresh the window
-        frame.revalidate();
-        frame.repaint();
+        refreshWindow();
 
         sidebarList.addListSelectionListener(event -> {
             // Get the selected user
@@ -1190,8 +1180,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             if (user != null) {
                 userActivityText.setText(user.getParagraphForm());
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         users.addActionListener(event -> {
@@ -1202,8 +1191,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             } catch (IOException | ClassNotFoundException e1) {
                 sidebarList.setListData(new String[]{"No users found."});
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         admins.addActionListener(event -> {
@@ -1216,8 +1204,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         deleteUser.addActionListener(event -> {
@@ -1235,8 +1222,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                     JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
                     ex.printStackTrace();
                 }
-                frame.revalidate();
-                frame.repaint();
+                refreshWindow();
             }
         });
 
@@ -1254,8 +1240,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
                 ex.printStackTrace();
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         downgrade.addActionListener(event -> {
@@ -1271,8 +1256,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't read the users." + ASK);
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         addUser.addActionListener(event -> {
@@ -1292,8 +1276,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             } catch (IOException | ClassNotFoundException e1) {
                 sidebarList.setListData(new String[]{"Couldn't show users."});
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
     }
 
@@ -1363,7 +1346,11 @@ public class EMSInterface implements EMSInterfaceConstants {
         JButton restoreData = new JButton("Restore Data");
 
 
-        JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
+        DefaultListModel<EmergencyRecord> listModel = new DefaultListModel<>();
+        for (EmergencyRecord recentRecord : recentRecords) {
+            listModel.addElement(recentRecord);
+        }
+        JList<EmergencyRecord> sidebarList = new JList<>(listModel);
         JScrollPane sidebarListScroll = new JScrollPane(sidebarList);
 
         // Add radiobuttons to the group
@@ -1520,8 +1507,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 String description = record.getDescription();
                 descriptionText.setText(description);
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         newestRecords.addActionListener(event -> {
@@ -1532,8 +1518,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             } catch (IOException | ClassNotFoundException e1) {
                 JOptionPane.showMessageDialog(frame, BURP + "Had trouble getting the users, actually." + ASK);
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         allRecords.addActionListener(event -> {
@@ -1545,8 +1530,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             } catch (IOException | ClassNotFoundException e1) {
                 JOptionPane.showMessageDialog(frame, BURP + "Had trouble getting the users, actually." + ASK);
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         saveRecord.addActionListener(event -> {
@@ -1589,7 +1573,6 @@ public class EMSInterface implements EMSInterfaceConstants {
                 record.setDescription(descriptionText.getText());
                 record.modify();
                 try {
-                    System.out.println("Finalizing record for " + record.getCaller().getFirstName());
                     record.modify();
                     controller.finalizeRecord(record);
                 } catch (IOException | ClassNotFoundException e) {
@@ -1598,8 +1581,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             } else {
                 JOptionPane.showMessageDialog(frame, BURP + "Had trouble saving the record, actually." + ASK);
             }
-            frame.revalidate();
-            frame.repaint();
+            refreshWindow();
         });
 
         deleteRecord.addActionListener(event -> {
@@ -1612,38 +1594,50 @@ public class EMSInterface implements EMSInterfaceConstants {
                     JOptionPane.showMessageDialog(frame, BURP + "Had trouble deleting the record, actually." + ASK);
                 }
             }
+            listModel.removeElement(record);
+            refreshWindow();
         });
 
         backupData.addActionListener(event -> {
             // Open the file
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.showSaveDialog(frame);
-
-            // Save database to the file
-            try {
-                controller.backupData(fileChooser.getSelectedFile());
-            } catch (IOException | ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+            int response = fileChooser.showSaveDialog(frame);
+            if (response == JFileChooser.APPROVE_OPTION) {
+                // Save database to the file
+                try {
+                    controller.backupData(fileChooser.getSelectedFile());
+                } catch (IOException | ClassNotFoundException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+                }
             }
         });
 
         restoreData.addActionListener(event -> {
             // Open the file
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.showOpenDialog(frame);
-
-            // Load database from file
-            try {
-                controller.restoreData(fileChooser.getSelectedFile());
-            } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+            int response = fileChooser.showOpenDialog(frame);
+            if (response == JFileChooser.APPROVE_OPTION) {
+                // Load database from file
+                try {
+                    controller.restoreData(fileChooser.getSelectedFile());
+                } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                    JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
+                }
             }
-
         });
+        refreshWindow();
+    }
 
+    void refreshWindow() {
         // Refresh the window
         frame.revalidate();
         frame.repaint();
-
     }
+
+    void removeAll() {
+        mainframe.removeAll();
+        sidebar.removeAll();
+        footer.removeAll();
+    }
+
 }
