@@ -101,7 +101,7 @@ public class EMSReport {
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getLocation().getAddress());
 
-        /* Emergency Address */
+        /* Emergency City */
         row = sheet1.getRow(8);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getLocation().getCity());
@@ -112,14 +112,14 @@ public class EMSReport {
         cell.setCellValue(emergencyRecord.getLocation().getState());
 
         /* Emergency Category */
-        row = sheet1.getRow(9);
+        row = sheet1.getRow(10);
         cell = row.getCell(2);
         cell.setCellValue(emergencyRecord.getCategory().toString()); // NEEDS TO BE TRANSFORMED IN STRING
 
         /* Emergency Response Time */
-        row = sheet1.getRow(10);
+        row = sheet1.getRow(11);
         cell = row.getCell(2);
-       cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
+        cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
 
         /* Responder Phone Number */
         row = sheet1.getRow(13);
@@ -159,7 +159,7 @@ public class EMSReport {
          /* Emergency Case Number of Modifications */
         row = sheet1.getRow(22);
         cell = row.getCell(2);
-     //   cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
+        cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
 
 
         /* MODIFICATION ENDS HERE */
@@ -316,7 +316,7 @@ public class EMSReport {
 
             /* Number of Modifications */
             cell = row.getCell(15);
-            //cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
+            cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
         }
 
         /* Writing starting and ending date period */

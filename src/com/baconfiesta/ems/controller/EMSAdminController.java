@@ -93,7 +93,7 @@ public class EMSAdminController extends EMSController {
             System.out.println(usr + ":" + (usr.isAdmin() ? "admin" : "not admin"));
         }
         System.out.println("Generating Records:");
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 25; i++) {
             EmergencyRecordBuilder builder = EmergencyRecordBuilder.newBuilder()
                     .withCaller(new Caller(
                             firstNames[abs(r.nextInt() % (firstNames.length - 1))],
