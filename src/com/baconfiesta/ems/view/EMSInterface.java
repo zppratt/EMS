@@ -672,12 +672,12 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Fill in the route directions
-        route1Text.setText("Main Route\nDistance: " + mainEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration" + mainEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + mainEmergencyRecordTempFile.getRoute().getRouteDirections());
-        route2Text.setText("Alternate Route\nDistance: " + alternateEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration" + alternateEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route1Text.setText("Route 1\nDistance: " + mainEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration: " + mainEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + mainEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route2Text.setText("Route 2\nDistance: " + alternateEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration: " + alternateEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
 
 
         // Set the summary
-        summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm() + "\nMain Route" + mainEmergencyRecordTempFile.getResponder().getParagraphForm() + "\nAlternate Route" + alternateEmergencyRecordTempFile.getResponder().getParagraphForm());
+        summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm() + "\nRoute 1" + mainEmergencyRecordTempFile.getResponder().getParagraphForm() + "\nRoute 2" + alternateEmergencyRecordTempFile.getResponder().getParagraphForm());
 
         // Add to the frame
         mainframe.setLayout(new GridLayout(2, 2));
