@@ -76,7 +76,7 @@ public class Metadata implements Serializable {
         return dtf.format(getTimeCreated());
     }
 
-    public void setCreatedBy(EMSUser createdBy) {
-        this.createdBy = createdBy;
+    public void setCreatedBy(EMSUser creator) {
+        this.createdBy = creator;
     }
 }

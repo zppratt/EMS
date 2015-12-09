@@ -12,13 +12,13 @@ import java.nio.file.Paths;
 
 public class GenerateTestData {
 
-    EMSAdminController ac;
+    EMSAdminController adminController;
 
     @Test
     public void testGenerateData() throws IOException, ClassNotFoundException, InterruptedException {
         backupAndDeleteDatabase();
-        ac = new EMSAdminController(new EMSUser("","","","",true),new EMSDatabase());
-        ac.generateTestData();
+        adminController = new EMSAdminController(new EMSUser("","","","",true),new EMSDatabase());
+        adminController.generateTestData();
     }
 
     private void backupAndDeleteDatabase() throws IOException {

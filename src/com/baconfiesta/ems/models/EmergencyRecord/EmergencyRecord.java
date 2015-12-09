@@ -67,7 +67,7 @@ public class EmergencyRecord implements Serializable{
             EMSUser creator
     ) {
         this.setMetadata(metadata);
-        this.metadata.setCreatedBy(creator);
+        this.setCreator(creator);
         this.setCaller(caller);
         this.setLocation(location);
         this.setCategory(category);
@@ -209,11 +209,14 @@ public class EmergencyRecord implements Serializable{
     protected void setMetadata(Metadata metadata) {
         this.metadata = metadata;
     }
-//
-//    public void mod ify(ArrayList<Instant> modifications) {
-//        modifications.add(Instant.now());
-//        getMetadata().setModifications(modifications);
-//    }
+
+    /**
+     * Adds this record to a user's list and sets as creator
+     */
+    void setCreator(EMSUser creator) {
+        metadata.setCreatedBy(creator);
+        creator.addRecord(this);
+    }
 
     /**
      * Adds a modification to the metadata
