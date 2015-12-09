@@ -757,19 +757,18 @@ public class EMSInterface implements EMSInterfaceConstants {
         summaryText.setLineWrap(true);
         summaryTitle.setFont(new Font(summaryTitle.getFont().getName(), Font.BOLD, 14));
 
-        // Set the summary
-        summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm());
-        summaryText.setText(alternateEmergencyRecordTempFile.getParagraphForm());
-
         // Add components to the screen
         mainframe.setLayout(new GridLayout(2, 1));
 
+        // Check if the main route or alternate route has been selected
         if (!mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected()) {
             mainframe.add(route1Panel);
-            routeText.setText(mainEmergencyRecordTempFile.getRoute().getRouteDirections());
+            summaryText.setText(mainEmergencyRecordTempFile.getParagraphForm()+ mainEmergencyRecordTempFile.getResponder().getParagraphForm());
+            routeText.setText("Distance: " + mainEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration: " + mainEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + mainEmergencyRecordTempFile.getRoute().getRouteDirections());
         } else {
             mainframe.add(route2Panel);
-            routeText.setText(alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
+            summaryText.setText(alternateEmergencyRecordTempFile.getParagraphForm()+ alternateEmergencyRecordTempFile.getResponder().getParagraphForm());
+            routeText.setText("Distance: " + alternateEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration: " + alternateEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
         }
         mainframe.add(routeScroll);
 
