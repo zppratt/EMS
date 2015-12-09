@@ -151,7 +151,7 @@ public class EMSUser implements Serializable {
                 "List of Records:\n";
 
         for (EmergencyRecord emergencyRecord : getRecords().values()) {
-            paragraph += emergencyRecord + "\n";
+            paragraph += emergencyRecord;
         }
         
         return paragraph;
