@@ -6,3 +6,4 @@ maps.private.properties
 db/
 dist/
 *.class
+/temp

@@ -44,22 +44,6 @@ public class Route implements Serializable {
     }
 
     /**
-     * \brief Retrieve the emergency responder's address
-     * @return a String containing the emergency responder's address
-     * */
-    public String getEmergencyResponderAddress() {
-        return emergencyResponderAddress;
-    }
-
-    /**
-     * \brief Retrieve the emergency location's address
-     * @return a String containing the emergency location's address
-     * */
-    public String getEmergencyLocationAddress() {
-        return emergencyLocationAddress;
-    }
-
-    /**
      * \brief Retrieve the HTML file containing the route
      * @return the HTML file containing the main route
      * */
@@ -152,14 +136,9 @@ public class Route implements Serializable {
 
         /* Creating a context for the places API query using our team key */
         GeoApiContext context = new GeoApiContext();
-        Properties properties = new Properties();
-        InputStream input;
 
         /* Retrieving our Places API key */
-        input = new FileInputStream("maps.private.properties");
-        properties.load(input);
-        context.setApiKey(properties.getProperty("PlacesKey")); // Our Places API key
-        input.close();
+        context.setApiKey(retrieveKey("PlacesKey")); // Our Places API key
 
         /* Fields required to create a new responder */
         String firstResponderPhone;
@@ -377,7 +356,7 @@ public class Route implements Serializable {
      * \brief Retrieves a key from the maps.private.properties
      * @param keyToRetrieve the label of the key to retrieve from the file
      * @return a String containing the key retrieved */
-    private String retrieveKey(String keyToRetrieve) throws IOException {
+    private static String retrieveKey(String keyToRetrieve) throws IOException {
         Properties properties = new Properties();
         InputStream input = new FileInputStream("maps.private.properties");
         properties.load(input);
