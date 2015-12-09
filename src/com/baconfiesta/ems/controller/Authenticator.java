@@ -10,11 +10,11 @@ public class Authenticator extends EMSController {
     }
 
     public static EMSUser authenticate(String username, char[] password) throws
-            NullPointerException, IOException, ClassNotFoundException {
+            NullPointerException {
         return authenticateUser(username, password);
     }
 
-    public static void init() throws IOException, ClassNotFoundException, InterruptedException {
+    public static void init() throws IOException, ClassNotFoundException {
         new EMSController();
     }
 

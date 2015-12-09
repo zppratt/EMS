@@ -33,28 +33,28 @@ import java.util.InputMismatchException;
  */
 public class EMSInterface implements EMSInterfaceConstants {
     private EMSController controller;
-    private JFrame frame;
-    private JPanel header;
-    private JPanel mainframe;
-    private JPanel footer;
-    private JPanel sidebar;
+    private final JFrame frame;
+    private final JPanel header;
+    private final JPanel mainframe;
+    private final JPanel footer;
+    private final JPanel sidebar;
 
-    private JLabel frameTitle;
+    private final JLabel frameTitle;
 
-    private JButton back;
-    private JButton logout;
-    private JButton createCase;
-    private JButton viewRecords;
-    private JButton manageUsers;
-    private JButton manageRecords;
+    private final JButton back;
+    private final JButton logout;
+    private final JButton createCase;
+    private final JButton viewRecords;
+    private final JButton manageUsers;
+    private final JButton manageRecords;
 
     private WebView browser1;
     private WebEngine webEngine1;
     private WebView browser2;
     private WebEngine webEngine2;
 
-    private JFXPanel route1Panel;
-    private JFXPanel route2Panel;
+    private final JFXPanel route1Panel;
+    private final JFXPanel route2Panel;
 
     private Instant[] reportDateRange;
 
@@ -145,10 +145,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Set logout actionListener
-        logout.addActionListener(e -> {
-            logOut();
-
-        });
+        logout.addActionListener(e -> logOut());
 
         // Set createCase actionListener
         createCase.addActionListener(e -> {
@@ -222,7 +219,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
     }
 
-    public void logOut() {
+    private void logOut() {
         // Confirm user logout
         if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             // Clear the window
@@ -238,7 +235,7 @@ public class EMSInterface implements EMSInterfaceConstants {
     /**
      * Show log in screen
      */
-    public void logIn() {
+    private void logIn() {
         // Create label, textfield, and jbutton local variables
         JLabel title = new JLabel("EMS");
         JLabel usernameLabel = new JLabel("Username:");
@@ -334,11 +331,7 @@ public class EMSInterface implements EMSInterfaceConstants {
      */
     private void userActions() {
 
-        try {
-            recentRecords = controller.getRecentRecords();
-        } catch (IOException | ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
-        }
+        recentRecords = controller.getRecentRecords();
 
         // Change the title
         frameTitle.setText("Select an Action");
@@ -908,7 +901,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             if (record != null) {
                 try {
                     saveReportFile(record);
-                } catch (IOException | ClassNotFoundException | NullPointerException e1) {
+                } catch (IOException | NullPointerException e1) {
                     JOptionPane.showMessageDialog(
                             frame, BURP + "For some reason I couldn't generate the report." + ASK);
                 }
@@ -929,7 +922,7 @@ public class EMSInterface implements EMSInterfaceConstants {
     /**
      * Allows user to choose a range to generate a report
      */
-    void showDateRangeChooser() throws Exception {
+    private void showDateRangeChooser() {
         // Change the title
         frameTitle.setText("Select Date Range");
 
@@ -965,7 +958,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             };
             try {
                 saveReportFile();
-            } catch (IOException | ClassNotFoundException e1) {
+            } catch (IOException e1) {
                 JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't generate the report." + ASK);
                 e1.printStackTrace();
             }
@@ -976,9 +969,8 @@ public class EMSInterface implements EMSInterfaceConstants {
      * Show the dialog to save the report to a file for a range of dates
      *
      * @throws IOException
-     * @throws ClassNotFoundException
      */
-    void saveReportFile() throws IOException, ClassNotFoundException {
+    private void saveReportFile() throws IOException {
         String suffix = ".xls";
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("xls files", suffix);
@@ -1005,10 +997,9 @@ public class EMSInterface implements EMSInterfaceConstants {
      * @param record the emergency record to save
      * @throws NullPointerException
      * @throws IOException
-     * @throws ClassNotFoundException
      */
-    void saveReportFile(EmergencyRecord record)
-            throws NullPointerException, IOException, ClassNotFoundException {
+    private void saveReportFile(EmergencyRecord record)
+            throws NullPointerException, IOException {
         if (record != null) {
             String suffix = ".xls";
             JFileChooser fileChooser = new JFileChooser();
@@ -1177,25 +1168,15 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         users.addActionListener(event -> {
             // Populate the list with users
-            try {
-                sidebarList.setListData(controller.getUsers().toArray());
-                sidebarList.setSelectedIndex(0);
-            } catch (IOException | ClassNotFoundException e1) {
-                sidebarList.setListData(new String[]{"No users found."});
-            }
+            sidebarList.setListData(controller.getUsers().toArray());
+            sidebarList.setSelectedIndex(0);
             refreshWindow();
         });
 
         admins.addActionListener(event -> {
             // Populate the list with admins
-            try {
-                sidebarList.setListData(controller.getAdminUsers().toArray());
-                sidebarList.setSelectedIndex(0);
-            } catch (IOException | ClassNotFoundException e1) {
-                sidebarList.setListData(new String[]{"No admin users found."});
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
+            sidebarList.setListData(controller.getAdminUsers().toArray());
+            sidebarList.setSelectedIndex(0);
             refreshWindow();
         });
 
@@ -1273,14 +1254,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                 usernameText.setText(null);
                 passwordField.setText(null);
                 confirmPasswordField.setText(null);
-            } catch (IOException | ClassNotFoundException e1) {
+            } catch (IOException e1) {
                 JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't add the user." + ASK);
             }
-            try {
-                sidebarList.setListData(controller.getUsers().toArray());
-            } catch (IOException | ClassNotFoundException e1) {
-                sidebarList.setListData(new String[]{"Couldn't show users."});
-            }
+            sidebarList.setListData(controller.getUsers().toArray());
             refreshWindow();
         });
     }
@@ -1517,24 +1494,16 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         newestRecords.addActionListener(event -> {
             // Populate the list with users
-            try {
-                sidebarList.setListData(controller.getRecentRecords());
-                sidebarList.setSelectedIndex(0);
-            } catch (IOException | ClassNotFoundException e1) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble getting the users, actually." + ASK);
-            }
+            sidebarList.setListData(controller.getRecentRecords());
+            sidebarList.setSelectedIndex(0);
             refreshWindow();
         });
 
         allRecords.addActionListener(event -> {
             // Populate the list with admins
-            try {
-                ArrayList<EmergencyRecord> records = controller.getRecords();
-                sidebarList.setListData(records.toArray(new EmergencyRecord[records.size()]));
-                sidebarList.setSelectedIndex(0);
-            } catch (IOException | ClassNotFoundException e1) {
-                JOptionPane.showMessageDialog(frame, BURP + "Had trouble getting the users, actually." + ASK);
-            }
+            ArrayList<EmergencyRecord> records = controller.getRecords();
+            sidebarList.setListData(records.toArray(new EmergencyRecord[records.size()]));
+            sidebarList.setSelectedIndex(0);
             refreshWindow();
         });
 
@@ -1580,7 +1549,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 try {
                     record.modify();
                     controller.finalizeRecord(record);
-                } catch (IOException | ClassNotFoundException e) {
+                } catch (IOException e) {
                     JOptionPane.showMessageDialog(frame, BURP + "Had trouble saving the record, actually." + ASK);
                 }
             } else {
@@ -1611,7 +1580,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 // Save database to the file
                 try {
                     controller.backupData(fileChooser.getSelectedFile());
-                } catch (IOException | ClassNotFoundException e) {
+                } catch (IOException e) {
                     JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
                 }
             }
@@ -1625,7 +1594,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 // Load database from file
                 try {
                     controller.restoreData(fileChooser.getSelectedFile());
-                } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     JOptionPane.showMessageDialog(frame, BURP + "Had trouble backing up the database." + ASK);
                 }
             }
@@ -1633,7 +1602,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         refreshWindow();
     }
 
-    void refreshWindow() {
+    private void refreshWindow() {
         // Refresh the window
         frame.revalidate();
         frame.repaint();

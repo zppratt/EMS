@@ -87,17 +87,12 @@ public class EmergencyRecordBuilder implements Serializable {
         return this;
     }
 
-
-    protected void setDescription(String description) {
-        this.description = description;
-    }
-
     public static EmergencyRecordBuilder newBuilder() {
         return new EmergencyRecordBuilder();
     }
 
     public EmergencyRecord getNewEmergencyRecord(@NotNull EMSUser user) {
-        return new EmergencyRecord(metadata, caller, location, category, responder, null, description, user); // with all the parameters
+        return new EmergencyRecord(metadata, caller, location, category, responder, description, user); // with all the parameters
     }
 
 }

@@ -34,7 +34,7 @@ public class EMSController implements Constants {
     /**
      * Default constructor for a user controller
      */
-    public EMSController() throws IOException, ClassNotFoundException, InterruptedException {
+    public EMSController() throws IOException, ClassNotFoundException {
         this(null, null);
     }
 
@@ -45,7 +45,7 @@ public class EMSController implements Constants {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public EMSController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException, InterruptedException {
+    public EMSController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException {
         // If database already exists, do not create a new one unless db parameter contains a different one
         if (database != null) {
             EMSController.database = database;
@@ -63,14 +63,14 @@ public class EMSController implements Constants {
      * @param password the password
      * @return the User on success, null on failure
      */
-    public EMSUser logIn(String username, char[] password) throws IOException, ClassNotFoundException {
+    public EMSUser logIn(String username, char[] password) {
         return authenticateUser(username, password);
     }
 
     /**
      * Logs a user out of the system
      */
-    public void logOut() throws IOException, InterruptedException {
+    public void logOut() {
         database.closeDatabase();
         database = null;
         this.currentUser = null;
@@ -103,7 +103,7 @@ public class EMSController implements Constants {
      * Saves a record to the database
      * @param record the record to finalize
      */
-    public void finalizeRecord(EmergencyRecord record) throws IOException, ClassNotFoundException {
+    public void finalizeRecord(EmergencyRecord record) throws IOException {
         currentUser.addRecord(record);
         database.addEmergencyRecord(record);
     }
@@ -113,7 +113,7 @@ public class EMSController implements Constants {
      * @param time the time of the record to access
      * @return the emergency record
      */
-    public EmergencyRecord accessEmergencyRecord(Instant time) throws IOException, ClassNotFoundException {
+    public EmergencyRecord accessEmergencyRecord(Instant time) {
         return database.getCachedRecords().get(time);
     }
 
@@ -125,7 +125,7 @@ public class EMSController implements Constants {
      * @param endingDate the end date of the report
      * @param filename the file to save the report into
      */
-    public void generateReport(Instant beginningDate, Instant endingDate, String filename) throws IOException, ClassNotFoundException{
+    public void generateReport(Instant beginningDate, Instant endingDate, String filename) {
         ArrayList<EmergencyRecord> records = getRecords();
         ArrayList<EmergencyRecord> recordsInRange = new ArrayList<>();
         // Gather records in range
@@ -144,10 +144,8 @@ public class EMSController implements Constants {
      * Generates a report for a single record
      * @param record the record to generate a report for
      * @param fileName the filename to save the report to
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
-    public void generateReport(EmergencyRecord record, String fileName) throws IOException, ClassNotFoundException {
+    public void generateReport(EmergencyRecord record, String fileName) {
         EMSReport.generateRecordReport(record, fileName);
     }
 
@@ -155,7 +153,7 @@ public class EMSController implements Constants {
      * Retrieves a list of all the users of the system
      * @return the list of users
      */
-    public ArrayList<EMSUser> getUsers() throws IOException, ClassNotFoundException {
+    public ArrayList<EMSUser> getUsers() {
         ArrayList<EMSUser> users = new ArrayList<>();
         database.getCachedUsers().values().stream()
                 .filter(u -> !u.isAdmin())
@@ -167,7 +165,7 @@ public class EMSController implements Constants {
      * Retrieves a list of all the admin users of the system
      * @return the list of users
      */
-    public ArrayList<EMSUser> getAdminUsers() throws Exception {
+    public ArrayList<EMSUser> getAdminUsers() {
         ArrayList<EMSUser> users = new ArrayList<>();
         database.getCachedUsers().values().stream()
                 .filter(EMSUser::isAdmin)
@@ -179,7 +177,7 @@ public class EMSController implements Constants {
      * Retrieves a list of all the records in the system
      * @return the list of records
      */
-    public ArrayList<EmergencyRecord> getRecords() throws IOException, ClassNotFoundException {
+    public ArrayList<EmergencyRecord> getRecords() {
         ArrayList<EmergencyRecord> list = new ArrayList<>();
 
         database.getCachedRecords().entrySet().stream()
@@ -192,10 +190,8 @@ public class EMSController implements Constants {
     /**
      * Retrieves a sorted list of the last twenty records
      * @return the descending list of records
-     * @throws IOException can be caught from getCachedRecords
-     * @throws ClassNotFoundException can be caught from getCachedRecords
      */
-    public EmergencyRecord[] getRecentRecords() throws IOException, ClassNotFoundException {
+    public EmergencyRecord[] getRecentRecords() {
 
         ArrayList<EmergencyRecord> list = new ArrayList<>();
 
@@ -211,7 +207,7 @@ public class EMSController implements Constants {
      * Saves all emergency data to a file
      * @param file the file to save to
      */
-    public void backupData(File file) throws IOException, ClassNotFoundException {
+    public void backupData(File file) throws IOException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             Serializable[] toWrite = {
                     (Serializable) database.getCachedUsers(),
@@ -226,7 +222,7 @@ public class EMSController implements Constants {
      * @param file the file to restore from
      */
     @SuppressWarnings("unchecked")
-    public void restoreData(File file) throws InterruptedException, IOException, ClassNotFoundException {
+    public void restoreData(File file) throws IOException, ClassNotFoundException {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             Serializable[] readObjects = (Serializable[]) ois.readObject();
             HashMap<String, EMSUser> users = (HashMap<String, EMSUser>) readObjects[0];
@@ -241,8 +237,7 @@ public class EMSController implements Constants {
      * @param username the username
      * @param password the password
      */
-    protected static EMSUser authenticateUser(String username, char[] password) throws
-            NullPointerException, IOException, ClassNotFoundException {
+    protected static EMSUser authenticateUser(String username, char[] password) {
         EMSUser user = database.lookupUser(username);
         if (user != null ) {
             user = user.checkPassword(password) ? user : null;
@@ -254,9 +249,8 @@ public class EMSController implements Constants {
      * Sets the current user
      * @param user the user
      */
-    EMSUser setUser(EMSUser user) {
+    void setUser(EMSUser user) {
         currentUser = user;
-        return currentUser;
     }
 
     /**

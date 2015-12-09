@@ -11,22 +11,22 @@ public class Responder implements Serializable {
     /**
      * The phone number of the responder
      */
-    private String phoneNumber;
+    private final String phoneNumber;
 
     /**
      * The street address where the responder is located
      */
-    private String address;
+    private final String address;
 
     /**
      * The state where the responder is located
      */
-    private String state;
+    private final String state;
 
     /**
      * The city where the responder is located
      */
-    private String city;
+    private final String city;
 
     /**
      * Default constructor for a responder object

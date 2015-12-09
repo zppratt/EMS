@@ -22,7 +22,7 @@ public class Metadata implements Serializable {
     /**
      * The time the emergency record was created
      */
-    private Instant timeCreated;
+    private final Instant timeCreated;
 
     /**
      * The modifications done to the emergency record by time, user

@@ -124,11 +124,6 @@ public class EMSControllerTest implements TestConstants{
     }
 
     @Test
-    public void testGenerateReport() throws Exception {
-
-    }
-
-    @Test
     public void testGetUsers() throws Exception {
         System.out.println("testGetUsers");
 

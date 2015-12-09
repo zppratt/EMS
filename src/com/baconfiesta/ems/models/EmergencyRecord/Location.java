@@ -11,17 +11,17 @@ public class Location implements Serializable {
     /**
      * The address of the emergency
      */
-    private String address;
+    private final String address;
 
     /**
      * The state where the emergency is/was located
      */
-    private String state;
+    private final String state;
 
     /**
      * The city where the emergency is/was located
      */
-    private String city;
+    private final String city;
 
     /**
      * Default constructor

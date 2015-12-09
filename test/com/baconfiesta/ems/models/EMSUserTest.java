@@ -25,7 +25,7 @@ public class EMSUserTest {
     private EMSUser adminUser;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Test regular user
         regularUser = new EMSUser("Frodo", "Baggins", "fbaggins", "password", false);
         // Test admin

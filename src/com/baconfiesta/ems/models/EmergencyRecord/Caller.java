@@ -11,17 +11,17 @@ public class Caller implements Serializable {
     /**
      * The first name of the caller
      */
-    private String firstName;
+    private final String firstName;
 
     /**
      * The last name of the caller
      */
-    private String lastName;
+    private final String lastName;
 
     /**
      * The phone number of the caller
      */
-    private String phone;
+    private final String phone;
 
     /**
      * Create a caller for an emergency record
@@ -57,14 +57,6 @@ public class Caller implements Serializable {
      */
     public String getPhone() {
         return phone;
-    }
-
-    /**
-     * Set the phone number of the caller
-     * @param phone the phone number
-     */
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public String toString() {

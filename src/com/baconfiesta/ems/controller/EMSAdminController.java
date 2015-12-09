@@ -24,7 +24,7 @@ public class EMSAdminController extends EMSController {
      * @param user the user to use the controller
      * @param database the database
      */
-    public EMSAdminController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException, InterruptedException {
+    public EMSAdminController(EMSUser user, EMSDatabase database) throws IOException, ClassNotFoundException {
         super(user, database);
     }
 
@@ -36,21 +36,24 @@ public class EMSAdminController extends EMSController {
      * @param password the user's password
      * @return the User on success, null on failure
      */
-    public EMSUser addUser(String firstname, String lastname, String username, String password) throws IOException, ClassNotFoundException {
+    public EMSUser addUser(String firstname, String lastname, String username, String password) throws IOException {
         return database.addUser(firstname, lastname, username, password);
     }
 
     /**
      * Removes a user from the system
      * @param username the username of the user to remove
-     * @return whether the removal was successful or not
      */
-    public boolean removeUser(String username) throws IOException, ClassNotFoundException {
-        return database.removeUser(username);
+    public void removeUser(String username) throws IOException {
+        database.removeUser(username);
     }
 
-    public boolean removeRecord(EmergencyRecord record) throws IOException {
-        return database.removeRecord(record);
+    /**
+     * Removes a record from the system
+     * @param record the record to remove
+     */
+    public void removeRecord(EmergencyRecord record) throws IOException {
+        database.removeRecord(record);
     }
 
     /**
@@ -58,7 +61,7 @@ public class EMSAdminController extends EMSController {
      * @param username the username
      * @return the User if found, otherwise null
      */
-    public EMSUser lookupUser(String username) throws IOException, ClassNotFoundException {
+    public EMSUser lookupUser(String username) {
         return database.lookupUser(username);
     }
 
@@ -69,7 +72,7 @@ public class EMSAdminController extends EMSController {
     /**
      * Creates users and records for manual testing
      */
-    public void generateTestData() throws IOException, ClassNotFoundException {
+    public void generateTestData() throws IOException {
         Random r = new Random(Instant.now().toEpochMilli());
         long endTime = Timestamp.valueOf("2017-01-01 00:00:00").getTime();
         System.out.println("Generating Users:");
@@ -119,12 +122,12 @@ public class EMSAdminController extends EMSController {
         }
     }
 
-    Category randomCategory() {
+    private Category randomCategory() {
         int pick = new Random().nextInt(Category.values().length);
         return Category.values()[pick];
     }
 
-    String randomStreet() {
+    private String randomStreet() {
         String[] streets = {
                 "9030 ima Rd",
                 "3014 N Clinton St",

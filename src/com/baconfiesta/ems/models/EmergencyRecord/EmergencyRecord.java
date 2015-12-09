@@ -53,7 +53,6 @@ public class EmergencyRecord implements Serializable{
      * @param location the location
      * @param category the category
      * @param responder the responder
-     * @param route the route
      * @param creator the creator of the record
      */
     public EmergencyRecord(
@@ -62,7 +61,6 @@ public class EmergencyRecord implements Serializable{
             Location location,
             Category category,
             Responder responder,
-            Route route,
             String description,
             EMSUser creator
     ) {
@@ -72,7 +70,6 @@ public class EmergencyRecord implements Serializable{
         this.setLocation(location);
         this.setCategory(category);
         this.setResponder(responder);
-        this.setRoute(route);
         this.setDescription(description);
     }
 
@@ -206,14 +203,14 @@ public class EmergencyRecord implements Serializable{
      * Sets the object containing the information about this record
      * @param metadata the metadata of this record
      */
-    protected void setMetadata(Metadata metadata) {
+    private void setMetadata(Metadata metadata) {
         this.metadata = metadata;
     }
 
     /**
      * Adds this record to a user's list and sets as creator
      */
-    void setCreator(EMSUser creator) {
+    private void setCreator(EMSUser creator) {
         metadata.setCreatedBy(creator);
         creator.addRecord(this);
     }

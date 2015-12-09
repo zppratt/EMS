@@ -15,22 +15,22 @@ public class EMSUser implements Serializable {
     /**
      * The first name of the system user
      */
-    private String firstname;
+    private final String firstname;
 
     /**
      * The last name of the system user
      */
-    private String lastname;
+    private final String lastname;
 
     /**
      * The username of the system user
      */
-    private String username;
+    private final String username;
 
     /**
      * The password of the user
      */
-    private String password;
+    private final String password;
 
     /**
      * The records a user has created

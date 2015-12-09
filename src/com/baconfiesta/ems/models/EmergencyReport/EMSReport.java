@@ -31,14 +31,14 @@ public class EMSReport {
      * \brief Generates a detailed report for a unique emergency record
      * @param emergencyRecord the emergency record to generate a report for
      * @param filename the name of the file (and its path) where we want to store the report */
-    public static File generateRecordReport(EmergencyRecord emergencyRecord, String filename) {
+    public static void generateRecordReport(EmergencyRecord emergencyRecord, String filename) {
 
         /* copying file from template */
         try {
             FileUtils.copyFile(new File(recordTemplateFilename), new File(filename));
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
         /* Create new input stream from file */
@@ -47,7 +47,7 @@ public class EMSReport {
             input = new FileInputStream(filename);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
         /* Open excel file from input stream */
@@ -56,7 +56,7 @@ public class EMSReport {
             excelFile = new POIFSFileSystem(input);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
          /* Create workbook */
@@ -65,7 +65,7 @@ public class EMSReport {
             wb = new HSSFWorkbook(excelFile);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
         /* MODIFICATION STARTS HERE */
@@ -160,7 +160,7 @@ public class EMSReport {
             row = sheet1.getRow(22);
             cell = row.getCell(2);
             cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
-        } catch(NullPointerException e) {
+        } catch(NullPointerException ignored) {
 
         }
 
@@ -172,7 +172,7 @@ public class EMSReport {
             out = new FileOutputStream(filename);
         } catch(Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
 
          /* Write the workbook in the output stream  */
@@ -189,8 +189,6 @@ public class EMSReport {
         } catch(Exception e) {
             e.printStackTrace();
         }
-
-        return new File(filename);
     }
 
 
@@ -320,7 +318,7 @@ public class EMSReport {
             /* Number of Modifications */
                 cell = row.getCell(15);
                 cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
-            } catch(NullPointerException e) {
+            } catch(NullPointerException ignored) {
 
             }
         }
@@ -378,7 +376,7 @@ public class EMSReport {
                     if (c.getCellType() == org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA) {
                         try {
                             evaluator.evaluateFormulaCell(c);
-                        } catch (Exception e) {
+                        } catch (Exception ignored) {
                         }
                     }
                 }

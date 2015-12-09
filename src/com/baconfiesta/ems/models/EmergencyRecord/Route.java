@@ -4,7 +4,6 @@ import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
-import com.google.maps.errors.ApiError;
 import com.google.maps.model.*;
 import javassist.tools.rmi.ObjectNotFoundException;
 import org.apache.commons.io.FileUtils;
@@ -18,8 +17,8 @@ import java.util.Properties;
  */
 public class Route implements Serializable {
 
-    private String emergencyResponderAddress;
-    private String emergencyLocationAddress;
+    private final String emergencyResponderAddress;
+    private final String emergencyLocationAddress;
     private File route;
     private String routeDirections;
     private String routeDistance;
