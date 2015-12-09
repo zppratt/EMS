@@ -4,8 +4,7 @@ import com.baconfiesta.ems.models.EmergencyRecord.EmergencyRecord;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,93 +73,96 @@ public class EMSReport {
         Sheet sheet1 = wb.getSheet("Details");
 
         Row row;
-        org.apache.poi.ss.usermodel.Cell cell;
+        Cell cell;
 
+        try {
        /* Emergency Case ID */
-        row = sheet1.getRow(0);
-        cell = row.getCell(1);
-        cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toEpochMilli());
+            row = sheet1.getRow(0);
+            cell = row.getCell(1);
+            cell.setCellValue(emergencyRecord.getMetadata().getTimeCreated().toEpochMilli());
 
         /* Caller first name */
-        row = sheet1.getRow(3);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getCaller().getFirstName());
+            row = sheet1.getRow(3);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getCaller().getFirstName());
 
         /* Caller last name */
-        row = sheet1.getRow(4);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getCaller().getLastName());
+            row = sheet1.getRow(4);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getCaller().getLastName());
 
         /* Caller Phone number */
-        row = sheet1.getRow(5);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getCaller().getPhone());
+            row = sheet1.getRow(5);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getCaller().getPhone());
 
         /* Emergency Address */
-        row = sheet1.getRow(7);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getLocation().getAddress());
+            row = sheet1.getRow(7);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getLocation().getAddress());
 
         /* Emergency City */
-        row = sheet1.getRow(8);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getLocation().getCity());
+            row = sheet1.getRow(8);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getLocation().getCity());
 
         /* Emergency State */
-        row = sheet1.getRow(9);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getLocation().getState());
+            row = sheet1.getRow(9);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getLocation().getState());
 
         /* Emergency Category */
-        row = sheet1.getRow(10);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getCategory().toString()); // NEEDS TO BE TRANSFORMED IN STRING
+            row = sheet1.getRow(10);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getCategory().toString()); // NEEDS TO BE TRANSFORMED IN STRING
 
         /* Emergency Response Time */
-        row = sheet1.getRow(11);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
+            row = sheet1.getRow(11);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getRoute().getRouteDuration());
 
         /* Responder Phone Number */
-        row = sheet1.getRow(13);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getResponder().getPhoneNumber());
+            row = sheet1.getRow(13);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getResponder().getPhoneNumber());
 
         /* Responder Address */
-        row = sheet1.getRow(14);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getResponder().getAddress());
+            row = sheet1.getRow(14);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getResponder().getAddress());
 
         /* Responder City */
-        row = sheet1.getRow(15);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getResponder().getCity());
+            row = sheet1.getRow(15);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getResponder().getCity());
 
         /* Responder State */
-        row = sheet1.getRow(16);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getResponder().getState());
+            row = sheet1.getRow(16);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getResponder().getState());
 
         /* Route Chosen */
-        row = sheet1.getRow(18);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getRoute().getRouteSelectedString());
+            row = sheet1.getRow(18);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getRoute().getRouteSelectedString());
 
         /* Emergency Case Created By */
-        row = sheet1.getRow(20);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy().toString().replace("\n", ""));
+            row = sheet1.getRow(20);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getMetadata().getCreatedBy().toString().replace("\n", ""));
 
          /* Emergency Case Time Created */
-        row = sheet1.getRow(21);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().toString());
+            row = sheet1.getRow(21);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getMetadata().toString());
 
          /* Emergency Case Number of Modifications */
-        row = sheet1.getRow(22);
-        cell = row.getCell(2);
-        cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
+            row = sheet1.getRow(22);
+            cell = row.getCell(2);
+            cell.setCellValue(emergencyRecord.getMetadata().getModifications().size());
+        } catch(NullPointerException e) {
 
+        }
 
         /* MODIFICATION ENDS HERE */
 
@@ -247,76 +249,80 @@ public class EMSReport {
         Sheet sheet1 = wb.getSheet("Details");
 
         Row row;
-        org.apache.poi.ss.usermodel.Cell cell;
+        Cell cell;
 
 
         /* For each emergency record, entering information in the excel file */
         for(i=0; i<emergencyRecordsLength; i++) {
-            row = sheet1.getRow(i+1);
+            try {
+                row = sheet1.getRow(i + 1);
 
             /* Emergency ID */
-            cell = row.getCell(0);
-            cell.setCellValue(emergencyRecords[i].getMetadata().getTimeCreated().toEpochMilli());
+                cell = row.getCell(0);
+                cell.setCellValue(emergencyRecords[i].getMetadata().getTimeCreated().toEpochMilli());
 
             /* Creation Time */
-            cell = row.getCell(1);
-            cell.setCellValue(emergencyRecords[i].getMetadata().toString());
+                cell = row.getCell(1);
+                cell.setCellValue(emergencyRecords[i].getMetadata().toString());
 
             /* Caller's first name */
-            cell = row.getCell(2);
-            cell.setCellValue(emergencyRecords[i].getCaller().getFirstName());
+                cell = row.getCell(2);
+                cell.setCellValue(emergencyRecords[i].getCaller().getFirstName());
 
             /* Caller's last name */
-            cell = row.getCell(3);
-            cell.setCellValue(emergencyRecords[i].getCaller().getLastName());
+                cell = row.getCell(3);
+                cell.setCellValue(emergencyRecords[i].getCaller().getLastName());
 
             /* Caller's Phone Number */
-            cell = row.getCell(4);
-            cell.setCellValue(emergencyRecords[i].getCaller().getPhone());
+                cell = row.getCell(4);
+                cell.setCellValue(emergencyRecords[i].getCaller().getPhone());
 
             /* Emergency Address */
-            cell = row.getCell(5);
-            cell.setCellValue(emergencyRecords[i].getLocation().getAddress());
+                cell = row.getCell(5);
+                cell.setCellValue(emergencyRecords[i].getLocation().getAddress());
 
             /* Emergency City */
-            cell = row.getCell(6);
-            cell.setCellValue(emergencyRecords[i].getLocation().getCity());
+                cell = row.getCell(6);
+                cell.setCellValue(emergencyRecords[i].getLocation().getCity());
 
             /* Emergency State */
-            cell = row.getCell(7);
-            cell.setCellValue(emergencyRecords[i].getLocation().getState());
+                cell = row.getCell(7);
+                cell.setCellValue(emergencyRecords[i].getLocation().getState());
 
             /* Emergency Category */
-            cell = row.getCell(8);
-            cell.setCellValue(emergencyRecords[i].getCategory().toString());
+                cell = row.getCell(8);
+                cell.setCellValue(emergencyRecords[i].getCategory().toString());
 
             /* Emergency Response Time */
-            cell = row.getCell(9);
-            cell.setCellValue(emergencyRecords[i].getRoute().getRouteDuration());
+                cell = row.getCell(9);
+                cell.setCellValue(emergencyRecords[i].getRoute().getRouteDuration());
 
             /* Responder's Address */
-            cell = row.getCell(10);
-            cell.setCellValue(emergencyRecords[i].getResponder().getAddress());
+                cell = row.getCell(10);
+                cell.setCellValue(emergencyRecords[i].getResponder().getAddress());
 
             /* Responder's City */
-            cell = row.getCell(11);
-            cell.setCellValue(emergencyRecords[i].getResponder().getCity());
+                cell = row.getCell(11);
+                cell.setCellValue(emergencyRecords[i].getResponder().getCity());
 
             /* Responder's State */
-            cell = row.getCell(12);
-            cell.setCellValue(emergencyRecords[i].getResponder().getState());
+                cell = row.getCell(12);
+                cell.setCellValue(emergencyRecords[i].getResponder().getState());
 
             /* Responder's Phone Number */
-            cell = row.getCell(13);
-            cell.setCellValue(emergencyRecords[i].getResponder().getPhoneNumber());
+                cell = row.getCell(13);
+                cell.setCellValue(emergencyRecords[i].getResponder().getPhoneNumber());
 
             /* Route Chosen */
-            cell = row.getCell(14);
-            cell.setCellValue(emergencyRecords[i].getRoute().getRouteSelectedString());
+                cell = row.getCell(14);
+                cell.setCellValue(emergencyRecords[i].getRoute().getRouteSelectedString());
 
             /* Number of Modifications */
-            cell = row.getCell(15);
-            cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
+                cell = row.getCell(15);
+                cell.setCellValue(emergencyRecords[i].getMetadata().getModifications().size());
+            } catch(NullPointerException e) {
+
+            }
         }
 
         /* Writing starting and ending date period */
@@ -334,6 +340,9 @@ public class EMSReport {
 
 
          /* MODIFICATION ENDS HERE */
+
+         /* Refreshing */
+        refreshFormulasSpreadsheet(wb);
 
          /* Create an output stream */
 
@@ -359,6 +368,21 @@ public class EMSReport {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void refreshFormulasSpreadsheet(Workbook wb) {
+        FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+        Sheet sheet = wb.getSheet("Details");
+            for (Row r : sheet) {
+                for (Cell c : r) {
+                    if (c.getCellType() == org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA) {
+                        try {
+                            evaluator.evaluateFormulaCell(c);
+                        } catch (Exception e) {
+                        }
+                    }
+                }
+            }
     }
 
 }

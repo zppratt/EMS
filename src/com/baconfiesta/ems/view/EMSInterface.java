@@ -146,7 +146,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Set logout actionListener
         logout.addActionListener(e -> {
             // Confirm user logout
-            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == 0) {
+            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 // Clear the window
                 mainframe.removeAll();
                 footer.removeAll();
@@ -278,7 +278,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                 Authenticator.init();
                 user = Authenticator.authenticate(username, password);
                 if (user == null) {
-                    JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                    JOptionPane.showMessageDialog(frame, "Invalid username or password.");
                     return;
                 }
                 // blank out password for security
@@ -286,10 +286,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                     password[i] = ' ';
                 }
             } catch (NullPointerException e) {
-                JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
+                JOptionPane.showMessageDialog(frame, BURP +  "Something broke." + ASK);
                 return;
             } catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(frame, "Invalid username or password.");
+                JOptionPane.showMessageDialog(frame, "Something broke.");
                 return;
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(frame, BURP + "Trouble reading user directory." + ASK);
@@ -672,8 +672,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Fill in the route directions
-        route1Text.setText(mainEmergencyRecordTempFile.getRoute().getRouteDirections());
-        route2Text.setText(alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route1Text.setText("Main Route\nDistance: " + mainEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration"+ mainEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + mainEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route2Text.setText("Alternate Route\nDistance: " + alternateEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration"+ alternateEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
 
 
         // Set the summary
@@ -932,11 +932,19 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Enable back button
         back.setEnabled(true);
 
+        // Initilize fields
+        JLabel fromDateTitle = new JLabel("From");
+        JLabel toDateTitle = new JLabel("To");
+        fromDateTitle.setFont(new Font(fromDateTitle.getFont().getName(), Font.BOLD, 14));
+        toDateTitle.setFont(new Font(toDateTitle.getFont().getName(), Font.BOLD, 14));
+
         removeAll();
-        mainframe.setLayout(new GridLayout(2, 2));
+        mainframe.setLayout(new BoxLayout(mainframe,BoxLayout.Y_AXIS));
         JCalendar fromDatePicker = new JCalendar();
         JCalendar toDatePicker = new JCalendar();
+        mainframe.add(fromDateTitle);
         mainframe.add(fromDatePicker);
+        mainframe.add(toDateTitle);
         mainframe.add(toDatePicker);
         JButton submitDates = new JButton("Submit");
         footer.add(submitDates);
@@ -1185,7 +1193,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         deleteUser.addActionListener(event -> {
                 // Remove the user from the database
             String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
-            if (JOptionPane.showConfirmDialog(frame, "Sure you want to delete " + username + "?") == JOptionPane.YES_OPTION) {
+            if (JOptionPane.showConfirmDialog(frame, "Sure you want to delete " + username + "?", null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 try {
                     if (controller.getCurrentUser().isAdmin()) {
                         ((EMSAdminController) controller).removeUser(username);
@@ -1235,6 +1243,15 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         addUser.addActionListener(event -> {
+            String password = String.valueOf(passwordField.getPassword());
+            String confirmPassword = String.valueOf(confirmPasswordField.getPassword());
+            if (password.compareTo(confirmPassword) != 0) {
+                passwordField.setText(null);
+                confirmPasswordField.setText(null);
+                JOptionPane.showMessageDialog(frame, "The two password you have entered don't match.");
+                return;
+            }
+
             // Add the user to the database
             try {
                 ((EMSAdminController) controller).addUser(
@@ -1242,6 +1259,11 @@ public class EMSInterface implements EMSInterfaceConstants {
                         lastnameText.getText(),
                         usernameText.getText(),
                         String.valueOf(passwordField.getPassword()));
+                firstnameText.setText(null);
+                lastnameText.setText(null);
+                usernameText.setText(null);
+                passwordField.setText(null);
+                confirmPasswordField.setText(null);
             } catch (IOException | ClassNotFoundException e1) {
                 JOptionPane.showMessageDialog(frame, BURP + "For some reason I couldn't add the user." + ASK);
             }
