@@ -855,13 +855,11 @@ public class EMSInterface implements EMSInterfaceConstants {
         JList<EmergencyRecord> sidebarList = new JList<>(recentRecords);
         if (initialRecord != null) {
             sidebarList.setSelectedValue(initialRecord, true);
-            summaryText.setText(initialRecord.getParagraphForm());
+            summaryText.setText(initialRecord.getParagraphForm() + initialRecord.getResponder().getParagraphForm());
 
             // Want only the selected route shown
-            if (initialRecord.getRoute() != null && !initialRecord.getRoute().getAlternateRouteSelected()) {
-                routeText.setText(initialRecord.getRoute().getRouteDirections());
-            } else if (initialRecord.getRoute() != null) {
-                routeText.setText(initialRecord.getRoute().getRouteDirections());
+            if (initialRecord.getRoute() != null) {
+                routeText.setText("Distance: " + initialRecord.getRoute().getRouteDistance() + "\nDuration: " + initialRecord.getRoute().getRouteDurationString() + "\n" + initialRecord.getRoute().getRouteDirections());
             }
         }
         JScrollPane sidebarListScrollPane = new JScrollPane(sidebarList);
