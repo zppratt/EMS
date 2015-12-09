@@ -6,6 +6,6 @@ public interface EMSInterfaceConstants {
     String ASK = "\nAsk TeamBaconFiesta for a software update.";
 
     int FOOTER_HEIGHT = 40;
-    int SIDEBAR_WIDTH = 200;
+    int SIDEBAR_WIDTH = 250;
 
 }
