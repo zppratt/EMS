@@ -81,7 +81,11 @@ public class EMSUser implements Serializable {
      * @return the username
      */
     public String getUsername() {
-        return username;
+        if (username != null && !username.equals("")) {
+            return username;
+        } else {
+            return "<blank>";
+        }
     }
 
     /**

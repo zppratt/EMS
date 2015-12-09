@@ -68,6 +68,7 @@ public class EMSInterface implements EMSInterfaceConstants {
     private EmergencyRecord mainEmergencyRecordTempFile;
     private EmergencyRecord alternateEmergencyRecordTempFile;
     private EmergencyRecord[] recentRecords;
+    private final String programTitle = "Emergency Management System";
 
     /**
      * The constructor for EMSInterface
@@ -94,9 +95,9 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.setMinimumSize(new Dimension(Integer.MAX_VALUE, FOOTER_HEIGHT));
         footer.setPreferredSize(new Dimension(Integer.MAX_VALUE, FOOTER_HEIGHT));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setMaximumSize(new Dimension(SIDEBAR_WIDTH,Integer.MAX_VALUE));
-        sidebar.setMinimumSize(new Dimension(SIDEBAR_WIDTH,Integer.MAX_VALUE));
-        sidebar.setPreferredSize(new Dimension(SIDEBAR_WIDTH,Integer.MAX_VALUE));
+        sidebar.setMaximumSize(new Dimension(SIDEBAR_WIDTH, Integer.MAX_VALUE));
+        sidebar.setMinimumSize(new Dimension(SIDEBAR_WIDTH, Integer.MAX_VALUE));
+        sidebar.setPreferredSize(new Dimension(SIDEBAR_WIDTH, Integer.MAX_VALUE));
 
         // Set panel borders
         header.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -145,18 +146,8 @@ public class EMSInterface implements EMSInterfaceConstants {
 
         // Set logout actionListener
         logout.addActionListener(e -> {
-            // Confirm user logout
-            if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                // Clear the window
-                mainframe.removeAll();
-                footer.removeAll();
-                sidebar.removeAll();
-                header.remove(back);
-                header.remove(logout);
+            logOut();
 
-                // Go back to login
-                logIn();
-            }
         });
 
         // Set createCase actionListener
@@ -231,6 +222,19 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
     }
 
+    public void logOut() {
+        // Confirm user logout
+        if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to logout?\nAny unsaved data will be lost.", null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            // Clear the window
+            removeAll();
+            header.remove(back);
+            header.remove(logout);
+            frame.setTitle(programTitle);
+            // Go back to login
+            logIn();
+        }
+    }
+
     /**
      * Show log in screen
      */
@@ -286,7 +290,7 @@ public class EMSInterface implements EMSInterfaceConstants {
                     password[i] = ' ';
                 }
             } catch (NullPointerException e) {
-                JOptionPane.showMessageDialog(frame, BURP +  "Something broke." + ASK);
+                JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
                 return;
             } catch (ClassNotFoundException e) {
                 JOptionPane.showMessageDialog(frame, "Something broke.");
@@ -313,12 +317,15 @@ public class EMSInterface implements EMSInterfaceConstants {
                     controller = new EMSController(user, null);
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (Exception e){
+                } catch (Exception e) {
                     JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
                     return;
                 }
                 userActions();
             }
+
+            frame.setTitle(programTitle + " : " + controller.getCurrentUser().toString());
+
         });
     }
 
@@ -357,7 +364,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Refresh the window
         refreshWindow();
 
-        if(controller instanceof EMSAdminController){
+        if (controller instanceof EMSAdminController) {
             adminActions();
         }
 
@@ -545,7 +552,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(selectRoute);
 
         // Check if there was a temp record to repopulate
-        if(mainEmergencyRecordTempFile != null){
+        if (mainEmergencyRecordTempFile != null) {
             firstnameText.setText(mainEmergencyRecordTempFile.getCaller().getFirstName());
             lastnameText.setText(mainEmergencyRecordTempFile.getCaller().getLastName());
             phoneText.setText(mainEmergencyRecordTempFile.getCaller().getPhone());
@@ -553,15 +560,15 @@ public class EMSInterface implements EMSInterfaceConstants {
             stateText.setText(mainEmergencyRecordTempFile.getLocation().getState());
             cityText.setText(mainEmergencyRecordTempFile.getLocation().getCity());
             descriptionText.setText(mainEmergencyRecordTempFile.getDescription());
-            if(mainEmergencyRecordTempFile.getCategory().equals(Category.FIRE)){
+            if (mainEmergencyRecordTempFile.getCategory().equals(Category.FIRE)) {
                 fire.setSelected(true);
-            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.CRIME)){
+            } else if (mainEmergencyRecordTempFile.getCategory().equals(Category.CRIME)) {
                 crime.setSelected(true);
-            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.MEDICAL)){
+            } else if (mainEmergencyRecordTempFile.getCategory().equals(Category.MEDICAL)) {
                 medical.setSelected(true);
-            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.HOAX)){
+            } else if (mainEmergencyRecordTempFile.getCategory().equals(Category.HOAX)) {
                 hoax.setSelected(true);
-            }else if(mainEmergencyRecordTempFile.getCategory().equals(Category.CRIME)){
+            } else if (mainEmergencyRecordTempFile.getCategory().equals(Category.CRIME)) {
                 crime.setSelected(true);
             }
         }
@@ -573,29 +580,29 @@ public class EMSInterface implements EMSInterfaceConstants {
             // Create the temp record
             mainEmergencyRecordTempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(controller.getCurrentUser());
             alternateEmergencyRecordTempFile = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(controller.getCurrentUser());
-            try{
+            try {
                 mainEmergencyRecordTempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
                 alternateEmergencyRecordTempFile.setCaller(new Caller(firstnameText.getText(), lastnameText.getText(), phoneText.getText()));
-                mainEmergencyRecordTempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
-                alternateEmergencyRecordTempFile.setLocation(new Location(addressText.getText(),stateText.getText(),cityText.getText()));
+                mainEmergencyRecordTempFile.setLocation(new Location(addressText.getText(), stateText.getText(), cityText.getText()));
+                alternateEmergencyRecordTempFile.setLocation(new Location(addressText.getText(), stateText.getText(), cityText.getText()));
                 mainEmergencyRecordTempFile.setDescription(descriptionText.getText());
                 alternateEmergencyRecordTempFile.setDescription(descriptionText.getText());
-                if(fire.isSelected()){
+                if (fire.isSelected()) {
                     mainEmergencyRecordTempFile.setCategory(Category.FIRE);
                     alternateEmergencyRecordTempFile.setCategory(Category.FIRE);
-                }else if(crime.isSelected()){
+                } else if (crime.isSelected()) {
                     mainEmergencyRecordTempFile.setCategory(Category.CRIME);
                     alternateEmergencyRecordTempFile.setCategory(Category.CRIME);
-                }else if(medical.isSelected()){
+                } else if (medical.isSelected()) {
                     mainEmergencyRecordTempFile.setCategory(Category.MEDICAL);
                     alternateEmergencyRecordTempFile.setCategory(Category.MEDICAL);
-                }else if(hoax.isSelected()){
+                } else if (hoax.isSelected()) {
                     mainEmergencyRecordTempFile.setCategory(Category.HOAX);
                     alternateEmergencyRecordTempFile.setCategory(Category.HOAX);
-                }else if(crash.isSelected()){
+                } else if (crash.isSelected()) {
                     mainEmergencyRecordTempFile.setCategory(Category.CRIME);
                     alternateEmergencyRecordTempFile.setCategory(Category.CRIME);
-                }else{
+                } else {
                     throw new InputMismatchException();
                 }
                 try {
@@ -609,10 +616,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                     JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file." + ASK);
                     return;
                 }
-            } catch (InputMismatchException mismatch){
+            } catch (InputMismatchException mismatch) {
                 JOptionPane.showMessageDialog(frame, "Every field must be filled.");
                 return;
-            } catch (Exception exception){
+            } catch (Exception exception) {
                 JOptionPane.showMessageDialog(frame, BURP + "Something broke." + ASK);
                 return;
             }
@@ -672,8 +679,8 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         // Fill in the route directions
-        route1Text.setText("Main Route\nDistance: " + mainEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration"+ mainEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + mainEmergencyRecordTempFile.getRoute().getRouteDirections());
-        route2Text.setText("Alternate Route\nDistance: " + alternateEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration"+ alternateEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route1Text.setText("Main Route\nDistance: " + mainEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration" + mainEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + mainEmergencyRecordTempFile.getRoute().getRouteDirections());
+        route2Text.setText("Alternate Route\nDistance: " + alternateEmergencyRecordTempFile.getRoute().getRouteDistance() + "\nDuration" + alternateEmergencyRecordTempFile.getRoute().getRouteDurationString() + "\n" + alternateEmergencyRecordTempFile.getRoute().getRouteDirections());
 
 
         // Set the summary
@@ -764,7 +771,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         // Add components to the screen
         mainframe.setLayout(new GridLayout(2, 1));
 
-        if(!mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected()) {
+        if (!mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected()) {
             mainframe.add(route1Panel);
             routeText.setText(mainEmergencyRecordTempFile.getRoute().getRouteDirections());
         } else {
@@ -787,7 +794,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
                 // Save the emergency object
                 try {
-                    if(!mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected())
+                    if (!mainEmergencyRecordTempFile.getRoute().getAlternateRouteSelected())
                         controller.finalizeRecord(mainEmergencyRecordTempFile);
                     else
                         controller.finalizeRecord(alternateEmergencyRecordTempFile);
@@ -859,7 +866,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             summaryText.setText(initialRecord.getParagraphForm());
 
             // Want only the selected route shown
-            if (initialRecord.getRoute() != null && !initialRecord.getRoute().getAlternateRouteSelected()){
+            if (initialRecord.getRoute() != null && !initialRecord.getRoute().getAlternateRouteSelected()) {
                 routeText.setText(initialRecord.getRoute().getRouteDirections());
             } else if (initialRecord.getRoute() != null) {
                 routeText.setText(initialRecord.getRoute().getRouteDirections());
@@ -939,7 +946,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         toDateTitle.setFont(new Font(toDateTitle.getFont().getName(), Font.BOLD, 14));
 
         removeAll();
-        mainframe.setLayout(new BoxLayout(mainframe,BoxLayout.Y_AXIS));
+        mainframe.setLayout(new BoxLayout(mainframe, BoxLayout.Y_AXIS));
         JCalendar fromDatePicker = new JCalendar();
         JCalendar toDatePicker = new JCalendar();
         mainframe.add(fromDateTitle);
@@ -967,19 +974,20 @@ public class EMSInterface implements EMSInterfaceConstants {
 
     /**
      * Show the dialog to save the report to a file for a range of dates
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
     void saveReportFile() throws IOException, ClassNotFoundException {
         String suffix = ".xls";
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("xls files",suffix);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("xls files", suffix);
         fileChooser.setFileFilter(filter);
         int accepted = fileChooser.showDialog(frame, "Save");
         if (accepted == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                if(!fileChooser.getSelectedFile().getAbsolutePath().endsWith(suffix)){
+                if (!fileChooser.getSelectedFile().getAbsolutePath().endsWith(suffix)) {
                     file = new File(fileChooser.getSelectedFile() + suffix);
                 }
                 Files.deleteIfExists(file.toPath());
@@ -993,6 +1001,7 @@ public class EMSInterface implements EMSInterfaceConstants {
 
     /**
      * Show the dialog to save a report for a single emergency record
+     *
      * @param record the emergency record to save
      * @throws NullPointerException
      * @throws IOException
@@ -1191,7 +1200,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         });
 
         deleteUser.addActionListener(event -> {
-                // Remove the user from the database
+            // Remove the user from the database
             String username = ((EMSUser) sidebarList.getSelectedValue()).getUsername();
             if (JOptionPane.showConfirmDialog(frame, "Sure you want to delete " + username + "?", null, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 try {
@@ -1469,7 +1478,7 @@ public class EMSInterface implements EMSInterfaceConstants {
         footer.add(restoreData);
 
         // Populate the field with the record info
-        sidebarList.addListSelectionListener(e ->{
+        sidebarList.addListSelectionListener(e -> {
             EmergencyRecord record = sidebarList.getSelectedValue();
             if (record != null) {
                 Caller caller = record.getCaller();
@@ -1560,10 +1569,10 @@ public class EMSInterface implements EMSInterfaceConstants {
                             location.getAddress(),
                             record.getRoute().getAlternateRouteSelected()
                     ));
-                } catch(ObjectNotFoundException e) {
+                } catch (ObjectNotFoundException e) {
                     JOptionPane.showMessageDialog(frame, BURP + "The server is unavailable at the moment. Could not fetch route.\n" +
                             "Check your internet connection and try again later\n" + ASK);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     JOptionPane.showMessageDialog(frame, "Could not retrieve the API key. Please check the 'maps.private.properties' file." + ASK);
                 }
                 record.setDescription(descriptionText.getText());
@@ -1585,7 +1594,7 @@ public class EMSInterface implements EMSInterfaceConstants {
             EmergencyRecord record = sidebarList.getSelectedValue();
             if (record != null) {
                 try {
-                    ((EMSAdminController)controller).removeRecord(record);
+                    ((EMSAdminController) controller).removeRecord(record);
                 } catch (IOException | NullPointerException e) {
                     JOptionPane.showMessageDialog(frame, BURP + "Had trouble deleting the record, actually." + ASK);
                 }
