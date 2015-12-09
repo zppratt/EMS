@@ -1,5 +1,6 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
+import com.baconfiesta.ems.models.EMSUser.EMSUser;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -11,7 +12,8 @@ import static org.junit.Assert.assertThat;
  */
 public class EmergencyRecordTest {
 
-    EmergencyRecord record = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord();
+    EMSUser user = new EMSUser("","","","",true);
+    EmergencyRecord record = EmergencyRecordBuilder.newBuilder().getNewEmergencyRecord(user);
 
     @Test
     public void testModify() throws Exception {

@@ -54,8 +54,8 @@ public class EMSControllerTest implements TestConstants{
         controller = new EMSController(user, database);
         adminController = new EMSAdminController(user, database);
         adminController.addUser("Bilbo","Baggins","bbaggins","bbaggins");
-        testRecord = recordBuilder.withTime(Instant.EPOCH).getNewEmergencyRecord();
         user = controller.getAdminUsers().get(0);
+        testRecord = recordBuilder.withTime(Instant.EPOCH).getNewEmergencyRecord(user);
         controller.setUser(user);
         controller.finalizeRecord(testRecord);
         // Default user created?

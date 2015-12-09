@@ -1,6 +1,7 @@
 package com.baconfiesta.ems.models.EmergencyRecord;
 
 import com.baconfiesta.ems.models.EMSUser.EMSUser;
+import com.sun.istack.internal.NotNull;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -95,11 +96,7 @@ public class EmergencyRecordBuilder implements Serializable {
         return new EmergencyRecordBuilder();
     }
 
-    public EmergencyRecord getNewEmergencyRecord() {
-        return getNewEmergencyRecord(null);
-    }
-
-    public EmergencyRecord getNewEmergencyRecord(EMSUser user) {
+    public EmergencyRecord getNewEmergencyRecord(@NotNull EMSUser user) {
         return new EmergencyRecord(metadata, caller, location, category, responder, null, description, user); // with all the parameters
     }
 
