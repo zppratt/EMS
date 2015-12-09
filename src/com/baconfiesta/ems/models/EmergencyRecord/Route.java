@@ -32,6 +32,9 @@ public class Route implements Serializable {
      * @param completeAddressFrom the complete address of the end point beginning of the route
      * @param completeAddressTo the complete address of the end point of the route
      * @param alternateRoute a boolean telling if the route calculated is the main or the alternate one
+     * @throws ObjectNotFoundException
+     * @throws ArrayIndexOutOfBoundsException
+     * @throws IOException
      * */
     public Route(String completeAddressFrom, String completeAddressTo, Boolean alternateRoute)
             throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
@@ -117,6 +120,9 @@ public class Route implements Serializable {
      *               Determines an emergency responder according to the type of the emergency. Queries places from google, selects the nearest place,
      *               queries information about this place, and formats information according to a Responder. Creates a new Responder and returns it.
      * @return       an emergency Responder
+     * @throws ObjectNotFoundException
+     * @throws ArrayIndexOutOfBoundsException
+     * @throws IOException
      */
     public static Responder[] determineNearestResponders(EmergencyRecord record) throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
 
@@ -237,7 +243,8 @@ public class Route implements Serializable {
 
     /**
      * \brief Calculates the shortest route from the Responder to the emergency address
-     *
+     *  @param alternateRoute if set to true, calculates the alternate route, calculates the main route otherwise
+     *  @throws IOException
      */
     private void calculateRoute(Boolean alternateRoute) throws IOException {
         String key;
@@ -262,6 +269,9 @@ public class Route implements Serializable {
 
     /**
      * \brief Retrieves the directions information between emergencyResponderAddress and emergencyLocationAddress
+     * @throws ObjectNotFoundException
+     * @throws ArrayIndexOutOfBoundsException
+     * @throws IOException
       */
     private void calculateDirections() throws ObjectNotFoundException, ArrayIndexOutOfBoundsException, IOException {
 
@@ -324,6 +334,7 @@ public class Route implements Serializable {
      *  @param HTMLRequest the URL of the request to include in the HTML file
      *  @param filename the name of the file to create
      *  @return a File object containing the HTML file created using the request
+     *  @throws IOException
      */
     private File createHTMLRoute(String HTMLRequest, String filename) throws IOException {
         File htmlTemplateFile;
@@ -355,7 +366,9 @@ public class Route implements Serializable {
     /**
      * \brief Retrieves a key from the maps.private.properties
      * @param keyToRetrieve the label of the key to retrieve from the file
-     * @return a String containing the key retrieved */
+     * @return a String containing the key retrieved
+     * @throws IOException
+     * */
     private static String retrieveKey(String keyToRetrieve) throws IOException {
         Properties properties = new Properties();
         InputStream input = new FileInputStream("maps.private.properties");
