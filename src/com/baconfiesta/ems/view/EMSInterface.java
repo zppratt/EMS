@@ -593,8 +593,8 @@ public class EMSInterface implements EMSInterfaceConstants {
                     mainEmergencyRecordTempFile.setCategory(Category.HOAX);
                     alternateEmergencyRecordTempFile.setCategory(Category.HOAX);
                 } else if (crash.isSelected()) {
-                    mainEmergencyRecordTempFile.setCategory(Category.CRIME);
-                    alternateEmergencyRecordTempFile.setCategory(Category.CRIME);
+                    mainEmergencyRecordTempFile.setCategory(Category.CAR_CRASH);
+                    alternateEmergencyRecordTempFile.setCategory(Category.CAR_CRASH);
                 } else {
                     throw new InputMismatchException();
                 }
